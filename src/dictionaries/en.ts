@@ -78,7 +78,7 @@ export const en = {
       adoption: "*90%+* daily adoption",
       checkin: {
         prompt:
-          "My job offers me opportunities for personal growth and development.",
+          "I am kept adequately up-to-date about important issues within my company",
         agree: "Agree",
         disagree: "Disagree",
         skip: "Skip",

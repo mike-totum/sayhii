@@ -84,7 +84,7 @@ export const es: typeof en = {
       adoption: "*90%+* de adopción diaria",
       checkin: {
         prompt:
-          "Mi trabajo me ofrece oportunidades de crecimiento y desarrollo personal.",
+          "Me mantienen adecuadamente al tanto de los temas importantes dentro de mi empresa",
         agree: "De acuerdo",
         disagree: "En desacuerdo",
         skip: "Omitir",

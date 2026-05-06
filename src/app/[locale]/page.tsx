@@ -219,12 +219,18 @@ function StickFigure({ className = "" }: { className?: string }) {
 
 function SpeechBubble({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative bg-primary text-primary-foreground rounded-[26px] rounded-bl-md px-5 py-4 sm:px-6 sm:py-5 shadow-[0_10px_30px_-12px_rgba(255,107,91,0.55)]">
-      <span
+    <div className="relative bg-primary text-primary-foreground rounded-[42px] px-7 py-5 sm:px-8 sm:py-6 shadow-[0_10px_30px_-12px_rgba(255,107,91,0.55)]">
+      <svg
         aria-hidden
-        className="absolute -left-2 bottom-3 size-3 rotate-45 bg-primary"
-      />
-      <p className="text-base sm:text-lg font-medium leading-snug">{children}</p>
+        viewBox="0 0 32 28"
+        className="absolute -bottom-3 left-5 sm:left-6 w-8 h-7 text-primary"
+        fill="currentColor"
+      >
+        <path d="M 8 0 L 30 0 L 0 26 Z" />
+      </svg>
+      <p className="text-base sm:text-lg font-medium leading-snug text-center">
+        {children}
+      </p>
     </div>
   );
 }
