@@ -200,7 +200,7 @@ function StickFigure({ className = "" }: { className?: string }) {
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`text-foreground ${className}`}
+      className={`text-primary ${className}`}
       aria-hidden
     >
       <circle cx="34" cy="18" r="11" />
