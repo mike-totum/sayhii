@@ -83,11 +83,11 @@ export const es: typeof en = {
       ctaSecondary: "Lee las Notas del Terreno",
       adoption: "*90%+* de adopción diaria",
       checkin: {
-        meta: "Check-in de hoy · 3 segundos",
-        time: "9:14 a. m.",
-        question: "¿Qué tan claro es el trabajo que tienes esta semana?",
-        footnote:
-          "Anónimo · agregado a partir de un tamaño muestral de 5 o más",
+        prompt:
+          "Mi trabajo me ofrece oportunidades de crecimiento y desarrollo personal.",
+        agree: "De acuerdo",
+        disagree: "En desacuerdo",
+        skip: "Omitir",
       },
       floatA: { eyebrow: "Lente", body: "*Individual*, equipo, organización" },
       floatB: {

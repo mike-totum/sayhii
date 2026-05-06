@@ -123,32 +123,50 @@ function HeroVisual({ dict }: { dict: DictPart }) {
   const b = dict.home.hero.floatB;
   return (
     <div className="relative">
-      <div className="relative rounded-[28px] bg-surface border border-border shadow-[0_30px_80px_-30px_rgba(15,17,23,0.25)] p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-primary animate-pulse-soft" />
-            <span className="text-xs font-medium text-muted">{c.meta}</span>
+      <div className="relative rounded-[28px] bg-surface border border-border shadow-[0_30px_80px_-30px_rgba(15,17,23,0.25)] p-7 lg:p-8">
+        <div className="flex items-baseline">
+          <span className="inline-flex items-baseline text-xl font-semibold tracking-tight">
+            <span>say</span>
+            <span className="font-serif italic text-primary">hii</span>
+            <span
+              aria-hidden
+              className="ml-0.5 inline-block size-1 rounded-full bg-primary translate-y-[-2px] animate-pulse-soft"
+            />
+          </span>
+        </div>
+
+        <div className="mt-4 grid grid-cols-[auto_1fr] gap-4 items-start">
+          <StickFigure className="w-16 sm:w-20 shrink-0" />
+          <SpeechBubble>{c.prompt}</SpeechBubble>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <span className="text-sm font-medium text-foreground">{c.agree}</span>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <button
+                key={i}
+                aria-label={
+                  i === 0 ? c.agree : i === 4 ? c.disagree : `Option ${i + 1}`
+                }
+                className={`size-5 rounded-full border-2 transition-all ${
+                  i === 0
+                    ? "border-primary bg-primary shadow-[0_0_0_3px_rgba(255,107,91,0.18)]"
+                    : "border-foreground/30 hover:border-foreground/60"
+                }`}
+              />
+            ))}
           </div>
-          <span className="text-xs text-muted">{c.time}</span>
+          <span className="text-sm font-medium text-foreground">
+            {c.disagree}
+          </span>
         </div>
-        <p className="mt-5 text-2xl tracking-tight font-medium leading-snug">
-          {c.question}
-        </p>
-        <div className="mt-6 grid grid-cols-5 gap-2">
-          {["😕", "😐", "🙂", "😀", "🤩"].map((e, i) => (
-            <button
-              key={i}
-              className={`aspect-square rounded-2xl border text-2xl flex items-center justify-center transition-all ${
-                i === 3
-                  ? "bg-primary/10 border-primary text-foreground"
-                  : "bg-background border-border hover:border-foreground/30"
-              }`}
-            >
-              {e}
-            </button>
-          ))}
+
+        <div className="mt-5 flex justify-end">
+          <button className="text-sm text-muted underline-offset-4 hover:underline hover:text-foreground transition-colors">
+            {c.skip}
+          </button>
         </div>
-        <p className="mt-4 text-xs text-muted">{c.footnote}</p>
       </div>
 
       <FloatingCard
@@ -169,6 +187,44 @@ function HeroVisual({ dict }: { dict: DictPart }) {
         </span>
         <p className="text-sm font-medium">{b.body}</p>
       </FloatingCard>
+    </div>
+  );
+}
+
+function StickFigure({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 80 110"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`text-foreground ${className}`}
+      aria-hidden
+    >
+      <circle cx="34" cy="18" r="11" />
+      <line x1="34" y1="29" x2="34" y2="68" />
+      <line x1="34" y1="40" x2="20" y2="58" />
+      <line x1="34" y1="40" x2="58" y2="22" />
+      <g className="origin-[58px_22px] animate-pulse-soft">
+        <path d="M62 16 q5 0 5 6" strokeWidth="2" />
+        <path d="M67 11 q7 0 7 9" strokeWidth="2" />
+      </g>
+      <line x1="34" y1="68" x2="22" y2="96" />
+      <line x1="34" y1="68" x2="46" y2="96" />
+    </svg>
+  );
+}
+
+function SpeechBubble({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative bg-primary text-primary-foreground rounded-[26px] rounded-bl-md px-5 py-4 sm:px-6 sm:py-5 shadow-[0_10px_30px_-12px_rgba(255,107,91,0.55)]">
+      <span
+        aria-hidden
+        className="absolute -left-2 bottom-3 size-3 rotate-45 bg-primary"
+      />
+      <p className="text-base sm:text-lg font-medium leading-snug">{children}</p>
     </div>
   );
 }

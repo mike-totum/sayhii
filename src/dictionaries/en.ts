@@ -77,10 +77,11 @@ export const en = {
       ctaSecondary: "Read the field notes",
       adoption: "*90%+* daily adoption",
       checkin: {
-        meta: "Today's check-in · 3 seconds",
-        time: "9:14 AM",
-        question: "How clear is the work in front of you this week?",
-        footnote: "Anonymous · aggregated at a sample size of 5 or greater",
+        prompt:
+          "My job offers me opportunities for personal growth and development.",
+        agree: "Agree",
+        disagree: "Disagree",
+        skip: "Skip",
       },
       floatA: { eyebrow: "Lens", body: "*Individual*, team, org" },
       floatB: {
