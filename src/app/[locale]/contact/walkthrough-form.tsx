@@ -7,10 +7,21 @@ import {
   type WalkthroughFormState,
 } from "./actions";
 import { ArrowIcon, CheckIcon } from "@/components/icons";
+import type { en } from "@/dictionaries/en";
 
 const initial: WalkthroughFormState = { ok: false };
 
-export function WalkthroughForm() {
+type ContactDict = (typeof en)["contact"];
+
+export function WalkthroughForm({
+  dict,
+  notesHref,
+  blogHref,
+}: {
+  dict: ContactDict;
+  notesHref: string;
+  blogHref: string;
+}) {
   const [state, action] = useActionState(requestWalkthrough, initial);
 
   if (state.ok && state.submitted) {
@@ -20,41 +31,43 @@ export function WalkthroughForm() {
           <CheckIcon className="size-6 text-accent" />
         </div>
         <p className="text-xs uppercase tracking-[0.2em] text-muted">
-          Got it, {state.submitted.name}
+          {dict.success.eyebrowPrefix} {state.submitted.name}
         </p>
         <h2 className="mt-3 text-3xl tracking-tight font-semibold">
-          We&rsquo;ll be in touch within the hour.
+          {dict.success.heading}
         </h2>
         <p className="mt-3 text-muted leading-relaxed">
-          A real person on the sayhii team will email you back from{" "}
+          {dict.success.bodyPrefix}{" "}
           <a
             href="mailto:hi@sayhii.io"
             className="text-foreground hover:text-primary transition-colors"
           >
-            hi@sayhii.io
+            {dict.success.bodyLink}
           </a>
-          .
+          {dict.success.bodyAfter}
         </p>
         <p className="mt-6 text-sm text-muted">
-          In the meantime — flip through the latest{" "}
+          {dict.success.meanwhile}{" "}
           <a
-            href="/notes"
+            href={notesHref}
             className="text-foreground hover:text-primary transition-colors"
           >
-            Notes from the Field
+            {dict.success.notesLink}
           </a>{" "}
-          or{" "}
+          {dict.success.or}{" "}
           <a
-            href="/blog"
+            href={blogHref}
             className="text-foreground hover:text-primary transition-colors"
           >
-            essays from sayhii
+            {dict.success.essaysLink}
           </a>
-          .
+          {dict.success.end}
         </p>
       </div>
     );
   }
+
+  const f = dict.form;
 
   return (
     <form
@@ -63,67 +76,68 @@ export function WalkthroughForm() {
     >
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-muted">
-          Step 1 of 1
+          {f.stepLabel}
         </p>
         <h2 className="mt-3 text-3xl tracking-tight font-semibold">
-          Tell us a little about you.
+          {f.heading}
         </h2>
-        <p className="mt-2 text-muted">
-          Five fields. We&rsquo;ll send a calendar link within an hour.
-        </p>
+        <p className="mt-2 text-muted">{f.sub}</p>
       </div>
 
       {state.formError && (
         <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-          {state.formError}
+          {f.delivery[state.formError]}
         </div>
       )}
 
       <div className="grid sm:grid-cols-2 gap-4">
         <Field
           name="name"
-          label="Your name"
-          placeholder="Jamie Rivera"
-          error={state.errors?.name}
+          label={f.labels.name}
+          placeholder={f.placeholders.name}
+          error={state.errors?.name && f.errors.name}
         />
         <Field
           name="email"
-          label="Work email"
-          placeholder="jamie@company.com"
+          label={f.labels.email}
+          placeholder={f.placeholders.email}
           type="email"
-          error={state.errors?.email}
+          error={state.errors?.email && f.errors.email}
         />
         <Field
           name="company"
-          label="Company"
-          placeholder="Northwind, Inc."
-          error={state.errors?.company}
+          label={f.labels.company}
+          placeholder={f.placeholders.company}
+          error={state.errors?.company && f.errors.company}
         />
         <Field
           name="headcount"
-          label="Headcount"
-          placeholder="220"
-          error={state.errors?.headcount}
+          label={f.labels.headcount}
+          placeholder={f.placeholders.headcount}
+          error={state.errors?.headcount && f.errors.headcount}
         />
       </div>
       <Field
         name="message"
-        label="What are you hoping to see?"
-        placeholder="We're considering replacing our annual survey..."
+        label={f.labels.message}
+        placeholder={f.placeholders.message}
         textarea
-        error={state.errors?.message}
       />
 
-      <SubmitButton />
+      <SubmitButton submit={f.submit} submitting={f.submitting} />
 
-      <p className="text-xs text-muted">
-        We don&rsquo;t do drip sequences. One real human will reply.
-      </p>
+      <p className="text-xs text-muted">{f.footnote}</p>
     </form>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({
+  submit,
+  submitting,
+}: {
+  submit: string;
+  submitting: string;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -133,11 +147,11 @@ function SubmitButton() {
     >
       {pending ? (
         <>
-          <Spinner /> Sending&hellip;
+          <Spinner /> {submitting}
         </>
       ) : (
         <>
-          Request a walkthrough
+          {submit}
           <ArrowIcon className="size-4" />
         </>
       )}

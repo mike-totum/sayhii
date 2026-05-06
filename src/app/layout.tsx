@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
-import { Nav } from "@/components/nav";
-import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,15 +20,9 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "sayhii — Deeper data. Happier employees. Less turnover.",
+  title: "sayhii",
   description:
-    "Real-time employee insight in 3 seconds a day. sayhii surfaces trust, workload, psychological safety, clarity, and belonging — so leaders can act before people leave.",
-  openGraph: {
-    title: "sayhii — Deeper data. Happier employees. Less turnover.",
-    description:
-      "Real-time employee insight in 3 seconds a day. Trust, workload, psychological safety, clarity, belonging.",
-    type: "website",
-  },
+    "Real-time employee insight in 3 seconds a day.",
 };
 
 export default function RootLayout({
@@ -40,13 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

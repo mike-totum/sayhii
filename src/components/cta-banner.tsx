@@ -1,21 +1,23 @@
 import Link from "next/link";
 import { ArrowIcon } from "./icons";
 
+type Action = { label: string; href: string };
+
 export function CtaBanner({
-  eyebrow = "It all starts with sayhii",
+  eyebrow,
   title,
   sub,
-  primary = { label: "Book a walkthrough", href: "/get-started" },
+  primary,
   secondary,
 }: {
-  eyebrow?: string;
-  title?: React.ReactNode;
-  sub?: React.ReactNode;
-  primary?: { label: string; href: string };
-  secondary?: { label: string; href: string };
+  eyebrow: string;
+  title: React.ReactNode;
+  sub: React.ReactNode;
+  primary: Action;
+  secondary?: Action;
 }) {
   return (
-    <section id="cta" className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28">
+    <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28">
       <div className="relative overflow-hidden rounded-[32px] bg-foreground text-background p-10 lg:p-16">
         <div
           aria-hidden
@@ -30,17 +32,9 @@ export function CtaBanner({
             {eyebrow}
           </span>
           <h2 className="mt-4 text-4xl lg:text-6xl tracking-tight font-semibold leading-[1.05]">
-            {title ?? (
-              <>
-                Start hearing your team{" "}
-                <span className="font-serif italic">this</span> quarter.
-              </>
-            )}
+            {title}
           </h2>
-          <p className="mt-5 text-lg text-background/70 max-w-xl">
-            {sub ??
-              "Twenty minutes, one shared screen, and you'll see the three signals you've been missing in your own org."}
-          </p>
+          <p className="mt-5 text-lg text-background/70 max-w-xl">{sub}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={primary.href}

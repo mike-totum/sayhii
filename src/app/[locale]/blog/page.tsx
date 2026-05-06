@@ -1,38 +1,48 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
 import { CtaBanner } from "@/components/cta-banner";
 import { ArrowIcon } from "@/components/icons";
 import { posts, postUrl } from "@/lib/posts";
+import {
+  fmt,
+  getDictionary,
+  isLocale,
+  localePath,
+  type Locale,
+} from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Blog — sayhii",
-  description: "Essays from sayhii on workforce, listening, and leadership.",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const dict = getDictionary(locale);
+  return { title: dict.meta.blog.title, description: dict.meta.blog.description };
+}
 
 const tones = ["bg-warm", "bg-accent-soft", "bg-sky"] as const;
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", {
+function formatDate(d: string, locale: Locale) {
+  return new Date(d).toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
 }
 
-export default function BlogPage() {
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const dict = getDictionary(locale);
+  const b = dict.blog;
   const [featured, ...rest] = posts;
+
   return (
     <>
-      <PageHero
-        eyebrow="Blog"
-        title={
-          <>
-            Essays from{" "}
-            <span className="font-serif italic">sayhii</span>.
-          </>
-        }
-        sub="Authored on the sayhii blog. Click any post to read it on sayhii.io."
-      />
+      <PageHero eyebrow={b.eyebrow} title={fmt(b.title)} sub={b.sub} />
 
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-24">
         {featured && (
@@ -47,9 +57,9 @@ export default function BlogPage() {
               <div>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
                   <span className="rounded-full border border-border px-3 py-1">
-                    Latest essay
+                    {b.latest}
                   </span>
-                  <span>{formatDate(featured.date)}</span>
+                  <span>{formatDate(featured.date, locale)}</span>
                   <span>·</span>
                   <span>{featured.author}</span>
                 </div>
@@ -57,7 +67,7 @@ export default function BlogPage() {
                   {featured.title}
                 </h2>
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
-                  Read on sayhii.io
+                  {b.cta}
                   <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -66,9 +76,7 @@ export default function BlogPage() {
                 <div className="absolute inset-0 grain" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="font-serif italic text-2xl text-foreground/80 leading-snug">
-                    &ldquo;sayhii{" "}
-                    <span className="not-italic font-sans">everyday</span>
-                    .&rdquo;
+                    {fmt(b.pullQuote)}
                   </p>
                 </div>
               </div>
@@ -88,7 +96,7 @@ export default function BlogPage() {
               <div className={`h-2 ${tones[i % tones.length]}`} />
               <div className="p-7">
                 <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
-                  <span>{formatDate(p.date)}</span>
+                  <span>{formatDate(p.date, locale)}</span>
                   <span>·</span>
                   <span>{p.author}</span>
                 </div>
@@ -96,7 +104,7 @@ export default function BlogPage() {
                   {p.title}
                 </h3>
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
-                  Read on sayhii.io
+                  {b.cta}
                   <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -106,14 +114,13 @@ export default function BlogPage() {
       </section>
 
       <CtaBanner
-        title={
-          <>
-            Create a <span className="font-serif italic">win-win</span>{" "}
-            workplace.
-          </>
-        }
-        sub="People are the heart of your business. We help you help them thrive. When you're ready to sayhii, we're ready to answer."
-        primary={{ label: "Schedule a 30-min chat", href: "/contact" }}
+        eyebrow={dict.home.cta.eyebrow}
+        title={fmt(dict.home.cta.title)}
+        sub={dict.home.cta.sub}
+        primary={{
+          label: dict.home.cta.primary,
+          href: localePath(locale, "/contact"),
+        }}
       />
     </>
   );
