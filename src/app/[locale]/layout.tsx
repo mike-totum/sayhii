@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Nav } from "@/components/nav";
-import { Footer } from "@/components/footer";
 import { getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
 
 type Props = {
@@ -35,9 +33,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <>
       <SetHtmlLang lang={typed} />
-      <Nav locale={typed} />
-      <main className="flex-1">{children}</main>
-      <Footer locale={typed} />
+      {children}
     </>
   );
 }

@@ -57,6 +57,12 @@ export function Nav({ locale }: Props) {
         <div className="hidden md:flex items-center gap-3">
           <LocaleSwitch locale={locale} />
           <Link
+            href={`/${locale}/signin`}
+            className="inline-flex h-9 items-center px-3 text-sm text-muted hover:text-foreground transition-colors"
+          >
+            Sign in
+          </Link>
+          <Link
             href={localePath(locale, "/contact")}
             className="inline-flex h-9 items-center rounded-full bg-foreground text-background px-4 text-sm font-medium hover:bg-foreground/85 transition-colors"
           >
@@ -105,6 +111,12 @@ export function Nav({ locale }: Props) {
                 {l.label}
               </Link>
             ))}
+            <Link
+              href={`/${locale}/signin`}
+              className="block py-2 text-base font-medium hover:text-primary transition-colors"
+            >
+              Sign in
+            </Link>
             <Link
               href={localePath(locale, "/contact")}
               className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-full bg-foreground text-background px-4 text-sm font-medium"
