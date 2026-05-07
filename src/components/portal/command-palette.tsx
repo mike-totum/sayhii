@@ -29,6 +29,8 @@ export function CommandPalette({
   const items = useMemo<Item[]>(() => {
     const base: Item[] = [
       { id: "home", label: "Home", hint: "Daily check-in and at-a-glance metrics", href: `/${locale}/portal`, group: "Navigate" },
+      { id: "actions", label: "Actions", hint: "Open queue · what to do this week", href: `/${locale}/portal/actions`, group: "Navigate", keywords: "queue todo workflow" },
+      { id: "briefings", label: "Briefings", hint: "The live quarterly report", href: `/${locale}/portal/briefings`, group: "Navigate", keywords: "report quarterly annual share" },
       { id: "vitals", label: "Vitals", hint: "Resources, demands, work-life balance", href: `/${locale}/portal/vitals`, group: "Navigate" },
       { id: "scorecard", label: "Scorecard", hint: "Wellness, engagement, themes", href: `/${locale}/portal/scorecard`, group: "Navigate", keywords: "score wellness engagement" },
       { id: "themes", label: "All themes", hint: "Browse the thirteen signals", href: `/${locale}/portal/themes`, group: "Navigate" },

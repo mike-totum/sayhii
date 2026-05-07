@@ -83,6 +83,19 @@ const treeIcon = (
   </svg>
 );
 
+const sparkIcon = (
+  <svg viewBox="0 0 24 24" fill="none" className="size-5">
+    <path d="M5 17l4-7 4 4 6-9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="19" cy="5" r="1.5" stroke="currentColor" strokeWidth="1.6"/>
+  </svg>
+);
+const docIcon = (
+  <svg viewBox="0 0 24 24" fill="none" className="size-5">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
+    <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 const profileIcon = (
   <svg viewBox="0 0 24 24" fill="none" className="size-5">
     <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.6" />
@@ -98,6 +111,8 @@ const reportsIcon = (
 
 const userItems: Item[] = [
   { href: "/portal", label: "Home", icon: homeIcon },
+  { href: "/portal/actions", label: "Actions", icon: sparkIcon },
+  { href: "/portal/briefings", label: "Briefings", icon: docIcon },
   { href: "/portal/vitals", label: "Vitals", icon: heartIcon },
   { href: "/portal/scorecard", label: "Scorecard", icon: cardIcon },
   { href: "/portal/themes", label: "Themes", icon: themeIcon },

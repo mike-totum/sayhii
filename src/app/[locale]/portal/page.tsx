@@ -7,6 +7,7 @@ import { MetricTile } from "@/components/portal/metric-tile";
 import { InsightCard } from "@/components/portal/insight-card";
 import { GradeTile, TrendDot } from "@/components/portal/grade-tile";
 import { MoversBar } from "@/components/portal/charts/bar";
+import { ActionCard } from "@/components/portal/action-card";
 import {
   scorecard,
   themes,
@@ -14,6 +15,7 @@ import {
   dailyQuestion,
   sparkSeries,
 } from "@/lib/portal-data";
+import { actions } from "@/lib/portal-actions";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -95,6 +97,8 @@ export default async function PortalHome({ params }: Props) {
       </div>
 
       <DailyCheckIn className="rise rise-2" />
+
+      <ThisWeekActions locale={locale} />
 
       <section className="rise rise-3">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -241,6 +245,39 @@ export default async function PortalHome({ params }: Props) {
         </div>
       </section>
     </div>
+  );
+}
+
+function ThisWeekActions({ locale }: { locale: string }) {
+  const open = actions
+    .filter((a) => a.status === "open" || a.status === "in_progress")
+    .slice(0, 3);
+  if (!open.length) return null;
+  return (
+    <section className="rise rise-3">
+      <header className="mb-3 flex items-baseline justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
+            Action queue
+          </p>
+          <h2 className="mt-0.5 text-xl tracking-tight font-semibold">
+            What to do this week
+          </h2>
+        </div>
+        <Link
+          href={`/${locale}/portal/actions`}
+          className="text-sm font-medium hover:text-primary transition-colors inline-flex items-center gap-1"
+        >
+          All actions
+          <ArrowIcon className="size-4" />
+        </Link>
+      </header>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {open.map((a) => (
+          <ActionCard key={a.id} action={a} href={`/${locale}/portal/actions/${a.id}`} />
+        ))}
+      </div>
+    </section>
   );
 }
 

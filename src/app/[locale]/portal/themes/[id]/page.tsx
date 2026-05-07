@@ -15,7 +15,9 @@ import { SubThemeRadar } from "@/components/portal/charts/radar";
 import { PeriodSelector } from "@/components/portal/period-selector";
 import { ThemeSwitcher } from "@/components/portal/theme-switcher";
 import { InsightCard } from "@/components/portal/insight-card";
+import { ActionCard } from "@/components/portal/action-card";
 import { ArrowIcon } from "@/components/icons";
+import { actionsForTheme } from "@/lib/portal-actions";
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -182,6 +184,8 @@ export default async function ThemeDetailPage({ params }: Props) {
         </div>
       </section>
 
+      <ThemeActionsSection locale={locale} themeKey={key} themeName={theme.name} />
+
       <section className="grid lg:grid-cols-[1.2fr_1fr] gap-5 rise rise-4">
         <div className="rounded-3xl border border-border bg-surface p-5 lg:p-6">
           <header className="mb-4">
@@ -234,5 +238,44 @@ export default async function ThemeDetailPage({ params }: Props) {
         </div>
       </section>
     </div>
+  );
+}
+
+function ThemeActionsSection({
+  locale,
+  themeKey,
+  themeName,
+}: {
+  locale: string;
+  themeKey: ThemeKey;
+  themeName: string;
+}) {
+  const items = actionsForTheme(themeKey);
+  if (!items.length) return null;
+  return (
+    <section className="rise rise-4">
+      <header className="mb-3 flex items-baseline justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
+            From signal to action
+          </p>
+          <h2 className="mt-0.5 text-xl tracking-tight font-semibold">
+            What we&rsquo;re doing about {themeName.toLowerCase()}
+          </h2>
+        </div>
+        <Link
+          href={`/${locale}/portal/actions`}
+          className="text-sm font-medium hover:text-primary transition-colors inline-flex items-center gap-1"
+        >
+          All actions
+          <ArrowIcon className="size-4" />
+        </Link>
+      </header>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {items.slice(0, 3).map((a) => (
+          <ActionCard key={a.id} action={a} href={`/${locale}/portal/actions/${a.id}`} />
+        ))}
+      </div>
+    </section>
   );
 }
