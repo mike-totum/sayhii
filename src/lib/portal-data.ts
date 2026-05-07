@@ -418,6 +418,20 @@ export const dailyQuestion: Question = {
   text: "I am kept adequately up-to-date about important issues within my company",
 };
 
+// 30-day sparkline series for tile metrics. Deterministic from a seed so
+// SSR and CSR match.
+export function sparkSeries(seed: number, base: number, amplitude = 0.18, length = 30): number[] {
+  const out: number[] = [];
+  let v = base;
+  for (let i = 0; i < length; i++) {
+    const drift = Math.sin(i * 0.42 + seed) * amplitude;
+    const wobble = Math.cos(i * 0.91 + seed * 1.7) * (amplitude * 0.6);
+    v = base + drift + wobble + (i / length) * (amplitude * 0.4);
+    out.push(Number(v.toFixed(3)));
+  }
+  return out;
+}
+
 // Helpers
 export function gradeColor(grade: string): string {
   if (grade.startsWith("A")) return "bg-accent-soft text-foreground border-accent/40";

@@ -3,13 +3,16 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { isLocale } from "@/lib/i18n";
 import { ArrowIcon } from "@/components/icons";
-import { GradeTile, NumberTile, TrendDot } from "@/components/portal/grade-tile";
+import { MetricTile } from "@/components/portal/metric-tile";
+import { InsightCard } from "@/components/portal/insight-card";
+import { GradeTile, TrendDot } from "@/components/portal/grade-tile";
 import { MoversBar } from "@/components/portal/charts/bar";
 import {
   scorecard,
   themes,
   vitals,
   dailyQuestion,
+  sparkSeries,
 } from "@/lib/portal-data";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -21,31 +24,30 @@ export default async function PortalHome({ params }: Props) {
   if (!session) redirect(`/${locale}/signin`);
 
   const isAdmin = session.role === "admin";
+  const top = scorecard.movers
+    .slice()
+    .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))[0];
+  const topTheme = themes.find((t) => t.name.startsWith(top.theme.split(" ")[0]));
 
   return (
-    <div className="px-6 lg:px-10 py-8 lg:py-10 space-y-10">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+    <div className="px-6 lg:px-10 py-7 lg:py-9 space-y-6">
+      <header className="flex flex-wrap items-end justify-between gap-4 rise">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted">
-            {isAdmin ? "Organization scorecard" : "Your scorecard"}
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
+            {isAdmin ? "Organization" : "Your sayhii"}
           </p>
-          <h1 className="mt-2 text-4xl lg:text-5xl tracking-tight font-semibold">
+          <h1 className="mt-1 text-3xl lg:text-4xl tracking-tight font-semibold">
             Good {timeOfDay()},{" "}
             <span className="font-serif italic text-primary">
               {session.name.split(" ")[0]}
             </span>
             .
           </h1>
-          <p className="mt-2 text-muted">
-            {isAdmin
-              ? "Three signals moved this week. Here's where to look first."
-              : "Your three-second check-in is ready."}
-          </p>
         </div>
         <div className="flex gap-3">
           <Link
             href={`/${locale}/portal/scorecard`}
-            className="inline-flex items-center gap-2 h-11 rounded-full border border-border bg-surface px-5 text-sm font-medium hover:border-foreground/30 transition-colors"
+            className="inline-flex items-center gap-2 h-10 rounded-full border border-border bg-surface px-4 text-sm font-medium hover:border-foreground/30 transition-colors"
           >
             Open scorecard
             <ArrowIcon className="size-4" />
@@ -53,40 +55,92 @@ export default async function PortalHome({ params }: Props) {
         </div>
       </header>
 
-      <DailyCheckIn />
+      <div className="rise rise-1">
+        <InsightCard
+          eyebrow={`This week's signal · ${top.trend === "up" ? "Trending up" : "Needs attention"}`}
+          title={
+            <>
+              <span className="font-serif italic">{top.theme}</span> moved{" "}
+              {top.delta >= 0 ? "+" : ""}
+              {top.delta.toFixed(1)}%
+              <br className="hidden sm:block" />
+              {top.trend === "up"
+                ? " — keep doing what you're doing."
+                : " — worth a 1:1 this week."}
+            </>
+          }
+          body={
+            isAdmin
+              ? `Concentrated in two groups. Open the theme to see the lowest-scoring questions and which managers should know.`
+              : `Your team is moving faster than the org average. The next adaptive prompt will probe where the change is coming from.`
+          }
+          metric={{
+            label: top.theme,
+            value: topTheme?.org ? topTheme.org * 20 : 80,
+            format: "percent1",
+            delta: top.delta,
+          }}
+          spark={sparkSeries(
+            top.theme.length,
+            topTheme?.org ?? 4.0,
+            0.18,
+          )}
+          cta={{
+            label: "Open theme",
+            href: `/${locale}/portal/themes/${
+              topTheme?.key ?? "recognition"
+            }`,
+          }}
+        />
+      </div>
 
-      <section>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-          Top metrics
-        </p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <NumberTile
-            label="Organizational wellness"
-            value={`${scorecard.wellness.toFixed(1)}%`}
+      <DailyCheckIn className="rise rise-2" />
+
+      <section className="rise rise-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <MetricTile
+            label="Org wellness"
+            value={scorecard.wellness}
+            format="percent1"
+            delta={1.2}
+            spark={sparkSeries(11, 4.0, 0.16)}
             sub="Steady · last 6 months"
             tone="accent"
           />
-          <NumberTile
-            label="Overall engagement"
-            value={`${scorecard.engagement.toFixed(1)}%`}
-            sub="Steady · last 6 months"
+          <MetricTile
+            label="Engagement"
+            value={scorecard.engagement}
+            format="percent1"
+            delta={0.4}
+            spark={sparkSeries(22, 4.2, 0.14)}
+            sub="vs prior 6 months"
           />
-          <NumberTile
+          <MetricTile
             label="Culture"
-            value={`${scorecard.culture.toFixed(1)}%`}
-            sub="Steady · last 6 months"
+            value={scorecard.culture}
+            format="percent1"
+            delta={-0.6}
+            spark={sparkSeries(33, 3.6, 0.18)}
+            sub="vs prior 6 months"
+          />
+          <MetricTile
+            label="Questions answered"
+            value={scorecard.questionsAnswered}
+            delta={6.1}
+            spark={sparkSeries(44, 4.0, 0.22)}
+            sub="In the last 12 months"
           />
         </div>
       </section>
 
-      <section className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
-        <div className="rounded-3xl border border-border bg-surface p-6 lg:p-8">
-          <header className="flex items-center justify-between mb-5">
+      <section className="grid lg:grid-cols-[1.3fr_1fr] gap-5 rise rise-4">
+        <div className="rounded-3xl border border-border bg-surface p-5 lg:p-6">
+          <header className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-muted">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
                 Vitals
               </p>
-              <h2 className="mt-1 text-2xl tracking-tight font-semibold">
+              <h2 className="mt-0.5 text-xl tracking-tight font-semibold">
                 {isAdmin ? "Organization vitals" : "Your vitals"}
               </h2>
             </div>
@@ -98,39 +152,52 @@ export default async function PortalHome({ params }: Props) {
               <ArrowIcon className="size-4" />
             </Link>
           </header>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {vitals.map((v) => (
+          <div className="grid sm:grid-cols-3 gap-3">
+            {vitals.map((v, i) => (
               <div
                 key={v.key}
-                className="rounded-2xl border border-border bg-background p-5"
+                className="rounded-2xl border border-border bg-background p-4"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
                   {v.label}
                 </p>
-                <p className="mt-3 text-2xl tracking-tight font-semibold">
+                <p className="mt-2 text-2xl tracking-tight font-semibold">
                   {isAdmin ? v.orgGrade : v.yourGrade}
                 </p>
-                <p className="mt-1 text-xs text-muted inline-flex items-center gap-1">
-                  <TrendDot trend={v.trend} />
-                  {v.trend === "up" && "Slight increase"}
-                  {v.trend === "down" && "Slight decrease"}
-                  {v.trend === "steady" && "Steady"}
-                </p>
+                <div className="mt-1 flex items-center justify-between">
+                  <p className="text-[11px] text-muted inline-flex items-center gap-1">
+                    <TrendDot trend={v.trend} />
+                    {v.trend === "up" && "Slight increase"}
+                    {v.trend === "down" && "Slight decrease"}
+                    {v.trend === "steady" && "Steady"}
+                  </p>
+                </div>
+                <div className="mt-2 -mx-1">
+                  <Mini
+                    seed={i + 7}
+                    base={v.yourScore}
+                    color={
+                      v.key === "resources"
+                        ? "#7da88a"
+                        : v.key === "demands"
+                          ? "#a8c5da"
+                          : "#ff6b5b"
+                    }
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border bg-surface p-6 lg:p-8">
-          <header className="flex items-center justify-between mb-5">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-muted">
-                Top movers
-              </p>
-              <h2 className="mt-1 text-2xl tracking-tight font-semibold">
-                Last 6 months
-              </h2>
-            </div>
+        <div className="rounded-3xl border border-border bg-surface p-5 lg:p-6">
+          <header className="mb-4">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
+              Top movers
+            </p>
+            <h2 className="mt-0.5 text-xl tracking-tight font-semibold">
+              Last 6 months
+            </h2>
           </header>
           <MoversBar
             data={scorecard.movers.map((m) => ({ theme: m.theme, delta: m.delta }))}
@@ -138,13 +205,13 @@ export default async function PortalHome({ params }: Props) {
         </div>
       </section>
 
-      <section>
+      <section className="rise rise-5">
         <header className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
               Themes
             </p>
-            <h2 className="mt-1 text-2xl tracking-tight font-semibold">
+            <h2 className="mt-0.5 text-xl tracking-tight font-semibold">
               How each theme is doing
             </h2>
           </div>
@@ -156,7 +223,7 @@ export default async function PortalHome({ params }: Props) {
             <ArrowIcon className="size-4" />
           </Link>
         </header>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {themes.slice(0, 8).map((t) => (
             <Link
               key={t.key}
@@ -184,17 +251,43 @@ function timeOfDay() {
   return "evening";
 }
 
-function DailyCheckIn() {
+function Mini({ seed, base, color }: { seed: number; base: number; color: string }) {
+  // Inline SVG sparkline to keep the home dense + lightweight
+  const data = sparkSeries(seed, base, 0.22);
+  const width = 200;
+  const height = 26;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = Math.max(0.001, max - min);
+  const stepX = width / (data.length - 1);
+  const path = data
+    .map((v, i) => {
+      const x = i * stepX;
+      const y = 4 + (height - 8) - ((v - min) / range) * (height - 8);
+      return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(" ");
   return (
-    <section className="rounded-[28px] border border-border bg-surface p-6 lg:p-8 grid lg:grid-cols-[1fr_auto] gap-6 items-center">
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-7">
+      <path d={path} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function DailyCheckIn({ className = "" }: { className?: string }) {
+  return (
+    <section
+      className={`rounded-2xl border border-border bg-surface p-5 lg:p-6 grid lg:grid-cols-[1fr_auto] gap-4 items-center ${className}`}
+    >
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted">
+        <p className="text-[11px] uppercase tracking-[0.22em] text-muted inline-flex items-center gap-2">
+          <span className="size-1.5 rounded-full bg-primary animate-pulse-soft" />
           Today&rsquo;s check-in · 3 seconds
         </p>
-        <p className="mt-3 text-2xl lg:text-3xl tracking-tight font-medium leading-snug max-w-2xl">
+        <p className="mt-2 text-xl lg:text-2xl tracking-tight font-medium leading-snug max-w-2xl">
           {dailyQuestion.text}
         </p>
-        <div className="mt-5 flex items-center gap-3 flex-wrap">
+        <div className="mt-4 flex items-center gap-3 flex-wrap">
           <span className="text-sm font-medium">Agree</span>
           <div className="flex items-center gap-3">
             {[0, 1, 2, 3, 4].map((i) => (
@@ -212,18 +305,13 @@ function DailyCheckIn() {
             ))}
           </div>
           <span className="text-sm font-medium">Disagree</span>
-          <button className="ml-auto sm:ml-0 sm:hidden text-sm text-muted hover:text-foreground transition-colors">
-            Skip
-          </button>
         </div>
       </div>
       <div className="flex flex-col items-end gap-2">
-        <button className="text-sm text-muted underline-offset-4 hover:underline hover:text-foreground transition-colors hidden sm:inline">
+        <button className="text-sm text-muted underline-offset-4 hover:underline hover:text-foreground transition-colors">
           Skip
         </button>
-        <p className="text-xs text-muted">
-          Anonymous · aggregated at sample size 5+
-        </p>
+        <p className="text-xs text-muted">Anonymous · sample size 5+</p>
       </div>
     </section>
   );

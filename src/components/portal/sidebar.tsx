@@ -185,16 +185,22 @@ function Item({
     <li>
       <Link
         href={href}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+        className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
           active
-            ? "bg-foreground text-background"
+            ? "text-foreground bg-gradient-to-r from-warm/70 via-accent-soft/40 to-transparent"
             : "text-muted hover:text-foreground hover:bg-background"
         }`}
       >
-        <span className={active ? "text-background" : "text-muted"}>
+        {active && (
+          <span
+            aria-hidden
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-r bg-primary"
+          />
+        )}
+        <span className={active ? "text-primary" : "text-muted"}>
           {item.icon}
         </span>
-        {item.label}
+        <span className={active ? "font-medium" : ""}>{item.label}</span>
       </Link>
     </li>
   );
