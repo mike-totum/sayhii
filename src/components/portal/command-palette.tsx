@@ -32,6 +32,8 @@ export function CommandPalette({
       { id: "vitals", label: "Vitals", hint: "Resources, demands, work-life balance", href: `/${locale}/portal/vitals`, group: "Navigate" },
       { id: "scorecard", label: "Scorecard", hint: "Wellness, engagement, themes", href: `/${locale}/portal/scorecard`, group: "Navigate", keywords: "score wellness engagement" },
       { id: "themes", label: "All themes", hint: "Browse the thirteen signals", href: `/${locale}/portal/themes`, group: "Navigate" },
+      { id: "profile", label: "Profile", hint: "Your personal info", href: `/${locale}/portal/profile`, group: "Navigate" },
+      { id: "reports", label: "Reports", hint: "Download org and personal reports", href: `/${locale}/portal/reports`, group: "Navigate" },
       { id: "trust", label: "Theme: Trust", hint: "Drill into the Trust theme", href: `/${locale}/portal/themes/trust`, group: "Navigate" },
       { id: "communication", label: "Theme: Communication", hint: "Drill into Communication", href: `/${locale}/portal/themes/communication`, group: "Navigate" },
       { id: "environment", label: "Theme: Environment", hint: "Drill into Environment", href: `/${locale}/portal/themes/environment`, group: "Navigate" },

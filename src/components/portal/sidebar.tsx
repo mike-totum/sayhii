@@ -83,11 +83,26 @@ const treeIcon = (
   </svg>
 );
 
+const profileIcon = (
+  <svg viewBox="0 0 24 24" fill="none" className="size-5">
+    <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+const reportsIcon = (
+  <svg viewBox="0 0 24 24" fill="none" className="size-5">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
+    <path d="M14 2v6h6M9 14h6M9 18h6M9 10h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 const userItems: Item[] = [
   { href: "/portal", label: "Home", icon: homeIcon },
   { href: "/portal/vitals", label: "Vitals", icon: heartIcon },
   { href: "/portal/scorecard", label: "Scorecard", icon: cardIcon },
   { href: "/portal/themes", label: "Themes", icon: themeIcon },
+  { href: "/portal/reports", label: "Reports", icon: reportsIcon },
+  { href: "/portal/profile", label: "Profile", icon: profileIcon },
 ];
 
 const adminItems: Item[] = [
