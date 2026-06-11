@@ -23,14 +23,8 @@ import {
 } from "@/components/feature-icons";
 import { HeroCheckin, StickFigure } from "@/components/hero-checkin";
 import { HeroV2 } from "@/components/hero-v2";
-import { Newsreader } from "next/font/google";
+import { DotSurface } from "@/components/dot-field";
 import { sparkSeries } from "@/lib/portal-data";
-
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500"],
-});
 
 // A/B switch: true renders the dot-field editorial hero, false the
 // "say hii." greeting hero from main.
@@ -56,7 +50,6 @@ export default async function Home({ params }: Props) {
       {USE_V2_HERO ? (
         <HeroV2
           locale={locale}
-          serifClass={newsreader.className}
           contactHref={localePath(locale, "/contact")}
           t={{
             ...h.v2,
@@ -292,7 +285,7 @@ function FloatingCard({
 }) {
   return (
     <div
-      className={`pointer-events-none rounded-2xl bg-surface text-foreground border border-border shadow-xl px-4 py-3 max-w-[260px] ${className}`}
+      className={`pointer-events-none rounded-md bg-surface text-foreground border border-border shadow-lg px-4 py-3 max-w-[260px] ${className}`}
     >
       <div className="flex items-center gap-2 mb-1">
         <span className={`size-2 rounded-full ${accent} animate-pulse-soft`} />
@@ -306,12 +299,12 @@ function FloatingCard({
 function TaglineStrip({ dict }: { dict: DictPart }) {
   const t = dict.home.tagline;
   return (
-    <section className="border-y border-border/60 bg-surface/40">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted mb-3">
-          {t.eyebrow}
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 text-center">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-muted mb-4">
+          02 · {t.eyebrow}
         </p>
-        <p className="text-2xl sm:text-3xl tracking-tight font-medium">
+        <p className="font-serif text-3xl sm:text-4xl tracking-tight">
           {fmt(t.body)}
         </p>
       </div>
@@ -324,13 +317,13 @@ function Stats({ dict }: { dict: DictPart }) {
   return (
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-24">
       <Reveal>
-        <div className="grid md:grid-cols-3 gap-px bg-border rounded-3xl overflow-hidden border border-border">
+        <div className="grid md:grid-cols-3 gap-px bg-border rounded-md overflow-hidden border border-border">
           {dict.home.stats.map((s) => (
             <div
               key={s.label}
               className="group bg-background p-8 lg:p-10 transition-colors hover:bg-surface"
             >
-              <div className="text-5xl lg:text-6xl tracking-tight font-semibold tabular-nums">
+              <div className="font-serif text-5xl lg:text-6xl tracking-tight tabular-nums">
                 {s.prefix}
                 <AnimatedNumber value={s.value} />
                 {s.suffix}
@@ -357,6 +350,7 @@ function HowItWorks({ dict }: { dict: DictPart }) {
     >
       <Reveal>
         <SectionHeader
+          no="03"
           eyebrow={h.eyebrow}
           title={fmt(h.title)}
           sub={h.sub}
@@ -366,24 +360,24 @@ function HowItWorks({ dict }: { dict: DictPart }) {
       <div className="relative mt-14">
         <div
           aria-hidden
-          className="hidden lg:block absolute top-7 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-border"
+          className="hidden lg:block absolute top-7 left-[16.66%] right-[16.66%] border-t border-dashed border-foreground/20"
         />
         <div className="grid lg:grid-cols-3 gap-8 lg:gap-6">
           {h.steps.map((step, i) => (
             <Reveal key={step.title} delay={i * 120}>
               <article className="relative flex flex-col">
-                <div className="relative z-10 self-center lg:self-start inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 shadow-sm">
+                <div className="relative z-10 self-center lg:self-start inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface px-4 py-2">
                   <span className="size-1.5 rounded-full bg-primary animate-pulse-soft" />
                   <span className="font-mono text-xs tracking-tight text-foreground">
                     {step.time}
                   </span>
                 </div>
-                <div className="mt-5 rounded-3xl border border-border bg-surface p-7 flex-1 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]">
+                <div className="mt-5 rounded-md border border-border bg-surface p-7 flex-1 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_-28px_rgba(17,17,23,0.4)]">
                   <StepVignette index={i} dict={dict} />
-                  <p className="mt-6 text-xs uppercase tracking-[0.2em] text-muted">
+                  <p className="mt-6 text-[11px] uppercase tracking-[0.25em] text-muted">
                     {step.tag}
                   </p>
-                  <h3 className="mt-2 text-2xl tracking-tight font-medium leading-snug">
+                  <h3 className="mt-2 font-serif text-2xl tracking-tight leading-snug">
                     {step.title}
                   </h3>
                   <p className="mt-3 text-muted leading-relaxed">{step.body}</p>
@@ -400,8 +394,8 @@ function HowItWorks({ dict }: { dict: DictPart }) {
 function StepVignette({ index, dict }: { index: number; dict: DictPart }) {
   if (index === 0) {
     return (
-      <div aria-hidden className="rounded-2xl bg-background border border-border p-4">
-        <div className="rounded-2xl bg-primary text-primary-foreground px-4 py-3 text-sm font-medium leading-snug">
+      <div aria-hidden className="rounded-md bg-background border border-border p-4">
+        <div className="rounded-md bg-primary text-primary-foreground px-4 py-3 text-sm font-medium leading-snug">
           {dict.home.hero.checkin.prompt.slice(0, 52)}…
         </div>
         <div className="mt-3 flex items-center justify-center gap-3">
@@ -422,8 +416,8 @@ function StepVignette({ index, dict }: { index: number; dict: DictPart }) {
   if (index === 1) {
     const sig = dict.home.signals.items;
     return (
-      <div aria-hidden className="rounded-2xl bg-background border border-border p-4 space-y-2.5">
-        <div className="flex items-center justify-between gap-3 rounded-xl bg-surface border border-border px-3 py-2">
+      <div aria-hidden className="rounded-md bg-background border border-border p-4 space-y-2.5">
+        <div className="flex items-center justify-between gap-3 rounded-[4px] bg-surface border border-border px-3 py-2">
           <span className="text-xs font-medium">{sig[0].name}</span>
           <div className="flex items-center gap-2">
             <Sparkline
@@ -435,7 +429,7 @@ function StepVignette({ index, dict }: { index: number; dict: DictPart }) {
             <DeltaPill delta={2.4} />
           </div>
         </div>
-        <div className="flex items-center justify-between gap-3 rounded-xl bg-surface border border-border px-3 py-2">
+        <div className="flex items-center justify-between gap-3 rounded-[4px] bg-surface border border-border px-3 py-2">
           <span className="text-xs font-medium">{sig[1].name}</span>
           <div className="flex items-center gap-2">
             <Sparkline
@@ -452,8 +446,8 @@ function StepVignette({ index, dict }: { index: number; dict: DictPart }) {
   }
   const m = dict.home.product.mock;
   return (
-    <div aria-hidden className="rounded-2xl bg-background border border-border p-4">
-      <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
+    <div aria-hidden className="rounded-md bg-background border border-border p-4">
+      <p className="text-[10px] uppercase tracking-[0.25em] text-muted">
         {m.actionEyebrow}
       </p>
       <div className="mt-2 flex items-start gap-3">
@@ -475,17 +469,14 @@ function ProductShowcase({ locale, dict }: { locale: Locale; dict: DictPart }) {
   const m = p.mock;
   return (
     <section className="relative overflow-hidden bg-foreground text-background py-16 lg:py-24">
-      <div aria-hidden className="absolute inset-0">
-        <div className="absolute -top-32 -left-32 size-[480px] rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute bottom-0 -right-24 size-[420px] rounded-full bg-accent/15 blur-3xl" />
-      </div>
+      <DotSurface tone="paper" density={2400} />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <div className="max-w-3xl mx-auto text-center">
-            <span className="text-xs uppercase tracking-[0.2em] text-background/60">
-              {p.eyebrow}
+            <span className="text-[11px] uppercase tracking-[0.25em] text-background/60">
+              04 · {p.eyebrow}
             </span>
-            <h2 className="mt-4 text-4xl lg:text-5xl tracking-tight font-semibold leading-tight">
+            <h2 className="mt-4 font-serif font-normal text-4xl lg:text-5xl tracking-tight leading-[1.08]">
               {fmt(p.title)}
             </h2>
             <p className="mt-5 text-lg text-background/70 leading-relaxed">
@@ -496,7 +487,7 @@ function ProductShowcase({ locale, dict }: { locale: Locale; dict: DictPart }) {
             {p.capabilities.map((cap) => (
               <span
                 key={cap}
-                className="inline-flex items-center gap-2 rounded-full border border-background/20 bg-background/5 px-4 py-1.5 text-sm font-medium text-background"
+                className="inline-flex items-center gap-2 rounded-[4px] border border-background/20 bg-background/5 px-4 py-1.5 text-sm font-medium text-background"
               >
                 <span className="size-1.5 rounded-full bg-primary" />
                 {cap}
@@ -506,7 +497,7 @@ function ProductShowcase({ locale, dict }: { locale: Locale; dict: DictPart }) {
         </Reveal>
 
         <Reveal delay={120} className="relative mt-12 max-w-5xl mx-auto">
-          <div className="relative rounded-[28px] border border-background/15 bg-surface text-foreground shadow-[0_50px_140px_-40px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div className="relative rounded-md border border-background/15 bg-surface text-foreground shadow-[0_50px_140px_-40px_rgba(0,0,0,0.7)] overflow-hidden">
             <div className="flex items-center gap-3 border-b border-border bg-background/60 px-5 py-3">
               <div aria-hidden className="flex gap-1.5">
                 <span className="size-2.5 rounded-full bg-primary/60" />
@@ -624,20 +615,20 @@ function Signals({ dict }: { dict: DictPart }) {
   return (
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-24">
       <Reveal>
-        <SectionHeader eyebrow={s.eyebrow} title={fmt(s.title)} sub={s.sub} />
+        <SectionHeader no="05" eyebrow={s.eyebrow} title={fmt(s.title)} sub={s.sub} />
       </Reveal>
       <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {s.items.map((item, i) => {
           const Icon = icons[i % icons.length];
           return (
           <Reveal key={item.name} delay={(i % 3) * 100}>
-            <article className="group h-full rounded-3xl border border-border bg-surface p-7 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]">
+            <article className="group h-full rounded-md border border-border bg-surface p-7 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_-28px_rgba(17,17,23,0.4)]">
               <div
-                className={`size-11 rounded-2xl ${tones[i % tones.length]} flex items-center justify-center mb-6 transition-transform group-hover:-rotate-6 group-hover:scale-105`}
+                className={`size-11 rounded-[4px] ${tones[i % tones.length]} flex items-center justify-center mb-6 transition-transform group-hover:-rotate-6 group-hover:scale-105`}
               >
                 <Icon className="size-5 text-foreground/75" />
               </div>
-              <h3 className="text-xl tracking-tight font-medium leading-snug">
+              <h3 className="font-serif text-2xl tracking-tight leading-snug">
                 {item.name}
               </h3>
               <p className="mt-2 text-sm text-muted leading-relaxed flex-1">
@@ -657,12 +648,9 @@ function Signals({ dict }: { dict: DictPart }) {
           );
         })}
         <Reveal delay={200}>
-          <article className="h-full rounded-3xl bg-foreground text-background p-7 flex flex-col justify-between overflow-hidden relative">
-            <div
-              aria-hidden
-              className="absolute -top-16 -right-16 size-48 rounded-full bg-primary/30 blur-3xl"
-            />
-            <p className="relative text-lg leading-relaxed text-background/85">
+          <article className="h-full rounded-md bg-foreground text-background p-7 flex flex-col justify-between overflow-hidden relative">
+            <DotSurface tone="paper" density={1600} />
+            <p className="relative font-serif text-xl leading-relaxed text-background/90">
               {s.outro}
             </p>
             <span className="relative mt-6 inline-flex items-baseline text-xl font-semibold tracking-tight">
@@ -687,6 +675,7 @@ function Compare({ dict }: { dict: DictPart }) {
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-24">
       <Reveal>
         <SectionHeader
+          no="06"
           eyebrow={c.eyebrow}
           title={fmt(c.title)}
           sub={c.sub}
@@ -695,12 +684,12 @@ function Compare({ dict }: { dict: DictPart }) {
       </Reveal>
       <div className="mt-14 grid lg:grid-cols-2 gap-5 max-w-4xl mx-auto items-stretch">
         <Reveal delay={80}>
-          <article className="h-full rounded-3xl border border-border bg-surface/60 p-8 lg:p-9">
+          <article className="h-full rounded-md border border-border bg-surface/60 p-8 lg:p-9">
             <h3 className="text-lg font-medium tracking-tight text-muted">
               {c.oldTitle}
             </h3>
-            <div className="relative mt-6 rounded-2xl border border-border bg-background p-4">
-              <span className="absolute top-3 right-3 z-10 rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] text-muted">
+            <div className="relative mt-6 rounded-md border border-border bg-background p-4">
+              <span className="absolute top-3 right-3 z-10 rounded-[3px] border border-border bg-surface px-2.5 py-1 font-mono text-[10px] text-muted">
                 {c.oldNote}
               </span>
               <div aria-hidden className="fade-y h-28 overflow-hidden">
@@ -744,11 +733,8 @@ function Compare({ dict }: { dict: DictPart }) {
           </article>
         </Reveal>
         <Reveal delay={180}>
-          <article className="relative h-full overflow-hidden rounded-3xl bg-foreground text-background p-8 lg:p-9 shadow-[0_30px_80px_-30px_rgba(15,17,23,0.45)]">
-            <div
-              aria-hidden
-              className="absolute -top-20 -right-20 size-56 rounded-full bg-primary/30 blur-3xl"
-            />
+          <article className="relative h-full overflow-hidden rounded-md bg-foreground text-background p-8 lg:p-9 shadow-[0_30px_80px_-30px_rgba(15,17,23,0.45)]">
+            <DotSurface tone="paper" density={2000} />
             <h3 className="relative text-lg font-medium tracking-tight">
               <span>say</span>
               <span className="font-serif italic text-primary">hii</span>
@@ -756,8 +742,8 @@ function Compare({ dict }: { dict: DictPart }) {
                 {c.newTitle.replace(/^sayhii/, "")}
               </span>
             </h3>
-            <div className="relative mt-6 flex h-[8.5rem] flex-col justify-center gap-3 rounded-2xl border border-background/15 bg-background/5 p-4">
-              <span className="self-start rounded-2xl rounded-bl-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+            <div className="relative mt-6 flex h-[8.5rem] flex-col justify-center gap-3 rounded-md border border-background/15 bg-background/5 p-4">
+              <span className="self-start rounded-md rounded-bl-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
                 say<span className="font-serif italic">hii</span>
               </span>
               <span className="inline-flex items-center gap-2 self-end rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-xs font-medium">
@@ -788,18 +774,13 @@ function Compare({ dict }: { dict: DictPart }) {
 function ListenAgain({ dict }: { dict: DictPart }) {
   const l = dict.home.listenAgain;
   return (
-    <section className="relative overflow-hidden border-y border-border/60 bg-warm/40">
-      <div className="grain" />
-      <div
-        aria-hidden
-        className="absolute -top-24 right-1/4 size-[320px] rounded-full bg-warm blur-3xl opacity-70"
-      />
+    <section className="relative overflow-hidden border-y border-border">
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-20 text-center">
         <Reveal>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted">
-            {l.eyebrow}
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted">
+            07 · {l.eyebrow}
           </p>
-          <p className="mt-5 text-2xl sm:text-3xl lg:text-4xl tracking-tight font-medium leading-snug max-w-3xl mx-auto">
+          <p className="mt-6 font-serif text-3xl sm:text-4xl lg:text-[2.75rem] tracking-tight leading-[1.15] max-w-3xl mx-auto">
             {fmt(l.body)}
           </p>
         </Reveal>
@@ -816,14 +797,14 @@ function UniquelySayhii({ dict }: { dict: DictPart }) {
   return (
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-24">
       <Reveal>
-        <SectionHeader eyebrow={u.eyebrow} title={fmt(u.title)} />
+        <SectionHeader no="08" eyebrow={u.eyebrow} title={fmt(u.title)} />
       </Reveal>
       <div className="mt-12 grid lg:grid-cols-3 gap-5">
         {u.pillars.map((p, i) => {
           const Icon = icons[i];
           return (
           <Reveal key={p.title} delay={i * 100}>
-            <article className="group relative h-full overflow-hidden rounded-3xl border border-border bg-surface p-7 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]">
+            <article className="group relative h-full overflow-hidden rounded-md border border-border bg-surface p-7 flex flex-col transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_-28px_rgba(17,17,23,0.4)]">
               <span
                 aria-hidden
                 className="absolute -top-3 right-4 font-serif italic text-[88px] leading-none text-border select-none"
@@ -831,14 +812,14 @@ function UniquelySayhii({ dict }: { dict: DictPart }) {
                 0{i + 1}
               </span>
               <div
-                className={`size-11 rounded-2xl ${tones[i]} flex items-center justify-center mb-6 transition-transform group-hover:-rotate-6 group-hover:scale-105`}
+                className={`size-11 rounded-[4px] ${tones[i]} flex items-center justify-center mb-6 transition-transform group-hover:-rotate-6 group-hover:scale-105`}
               >
                 <Icon className="size-5 text-foreground/75" />
               </div>
-              <p className="text-xs uppercase tracking-[0.2em] text-muted">
+              <p className="text-[11px] uppercase tracking-[0.25em] text-muted">
                 {p.eyebrow}
               </p>
-              <h3 className="mt-3 text-2xl tracking-tight font-medium leading-snug">
+              <h3 className="mt-3 font-serif text-2xl tracking-tight leading-snug">
                 {p.title}
               </h3>
               <p className="mt-3 text-muted leading-relaxed">{p.body}</p>
@@ -861,7 +842,7 @@ function Stories({ dict }: { dict: DictPart }) {
     <section className="py-16 lg:py-24 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <SectionHeader eyebrow={s.eyebrow} title={fmt(s.title)} align="center" />
+          <SectionHeader no="09" eyebrow={s.eyebrow} title={fmt(s.title)} align="center" />
         </Reveal>
       </div>
       <Reveal delay={120}>
@@ -888,14 +869,14 @@ function MarqueeRow({
       {quotes.map((body, i) => (
         <figure
           key={i}
-          className="w-[320px] sm:w-[400px] shrink-0 rounded-3xl border border-border bg-surface p-6 lg:p-7"
+          className="w-[320px] sm:w-[400px] shrink-0 rounded-md border border-border bg-surface p-6 lg:p-7"
         >
           <span
-            className={`size-9 rounded-2xl ${tones[i % tones.length]} flex items-center justify-center mb-4`}
+            className={`size-9 rounded-[4px] ${tones[i % tones.length]} flex items-center justify-center mb-4`}
           >
             <QuoteIcon className="size-4 text-foreground/70" />
           </span>
-          <blockquote className="text-base leading-relaxed text-foreground">
+          <blockquote className="font-serif text-lg leading-relaxed text-foreground">
             &ldquo;{body}&rdquo;
           </blockquote>
         </figure>

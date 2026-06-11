@@ -30,7 +30,7 @@ export default async function PrivacyPage({ params }: Props) {
 
       <section className="mx-auto max-w-3xl px-6 lg:px-10 py-16 lg:py-20">
         {p.note && (
-          <p className="mb-10 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted">
+          <p className="mb-10 rounded-md border border-border bg-surface px-5 py-4 text-sm text-muted">
             {p.note}
           </p>
         )}
@@ -51,7 +51,7 @@ export default async function PrivacyPage({ params }: Props) {
                   ) : (
                     <blockquote
                       key={i}
-                      className="rounded-2xl border-l-4 border-primary bg-warm/40 px-5 py-4 text-foreground"
+                      className="rounded-md border-l-4 border-primary bg-warm/40 px-5 py-4 text-foreground"
                     >
                       {para.quote}
                     </blockquote>

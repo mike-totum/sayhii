@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
+/* Brand: ink on paper, one signal color. Every answer is a dot. */
 :root {
-  --background: #fbf7f2;
+  --background: #fcfcfa;
   --surface: #ffffff;
-  --foreground: #0f1117;
-  --muted: #5a5751;
-  --border: #ebe4da;
-  --primary: #ff6b5b;
-  --primary-hover: #e84f3d;
+  --foreground: #111117;
+  --muted: #5d5d66;
+  --border: #e4e3dd;
+  --primary: #ff4d2e;
+  --primary-hover: #e83b1d;
   --primary-foreground: #ffffff;
-  --accent: #7da88a;
-  --accent-soft: #e6efe8;
-  --warm: #ffe4cf;
-  --sky: #d9e7f0;
+  --accent: #2f7d54;
+  --accent-soft: #edf2ee;
+  --warm: #f5f1e9;
+  --sky: #edf0f3;
 }
 
 @theme inline {
@@ -29,7 +30,7 @@
   --color-warm: var(--warm);
   --color-sky: var(--sky);
   --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-instrument-serif);
+  --font-serif: var(--font-newsreader);
   --font-mono: var(--font-geist-mono);
 }
 

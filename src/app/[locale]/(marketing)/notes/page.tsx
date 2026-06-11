@@ -58,14 +58,14 @@ export default async function NotesPage({ params }: Props) {
                   href={issue.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group relative block h-full rounded-[28px] border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
+                  className="group relative block h-full rounded-md border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
                 >
                   <div
                     className={`h-2 ${tones[i % tones.length]} transition-all group-hover:h-3`}
                   />
                   <div className="p-8 lg:p-10 grid sm:grid-cols-[auto_1fr] gap-6 items-start">
                     <div
-                      className={`hidden sm:flex size-20 rounded-2xl ${tones[i % tones.length]} items-center justify-center transition-transform group-hover:rotate-3 group-hover:scale-105`}
+                      className={`hidden sm:flex size-20 rounded-md ${tones[i % tones.length]} items-center justify-center transition-transform group-hover:rotate-3 group-hover:scale-105`}
                     >
                       <span className="font-serif italic text-3xl text-foreground/70">
                         {localizedLabel[0]}

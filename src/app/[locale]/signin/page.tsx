@@ -55,7 +55,7 @@ export default async function SignInPage({ params }: Props) {
                   type="email"
                   required
                   placeholder="you@company.com"
-                  className="mt-2 block w-full h-12 rounded-2xl border border-border bg-surface px-4 text-foreground placeholder:text-muted/70 focus:border-foreground/40 focus:outline-none transition-colors"
+                  className="mt-2 block w-full h-12 rounded-md border border-border bg-surface px-4 text-foreground placeholder:text-muted/70 focus:border-foreground/40 focus:outline-none transition-colors"
                 />
               </label>
               <button
@@ -82,7 +82,7 @@ export default async function SignInPage({ params }: Props) {
               <form action={continueAsUser}>
                 <button
                   type="submit"
-                  className="group w-full h-full text-left rounded-2xl border border-border bg-surface p-5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.3)]"
+                  className="group w-full h-full text-left rounded-md border border-border bg-surface p-5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.3)]"
                 >
                   <p className="text-xs uppercase tracking-[0.2em] text-muted">
                     Continue as
@@ -101,7 +101,7 @@ export default async function SignInPage({ params }: Props) {
               <form action={continueAsAdmin}>
                 <button
                   type="submit"
-                  className="group w-full h-full text-left rounded-2xl border border-primary/40 bg-primary/5 p-5 transition-all hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(255,107,91,0.45)]"
+                  className="group w-full h-full text-left rounded-md border border-primary/40 bg-primary/5 p-5 transition-all hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(255,107,91,0.45)]"
                 >
                   <p className="text-xs uppercase tracking-[0.2em] text-primary">
                     Continue as

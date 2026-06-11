@@ -28,7 +28,7 @@ export function Nav({ locale }: Props) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border/60">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/85 border-b border-border">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
         <Link href={localePath(locale, "/")} className="flex items-center">
           <Logo />
@@ -42,10 +42,10 @@ export function Nav({ locale }: Props) {
               <Link
                 key={l.href}
                 href={localized}
-                className={`px-3 py-2 rounded-full transition-colors ${
+                className={`px-3 py-2 border-b-2 transition-colors ${
                   active
-                    ? "text-foreground bg-surface shadow-sm"
-                    : "text-muted hover:text-foreground hover:bg-surface/60"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted hover:text-foreground"
                 }`}
               >
                 {l.label}
@@ -64,7 +64,7 @@ export function Nav({ locale }: Props) {
           </Link>
           <Link
             href={localePath(locale, "/contact")}
-            className="inline-flex h-9 items-center rounded-full bg-foreground text-background px-4 text-sm font-medium hover:bg-foreground/85 transition-colors"
+            className="inline-flex h-9 items-center rounded-[4px] bg-foreground text-background px-4 text-sm font-medium hover:bg-primary transition-colors"
           >
             {dict.nav.cta}
           </Link>
@@ -76,7 +76,7 @@ export function Nav({ locale }: Props) {
             aria-label={dict.nav.toggleMenu}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="inline-flex items-center justify-center size-10 rounded-full border border-border bg-surface"
+            className="inline-flex items-center justify-center size-10 rounded-[4px] border border-border bg-surface"
           >
             <span className="relative block w-4 h-3">
               <span
@@ -100,7 +100,7 @@ export function Nav({ locale }: Props) {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-border/60 bg-background">
+        <div className="md:hidden border-t border-border bg-background">
           <div className="mx-auto max-w-7xl px-6 py-6 space-y-3">
             {links.map((l) => (
               <Link
@@ -119,7 +119,7 @@ export function Nav({ locale }: Props) {
             </Link>
             <Link
               href={localePath(locale, "/contact")}
-              className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-full bg-foreground text-background px-4 text-sm font-medium"
+              className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-[4px] bg-foreground text-background px-4 text-sm font-medium"
             >
               {dict.nav.cta}
             </Link>
@@ -147,7 +147,7 @@ function LocaleSwitch({ locale }: { locale: Locale }) {
     <div
       role="group"
       aria-label="Language"
-      className="inline-flex items-center rounded-full border border-border bg-surface text-xs font-medium overflow-hidden"
+      className="inline-flex items-center rounded-[4px] border border-border bg-surface text-xs font-medium overflow-hidden"
     >
       {locales.map((l) => {
         const active = l === locale;

@@ -47,7 +47,7 @@ export default async function ContactPage({ params }: Props) {
 
           <aside className="space-y-5">
             <Reveal delay={100}>
-              <div className="group rounded-3xl border border-border bg-surface p-7 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.25)]">
+              <div className="group rounded-md border border-border bg-surface p-7 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.25)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted">
                   {c.sidebar.emailEyebrow}
                 </p>
@@ -62,7 +62,7 @@ export default async function ContactPage({ params }: Props) {
             </Reveal>
 
             <Reveal delay={180}>
-              <div className="rounded-3xl border border-border bg-surface p-7 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.25)]">
+              <div className="rounded-md border border-border bg-surface p-7 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.25)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted">
                   {c.sidebar.visitEyebrow}
                 </p>
@@ -75,7 +75,7 @@ export default async function ContactPage({ params }: Props) {
             </Reveal>
 
             <Reveal delay={260}>
-              <div className="relative overflow-hidden rounded-3xl border border-border bg-foreground text-background p-7">
+              <div className="relative overflow-hidden rounded-md border border-border bg-foreground text-background p-7">
                 <div
                   aria-hidden
                   className="absolute -top-14 -right-14 size-40 rounded-full bg-primary/30 blur-3xl"

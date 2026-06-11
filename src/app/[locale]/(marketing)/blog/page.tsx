@@ -52,7 +52,7 @@ export default async function BlogPage({ params }: Props) {
               href={postUrl(featured.slug)}
               target="_blank"
               rel="noreferrer"
-              className="group block rounded-[28px] border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_30px_80px_-35px_rgba(15,17,23,0.3)]"
+              className="group block rounded-md border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_30px_80px_-35px_rgba(15,17,23,0.3)]"
             >
               <div className="h-2 bg-warm transition-all group-hover:h-3" />
               <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 p-8 lg:p-12 items-center">
@@ -74,7 +74,7 @@ export default async function BlogPage({ params }: Props) {
                     <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </div>
-                <div className="relative aspect-[4/3] rounded-2xl bg-background border border-border overflow-hidden">
+                <div className="relative aspect-[4/3] rounded-md bg-background border border-border overflow-hidden">
                   <div className="absolute inset-0 bg-warm opacity-60 transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 grain" />
                   <div className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover:-translate-y-1">
@@ -95,7 +95,7 @@ export default async function BlogPage({ params }: Props) {
                 href={postUrl(p.slug)}
                 target="_blank"
                 rel="noreferrer"
-                className="group block h-full rounded-3xl border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
+                className="group block h-full rounded-md border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
               >
                 <div
                   className={`h-2 ${tones[i % tones.length]} transition-all group-hover:h-3`}

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "sayhii: real-time employee insight in 3 seconds a day. Deeper data. Happier employees. Less turnover.";
+  "sayhii: a million tiny answers, one clear picture. Real-time employee insight in 3 seconds a day.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -20,21 +20,46 @@ async function loadGoogleFont(family: string, text: string) {
   }
 }
 
+// Deterministic scatter so the image is identical on every build.
+function dotScatter(n: number) {
+  let seed = 1234567;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  return Array.from({ length: n }, (_, i) => ({
+    left: Math.round(rand() * 1180),
+    top: Math.round(rand() * 610),
+    size: rand() < 0.85 ? 3 : 5,
+    coral: i % 23 === 0,
+    alpha: 0.1 + rand() * 0.14,
+  }));
+}
+
+const DOTS = dotScatter(220);
+
 export default async function Image() {
-  const sansText =
-    "sayhii. Deeper data. Happier Less turnover. 3 seconds a day 90%+ daily adoption sayhii.io";
-  const serifText = "hii. employees. 3 90%+";
-  const [geist, serif] = await Promise.all([
-    loadGoogleFont("Geist:wght@600", sansText),
-    loadGoogleFont("Instrument+Serif:ital@1", serifText),
+  const serifText =
+    "A million tiny answers. One clear picture. sayhii. 3 seconds a day 90%+ daily adoption sayhii.io · ";
+  const [serif, serifItalic] = await Promise.all([
+    loadGoogleFont("Newsreader:opsz,wght@6..72,400", serifText),
+    loadGoogleFont("Newsreader:ital,opsz,wght@1,6..72,400", serifText),
   ]);
 
   const fonts = [
-    geist && { name: "Geist", data: geist, style: "normal" as const, weight: 600 as const },
-    serif && { name: "Instrument Serif", data: serif, style: "italic" as const, weight: 400 as const },
+    serif && {
+      name: "Newsreader",
+      data: serif,
+      style: "normal" as const,
+      weight: 400 as const,
+    },
+    serifItalic && {
+      name: "Newsreader",
+      data: serifItalic,
+      style: "italic" as const,
+      weight: 400 as const,
+    },
   ].filter((f) => f !== null);
-
-  const serifFamily = serif ? "Instrument Serif" : undefined;
 
   return new ImageResponse(
     (
@@ -43,143 +68,97 @@ export default async function Image() {
           width: "100%",
           height: "100%",
           display: "flex",
-          backgroundColor: "#fbf7f2",
-          backgroundImage:
-            "radial-gradient(circle at 88% 0%, #ffe4cf 0%, rgba(255,228,207,0) 42%), radial-gradient(circle at 0% 100%, #e6efe8 0%, rgba(230,239,232,0) 40%), radial-gradient(circle at 70% 100%, #d9e7f0 0%, rgba(217,231,240,0) 30%)",
-          fontFamily: geist ? "Geist" : undefined,
-          color: "#0f1117",
-          padding: "72px 80px",
+          flexDirection: "column",
+          backgroundColor: "#fcfcfa",
+          color: "#111117",
+          fontFamily: serif ? "Newsreader" : undefined,
+          padding: "64px 72px",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "baseline", fontSize: 44 }}>
-            <span style={{ fontWeight: 600, letterSpacing: -1 }}>say</span>
-            <span
-              style={{
-                fontFamily: serifFamily,
-                fontStyle: "italic",
-                color: "#ff6b5b",
-              }}
-            >
-              hii
-            </span>
+        {DOTS.map((d, i) => (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: d.left,
+              top: d.top,
+              width: d.size,
+              height: d.size,
+              borderRadius: 99,
+              backgroundColor: d.coral
+                ? "rgba(255,77,46,0.85)"
+                : `rgba(17,17,23,${d.alpha})`,
+            }}
+          />
+        ))}
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid rgba(17,17,23,0.15)",
+            paddingBottom: 20,
+            fontSize: 26,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span>say</span>
+            <span style={{ fontStyle: "italic", color: "#ff4d2e" }}>hii</span>
             <div
               style={{
-                width: 9,
-                height: 9,
-                borderRadius: 9,
-                backgroundColor: "#ff6b5b",
-                marginLeft: 5,
-                marginBottom: 6,
+                width: 7,
+                height: 7,
+                borderRadius: 7,
+                backgroundColor: "#ff4d2e",
+                marginLeft: 4,
+                marginTop: 10,
               }}
             />
           </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 64,
-              fontSize: 76,
-              fontWeight: 600,
-              letterSpacing: -3,
-              lineHeight: 1.04,
-            }}
-          >
-            <span>Deeper data.</span>
-            <span style={{ display: "flex" }}>
-              Happier&nbsp;
-              <span style={{ fontFamily: serifFamily, fontStyle: "italic", fontWeight: 400 }}>
-                employees.
-              </span>
-            </span>
-            <span>Less turnover.</span>
-          </div>
-
-          <div style={{ display: "flex", gap: 14, marginTop: "auto" }}>
-            {["3 seconds a day", "90%+ daily adoption"].map((chip) => (
-              <div
-                key={chip}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  border: "1px solid #ebe4da",
-                  backgroundColor: "#ffffff",
-                  borderRadius: 999,
-                  padding: "12px 24px",
-                  fontSize: 24,
-                }}
-              >
-                <div
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 10,
-                    backgroundColor: "#7da88a",
-                  }}
-                />
-                {chip}
-              </div>
-            ))}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "auto",
-                fontSize: 24,
-                color: "#5a5751",
-              }}
-            >
-              sayhii.io
-            </div>
-          </div>
+          <span style={{ color: "rgba(17,17,23,0.55)" }}>sayhii.io</span>
         </div>
 
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
             justifyContent: "center",
-            width: 330,
+            flex: 1,
+            fontSize: 84,
+            letterSpacing: -2,
+            lineHeight: 1.04,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              backgroundColor: "#ff6b5b",
-              color: "#ffffff",
-              borderRadius: 60,
-              padding: "26px 48px",
-              fontSize: 56,
-              fontFamily: serifFamily,
-              fontStyle: "italic",
-              boxShadow: "0 24px 60px -20px rgba(255,107,91,0.55)",
-            }}
-          >
-            hii.
+          <span>A million tiny answers.</span>
+          <span style={{ fontStyle: "italic" }}>One clear picture.</span>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 28,
+            borderTop: "1px solid rgba(17,17,23,0.15)",
+            paddingTop: 22,
+            fontSize: 26,
+            color: "rgba(17,17,23,0.65)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 10,
+                backgroundColor: "#ff4d2e",
+              }}
+            />
+            <span>3 seconds a day</span>
           </div>
-          <svg
-            width="220"
-            height="300"
-            viewBox="0 0 80 110"
-            fill="none"
-            stroke="#ff6b5b"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ marginTop: 8 }}
-          >
-            <circle cx="34" cy="18" r="11" />
-            <line x1="34" y1="29" x2="34" y2="68" />
-            <line x1="34" y1="40" x2="20" y2="58" />
-            <line x1="34" y1="40" x2="58" y2="22" />
-            <path d="M62 16 q5 0 5 6" strokeWidth="2" />
-            <path d="M67 11 q7 0 7 9" strokeWidth="2" />
-            <line x1="34" y1="68" x2="22" y2="96" />
-            <line x1="34" y1="68" x2="46" y2="96" />
-          </svg>
+          <span>·</span>
+          <span>90%+ daily adoption</span>
         </div>
       </div>
     ),

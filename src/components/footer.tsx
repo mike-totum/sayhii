@@ -12,12 +12,12 @@ export function Footer({ locale }: { locale: Locale }) {
   const dict = dicts[locale];
   const f = dict.footer;
   return (
-    <footer className="mt-24 border-t border-border/60">
+    <footer className="mt-24 border-t border-border">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
         <div className="grid gap-12 lg:grid-cols-[1.6fr_repeat(2,1fr)_1.4fr]">
           <div className="space-y-5">
             <Logo />
-            <p className="text-2xl tracking-tight font-medium text-foreground max-w-xs leading-snug">
+            <p className="font-serif text-3xl tracking-tight text-foreground max-w-xs leading-snug">
               {fmt(f.motto)}
             </p>
             <p className="text-sm text-muted leading-relaxed whitespace-pre-line">
@@ -27,7 +27,7 @@ export function Footer({ locale }: { locale: Locale }) {
 
           {[f.columns.read, f.columns.connect].map((c) => (
             <div key={c.title}>
-              <h4 className="text-sm font-medium text-foreground mb-4">
+              <h4 className="text-[11px] uppercase tracking-[0.25em] text-muted mb-4">
                 {c.title}
               </h4>
               <ul className="space-y-3 text-sm text-muted">
@@ -64,7 +64,7 @@ export function Footer({ locale }: { locale: Locale }) {
           ))}
 
           <div>
-            <h4 className="text-sm font-medium text-foreground mb-4">
+            <h4 className="text-[11px] uppercase tracking-[0.25em] text-muted mb-4">
               {f.subscribe.title}
             </h4>
             <p className="text-sm text-muted">{f.subscribe.body}</p>
@@ -78,12 +78,12 @@ export function Footer({ locale }: { locale: Locale }) {
                 name="email"
                 placeholder={f.subscribe.placeholder}
                 aria-label={f.subscribe.ariaEmail}
-                className="flex-1 h-10 rounded-full border border-border bg-background px-4 text-sm placeholder:text-muted/70 focus:border-foreground/40 focus:outline-none transition-colors"
+                className="flex-1 h-10 rounded-[4px] border border-border bg-surface px-4 text-sm placeholder:text-muted/70 focus:border-foreground/40 focus:outline-none transition-colors"
               />
               <button
                 type="submit"
                 aria-label={f.subscribe.ariaSubmit}
-                className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background hover:bg-primary transition-colors"
+                className="group inline-flex h-10 w-10 items-center justify-center rounded-[4px] bg-foreground text-background hover:bg-primary transition-colors"
               >
                 <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
               </button>
@@ -91,7 +91,7 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between text-xs text-muted">
+        <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row gap-4 items-start md:items-center justify-between text-xs text-muted">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <p>
               {f.copyright.replace("{year}", String(new Date().getFullYear()))}
