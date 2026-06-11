@@ -56,7 +56,7 @@ export const actions: Action[] = [
     id: "a-recognition-atlas",
     title: "Re-establish recognition cadence on Team Atlas",
     summary:
-      "Recognition has fallen 7.6% over six months — the largest org-wide drop. Atlas is concentrated in two ICs.",
+      "Recognition has fallen 7.6% over six months, the largest org-wide drop. Atlas is concentrated in two ICs.",
     theme: "recognition",
     owner: { name: "Richard Webber", email: "rwebber@sayhii-demo.com" },
     affects: "Grey's Anatomy · Team Atlas",
@@ -66,10 +66,10 @@ export const actions: Action[] = [
     createdLabel: "Created Mon, May 5",
     template: {
       kind: "one_on_one",
-      title: "1:1 prompt — recognition reset",
+      title: "1:1 prompt: recognition reset",
       duration: "20 min · in your next 1:1",
       prompt: [
-        "Open with what you've seen them ship recently — be specific.",
+        "Open with what you've seen them ship recently. Be specific.",
         "Ask: 'What's a piece of work you're proud of from the last month that didn't get acknowledged?'",
         "Don't defend the gap. Listen, take notes, surface a name later.",
         "Close with a concrete commitment: a public callout, a peer-shoutout, or a team ritual change.",
@@ -77,7 +77,7 @@ export const actions: Action[] = [
       talkingPoints: [
         "The org-wide score for Recognition is down 7.6% in six months.",
         "Two ICs on Atlas are driving most of the drop.",
-        "Tension to manage: don't 'fix' it with empty praise — that can score lower.",
+        "Tension to manage: don't 'fix' it with empty praise, which can score lower.",
       ],
     },
     trigger: {
@@ -140,11 +140,11 @@ export const actions: Action[] = [
         "Lead with the data: 'Our score on competent and ethical leadership is 2.9 out of 5.'",
         "Don't argue with it. Don't reframe it. Acknowledge it.",
         "Name two things you'll do in the next 30 days, and the criteria for whether they worked.",
-        "Schedule a follow-up to share the new score honestly — even if it didn't move.",
+        "Schedule a follow-up to share the new score honestly, even if it didn't move.",
       ],
       talkingPoints: [
-        "The score is from 49,171 answers — not a single complaint.",
-        "Average response: 2.9 — the lowest single question across all 13 themes.",
+        "The score is from 49,171 answers, not a single complaint.",
+        "Average response: 2.9, the lowest single question across all 13 themes.",
         "Trust questions move slowly; expect the next read in 4-6 weeks.",
       ],
     },
@@ -189,7 +189,7 @@ export const actions: Action[] = [
   },
   {
     id: "a-belonging-design",
-    title: "1:1 with Design Guild lead — belonging dipped",
+    title: "1:1 with Design Guild lead: belonging dipped",
     summary:
       "Belonging on Design Guild moved -6% in the last month. Earliest signal of regrettable attrition.",
     theme: "diversity",
@@ -201,7 +201,7 @@ export const actions: Action[] = [
     createdLabel: "Created Wed, May 7",
     template: {
       kind: "one_on_one",
-      title: "Skip-level prompt — belonging dip",
+      title: "Skip-level prompt: belonging dip",
       duration: "30 min · skip-level",
       prompt: [
         "Lead with curiosity, not concern. 'I noticed something in the data and wanted your read.'",
@@ -237,9 +237,9 @@ export const actions: Action[] = [
       title: "Team meeting agenda · Q2 kickoff",
       duration: "45 min · team meeting",
       prompt: [
-        "Open with the company OKR for Q2 — one slide.",
+        "Open with the company OKR for Q2 (one slide).",
         "Then your team's OKR. Same format.",
-        "Then each IC's slice — one bullet per person, what 'good' looks like.",
+        "Then each IC's slice: one bullet per person, what 'good' looks like.",
         "Take questions. Re-share the slides afterwards.",
       ],
       talkingPoints: [
@@ -274,7 +274,7 @@ export const actions: Action[] = [
         "Identify three projects that don't have an obvious owner.",
         "Open them as stretch slots, with clear scope and a sponsor manager.",
         "Pair each with a buddy.",
-        "Review at end of quarter — both project outcome and IC growth.",
+        "Review at end of quarter, both project outcome and IC growth.",
       ],
       talkingPoints: [
         "Three projects opened on April 18.",
@@ -350,7 +350,7 @@ export const actions: Action[] = [
       ],
       talkingPoints: [
         "Comedy Equity / Pay: 3.6 → 2.5 in 6 months.",
-        "Trust score on Comedy down 0.4 in same window — likely correlated.",
+        "Trust score on Comedy down 0.4 in same window, likely correlated.",
         "Don't pre-announce. Bring outcomes first.",
       ],
     },
@@ -449,7 +449,7 @@ export const actions: Action[] = [
       ],
       talkingPoints: [
         "Change Pace sub-score moved -0.5 pts.",
-        "Three initiatives launched in week of Apr 4 — root cause.",
+        "Three initiatives launched in week of Apr 4: root cause.",
       ],
     },
     trigger: {
@@ -460,7 +460,7 @@ export const actions: Action[] = [
     outcome: {
       reviewed: true,
       helped: false,
-      note: "Decision: not the right intervention right now — exec team felt pause would itself be a change. Watching the signal another 4 weeks before deciding next step.",
+      note: "Decision: not the right intervention right now. Exec team felt pause would itself be a change. Watching the signal another 4 weeks before deciding next step.",
     },
   },
   {

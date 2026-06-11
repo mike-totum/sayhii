@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
 import { CtaBanner } from "@/components/cta-banner";
+import { Reveal } from "@/components/reveal";
 import { ArrowIcon } from "@/components/icons";
 import { posts, postUrl } from "@/lib/posts";
 import {
@@ -46,69 +47,75 @@ export default async function BlogPage({ params }: Props) {
 
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-24">
         {featured && (
-          <a
-            href={postUrl(featured.slug)}
-            target="_blank"
-            rel="noreferrer"
-            className="group block rounded-[28px] border border-border bg-surface overflow-hidden hover:-translate-y-0.5 transition-transform"
-          >
-            <div className="h-2 bg-warm" />
-            <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 p-8 lg:p-12 items-center">
-              <div>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
-                  <span className="rounded-full border border-border px-3 py-1">
-                    {b.latest}
+          <Reveal>
+            <a
+              href={postUrl(featured.slug)}
+              target="_blank"
+              rel="noreferrer"
+              className="group block rounded-[28px] border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_30px_80px_-35px_rgba(15,17,23,0.3)]"
+            >
+              <div className="h-2 bg-warm transition-all group-hover:h-3" />
+              <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 p-8 lg:p-12 items-center">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1">
+                      <span className="size-1.5 rounded-full bg-primary animate-pulse-soft" />
+                      {b.latest}
+                    </span>
+                    <span>{formatDate(featured.date, locale)}</span>
+                    <span>·</span>
+                    <span>{featured.author}</span>
+                  </div>
+                  <h2 className="mt-5 text-3xl lg:text-5xl tracking-tight font-semibold leading-tight">
+                    {featured.title}
+                  </h2>
+                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
+                    {b.cta}
+                    <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
-                  <span>{formatDate(featured.date, locale)}</span>
-                  <span>·</span>
-                  <span>{featured.author}</span>
                 </div>
-                <h2 className="mt-5 text-3xl lg:text-5xl tracking-tight font-semibold leading-tight">
-                  {featured.title}
-                </h2>
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
-                  {b.cta}
-                  <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </div>
-              <div className="relative aspect-[4/3] rounded-2xl bg-background border border-border overflow-hidden">
-                <div className="absolute inset-0 bg-warm opacity-60" />
-                <div className="absolute inset-0 grain" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <p className="font-serif italic text-2xl text-foreground/80 leading-snug">
-                    {fmt(b.pullQuote)}
-                  </p>
+                <div className="relative aspect-[4/3] rounded-2xl bg-background border border-border overflow-hidden">
+                  <div className="absolute inset-0 bg-warm opacity-60 transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 grain" />
+                  <div className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover:-translate-y-1">
+                    <p className="font-serif italic text-2xl text-foreground/80 leading-snug">
+                      {fmt(b.pullQuote)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </Reveal>
         )}
 
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rest.map((p, i) => (
-            <a
-              key={p.slug}
-              href={postUrl(p.slug)}
-              target="_blank"
-              rel="noreferrer"
-              className="group rounded-3xl border border-border bg-surface overflow-hidden hover:-translate-y-0.5 transition-transform"
-            >
-              <div className={`h-2 ${tones[i % tones.length]}`} />
-              <div className="p-7">
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
-                  <span>{formatDate(p.date, locale)}</span>
-                  <span>·</span>
-                  <span>{p.author}</span>
+            <Reveal key={p.slug} delay={(i % 3) * 100}>
+              <a
+                href={postUrl(p.slug)}
+                target="_blank"
+                rel="noreferrer"
+                className="group block h-full rounded-3xl border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
+              >
+                <div
+                  className={`h-2 ${tones[i % tones.length]} transition-all group-hover:h-3`}
+                />
+                <div className="p-7 flex flex-col h-[calc(100%-0.5rem)]">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+                    <span>{formatDate(p.date, locale)}</span>
+                    <span>·</span>
+                    <span>{p.author}</span>
+                  </div>
+                  <h3 className="mt-4 text-xl tracking-tight font-medium leading-snug flex-1">
+                    {p.title}
+                  </h3>
+                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
+                    {b.cta}
+                    <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
                 </div>
-                <h3 className="mt-4 text-xl tracking-tight font-medium leading-snug">
-                  {p.title}
-                </h3>
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
-                  {b.cta}
-                  <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </a>
+              </a>
+            </Reveal>
           ))}
         </div>
       </section>

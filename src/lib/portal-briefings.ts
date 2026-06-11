@@ -66,13 +66,13 @@ export const briefings: Briefing[] = [
         blocks: [
           {
             kind: "lead",
-            text: "Wellness held steady at 80.2%. Two themes moved in opposite directions hard enough to shape the entire quarter — Recognition fell 7.6% while Change lifted 5.9%. The rest of the org was quiet.",
+            text: "Wellness held steady at 80.2%. Two themes moved in opposite directions hard enough to shape the entire quarter: Recognition fell 7.6% while Change lifted 5.9%. The rest of the org was quiet.",
           },
           {
             kind: "callout",
             tone: "primary",
             eyebrow: "Headline",
-            body: "Recognition needs the most attention going into Q2. Change is the bright spot — what we did there is worth copying.",
+            body: "Recognition needs the most attention going into Q2. Change is the bright spot, and what we did there is worth copying.",
           },
           {
             kind: "stat-row",
@@ -129,7 +129,7 @@ export const briefings: Briefing[] = [
           },
           {
             kind: "p",
-            text: "Two of the three biggest moves are intervention-shaped — Change lifted after we paused three competing initiatives in February, and Equity / Equality moved on the back of the pay-band review on Comedy. Both are repeatable.",
+            text: "Two of the three biggest moves are intervention-shaped. Change lifted after we paused three competing initiatives in February, and Equity / Equality moved on the back of the pay-band review on Comedy. Both are repeatable.",
           },
         ],
       },
@@ -148,12 +148,12 @@ export const briefings: Briefing[] = [
           },
           {
             kind: "p",
-            text: "The drop concentrates on Atlas (Engineering, n=12) and Customer Success Tier 2. The org-level decline is mostly two cohorts moving down, not a broad drift. That's actually good news — it means the lever is local.",
+            text: "The drop concentrates on Atlas (Engineering, n=12) and Customer Success Tier 2. The org-level decline is mostly two cohorts moving down, not a broad drift. That's actually good news: it means the lever is local.",
           },
           {
             kind: "sub-theme-radar",
             theme: "recognition",
-            caption: "Recognition sub-themes — your team vs the org.",
+            caption: "Recognition sub-themes: your team vs the org.",
           },
           {
             kind: "callout",
@@ -217,10 +217,10 @@ export const briefings: Briefing[] = [
           {
             kind: "list",
             items: [
-              "Recognition recovery on Atlas — read the score 4 weeks after the 1:1 cycle.",
+              "Recognition recovery on Atlas. Read the score 4 weeks after the 1:1 cycle.",
               "Comedy Equity scores against the new pay bands.",
               "Tuesday all-hands attendance and the Communication Frequency sub-score.",
-              "Belonging on Design Guild — an early warning still pending follow-up.",
+              "Belonging on Design Guild, an early warning still pending follow-up.",
             ],
           },
           {
@@ -253,7 +253,7 @@ export const briefings: Briefing[] = [
         blocks: [
           {
             kind: "lead",
-            text: "Grey's Anatomy held above the org average on every theme except Recognition, where the dip on Atlas dragged the team line. Belonging is the strength to protect — yours moved while the org's didn't.",
+            text: "Grey's Anatomy held above the org average on every theme except Recognition, where the dip on Atlas dragged the team line. Belonging is the strength to protect: yours moved while the org's didn't.",
           },
           {
             kind: "stat-row",
@@ -308,7 +308,7 @@ export const briefings: Briefing[] = [
           {
             kind: "list",
             items: [
-              "Lead with the wellness number, not the dip — context matters.",
+              "Lead with the wellness number, not the dip. Context matters.",
               "Acknowledge the Recognition score honestly. Don't pre-empt it with praise.",
               "Share one specific thing each person is doing well, before any feedback.",
               "Close with: what's one thing we should do less of next quarter?",
@@ -367,7 +367,7 @@ export const briefings: Briefing[] = [
           },
           {
             kind: "p",
-            text: "Trust is the theme we touched most often and the one that moved the slowest. That is the right pattern — fast moves on Trust usually mean we mistook approval for trust.",
+            text: "Trust is the theme we touched most often and the one that moved the slowest. That is the right pattern: fast moves on Trust usually mean we mistook approval for trust.",
           },
         ],
       },

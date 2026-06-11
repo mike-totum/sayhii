@@ -9,6 +9,8 @@ export function proxy(request: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/-/") ||
+    /\/(opengraph|twitter)-image$/.test(pathname) ||
     PUBLIC_FILE.test(pathname)
   ) {
     return;

@@ -20,6 +20,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sayhii.io"),
   title: "sayhii",
   description:
     "Real-time employee insight in 3 seconds a day.",
@@ -32,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
+      // lang is set per-locale by SetHtmlLang in [locale]/layout.tsx before
+      // hydration; suppress the expected attribute mismatch on this element.
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">

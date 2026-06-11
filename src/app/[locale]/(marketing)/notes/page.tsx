@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
 import { CtaBanner } from "@/components/cta-banner";
+import { Reveal } from "@/components/reveal";
 import { ArrowIcon } from "@/components/icons";
 import { issues } from "@/lib/notes-issues";
 import {
@@ -52,38 +53,41 @@ export default async function NotesPage({ params }: Props) {
               ? issue.number.replace("Issue", n.issueNumberPrefix)
               : undefined;
             return (
-              <a
-                key={issue.href}
-                href={issue.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group relative rounded-[28px] border border-border bg-surface overflow-hidden hover:-translate-y-0.5 transition-transform"
-              >
-                <div className={`h-2 ${tones[i % tones.length]}`} />
-                <div className="p-8 lg:p-10 grid sm:grid-cols-[auto_1fr] gap-6 items-start">
+              <Reveal key={issue.href} delay={(i % 2) * 100}>
+                <a
+                  href={issue.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative block h-full rounded-[28px] border border-border bg-surface overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(15,17,23,0.25)]"
+                >
                   <div
-                    className={`hidden sm:flex size-20 rounded-2xl ${tones[i % tones.length]} items-center justify-center`}
-                  >
-                    <span className="font-serif italic text-3xl text-foreground/70">
-                      {localizedLabel[0]}
-                    </span>
+                    className={`h-2 ${tones[i % tones.length]} transition-all group-hover:h-3`}
+                  />
+                  <div className="p-8 lg:p-10 grid sm:grid-cols-[auto_1fr] gap-6 items-start">
+                    <div
+                      className={`hidden sm:flex size-20 rounded-2xl ${tones[i % tones.length]} items-center justify-center transition-transform group-hover:rotate-3 group-hover:scale-105`}
+                    >
+                      <span className="font-serif italic text-3xl text-foreground/70">
+                        {localizedLabel[0]}
+                      </span>
+                    </div>
+                    <div>
+                      {issueNumberLocalized && (
+                        <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                          {issueNumberLocalized}
+                        </p>
+                      )}
+                      <h2 className="mt-2 text-2xl lg:text-3xl tracking-tight font-semibold leading-tight">
+                        {localizedLabel}
+                      </h2>
+                      <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
+                        {n.open}
+                        <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    {issueNumberLocalized && (
-                      <p className="text-xs uppercase tracking-[0.2em] text-muted">
-                        {issueNumberLocalized}
-                      </p>
-                    )}
-                    <h2 className="mt-2 text-2xl lg:text-3xl tracking-tight font-semibold leading-tight">
-                      {localizedLabel}
-                    </h2>
-                    <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-primary transition-colors">
-                      {n.open}
-                      <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-                    </span>
-                  </div>
-                </div>
-              </a>
+                </a>
+              </Reveal>
             );
           })}
         </div>

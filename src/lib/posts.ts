@@ -18,7 +18,7 @@ export const posts: Post[] = [
   },
   {
     slug: "the-doctor-is-in-and-so-is-their-ai-twin",
-    title: "The Doctor Is In — And So Is Their AI Twin",
+    title: "The Doctor Is In. And So Is Their AI Twin",
     author: "Amy Gurske",
     date: "2026-03-31",
   },

@@ -44,8 +44,8 @@ export function Nav({ locale }: Props) {
                 href={localized}
                 className={`px-3 py-2 rounded-full transition-colors ${
                   active
-                    ? "text-foreground"
-                    : "text-muted hover:text-foreground"
+                    ? "text-foreground bg-surface shadow-sm"
+                    : "text-muted hover:text-foreground hover:bg-surface/60"
                 }`}
               >
                 {l.label}

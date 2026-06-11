@@ -19,6 +19,7 @@ export function CtaBanner({
   return (
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28">
       <div className="relative overflow-hidden rounded-[32px] bg-foreground text-background p-10 lg:p-16">
+        <div className="grain" />
         <div
           aria-hidden
           className="absolute -top-24 -right-24 size-[420px] rounded-full bg-primary/30 blur-3xl"
@@ -38,10 +39,10 @@ export function CtaBanner({
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={primary.href}
-              className="inline-flex items-center gap-2 h-12 rounded-full bg-primary px-6 font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
+              className="group inline-flex items-center gap-2 h-12 rounded-full bg-primary px-6 font-medium text-primary-foreground shadow-[0_8px_24px_-8px_rgba(255,107,91,0.6)] hover:bg-primary-hover transition-all"
             >
               {primary.label}
-              <ArrowIcon className="size-4" />
+              <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             {secondary && (
               <Link

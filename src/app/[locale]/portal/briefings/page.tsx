@@ -51,7 +51,7 @@ export default async function BriefingsPage({ params }: Props) {
           </h1>
           <p className="mt-2 text-muted max-w-2xl leading-relaxed text-sm">
             Briefings are read-only documents that pull live charts straight
-            from the portal. Share a link with your team — they don&rsquo;t
+            from the portal. Share a link with your team. They don&rsquo;t
             need an account to read it, and every chart links back to the
             full data when they want to dig in.
           </p>
@@ -164,7 +164,7 @@ export default async function BriefingsPage({ params }: Props) {
             No more zip files of agenda decks.
           </h2>
           <p className="mt-3 max-w-2xl text-background/75 leading-relaxed">
-            Briefings have read-only share links — recipients don&rsquo;t need
+            Briefings have read-only share links, so recipients don&rsquo;t need
             a sayhii account. Every embedded chart links back to the live
             portal for anyone who does. View counts are tracked. The PDF is
             optional and one-click.

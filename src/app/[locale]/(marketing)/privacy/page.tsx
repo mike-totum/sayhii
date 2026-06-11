@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
+import { Reveal } from "@/components/reveal";
 import { fmt, getDictionary, isLocale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -35,8 +36,12 @@ export default async function PrivacyPage({ params }: Props) {
         )}
         <div className="space-y-12">
           {p.sections.map((s) => (
-            <div key={s.h}>
-              <h2 className="text-2xl lg:text-3xl tracking-tight font-semibold leading-snug">
+            <Reveal key={s.h}>
+              <h2 className="flex items-baseline gap-3 text-2xl lg:text-3xl tracking-tight font-semibold leading-snug">
+                <span
+                  aria-hidden
+                  className="size-2 shrink-0 rounded-full bg-primary translate-y-[-3px]"
+                />
                 {s.h}
               </h2>
               <div className="mt-4 space-y-4 text-foreground/85 leading-relaxed">
@@ -53,7 +58,7 @@ export default async function PrivacyPage({ params }: Props) {
                   ),
                 )}
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>

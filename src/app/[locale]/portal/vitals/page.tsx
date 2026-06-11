@@ -51,7 +51,7 @@ export default async function VitalsPage({ params }: Props) {
           </h1>
           <p className="mt-2 text-muted max-w-2xl leading-relaxed text-sm">
             Vitals impact your ability to perform over time. Stress, bandwidth,
-            and balance are interconnected — measuring all three keeps the
+            and balance are interconnected, and measuring all three keeps the
             picture honest.
           </p>
         </div>
@@ -75,7 +75,7 @@ export default async function VitalsPage({ params }: Props) {
           body={
             diverging.yourScore < diverging.orgScore
               ? "Most teams in sayhii-demo report similar pressure this quarter. The system has surfaced two next-step prompts to help isolate the cause."
-              : "You're doing better than average — keep an eye on the team around you and share what's working."
+              : "You're doing better than average. Keep an eye on the team around you and share what's working."
           }
           metric={{
             label: diverging.label,

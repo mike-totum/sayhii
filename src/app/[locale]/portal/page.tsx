@@ -64,11 +64,11 @@ export default async function PortalHome({ params }: Props) {
             <>
               <span className="font-serif italic">{top.theme}</span> moved{" "}
               {top.delta >= 0 ? "+" : ""}
-              {top.delta.toFixed(1)}%
+              {top.delta.toFixed(1)}%.
               <br className="hidden sm:block" />
               {top.trend === "up"
-                ? " — keep doing what you're doing."
-                : " — worth a 1:1 this week."}
+                ? " Keep doing what you're doing."
+                : " Worth a 1:1 this week."}
             </>
           }
           body={

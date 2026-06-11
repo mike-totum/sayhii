@@ -15,9 +15,9 @@ export function Footer({ locale }: { locale: Locale }) {
     <footer className="mt-24 border-t border-border/60">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
         <div className="grid gap-12 lg:grid-cols-[1.6fr_repeat(2,1fr)_1.4fr]">
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Logo />
-            <p className="text-sm text-muted max-w-xs leading-relaxed">
+            <p className="text-2xl tracking-tight font-medium text-foreground max-w-xs leading-snug">
               {fmt(f.motto)}
             </p>
             <p className="text-sm text-muted leading-relaxed whitespace-pre-line">
@@ -83,9 +83,9 @@ export function Footer({ locale }: { locale: Locale }) {
               <button
                 type="submit"
                 aria-label={f.subscribe.ariaSubmit}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background hover:bg-foreground/85 transition-colors"
+                className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background hover:bg-primary transition-colors"
               >
-                <ArrowIcon className="size-4" />
+                <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </form>
           </div>

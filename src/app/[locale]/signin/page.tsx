@@ -37,16 +37,16 @@ export default async function SignInPage({ params }: Props) {
           </div>
 
           <div className="w-full max-w-md">
-            <h1 className="text-4xl lg:text-5xl tracking-tight font-semibold leading-tight">
+            <h1 className="rise text-4xl lg:text-5xl tracking-tight font-semibold leading-tight">
               Welcome back to{" "}
               <span className="font-serif italic text-primary">sayhii</span>.
             </h1>
-            <p className="mt-3 text-muted leading-relaxed">
+            <p className="rise rise-1 mt-3 text-muted leading-relaxed">
               Sign in with your work email. We&rsquo;ll route you to the right
               view.
             </p>
 
-            <form action={signInWithEmail} className="mt-8 space-y-4">
+            <form action={signInWithEmail} className="rise rise-2 mt-8 space-y-4">
               <input type="hidden" name="locale" value={locale} />
               <label className="block">
                 <span className="text-sm font-medium">Work email</span>
@@ -78,11 +78,11 @@ export default async function SignInPage({ params }: Props) {
               </div>
             </div>
 
-            <div className="mt-6 grid sm:grid-cols-2 gap-3">
+            <div className="rise rise-3 mt-6 grid sm:grid-cols-2 gap-3">
               <form action={continueAsUser}>
                 <button
                   type="submit"
-                  className="group w-full text-left rounded-2xl border border-border bg-surface p-5 hover:border-foreground/30 transition-colors"
+                  className="group w-full h-full text-left rounded-2xl border border-border bg-surface p-5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(15,17,23,0.3)]"
                 >
                   <p className="text-xs uppercase tracking-[0.2em] text-muted">
                     Continue as
@@ -101,7 +101,7 @@ export default async function SignInPage({ params }: Props) {
               <form action={continueAsAdmin}>
                 <button
                   type="submit"
-                  className="group w-full text-left rounded-2xl border border-primary/40 bg-primary/5 p-5 hover:border-primary transition-colors"
+                  className="group w-full h-full text-left rounded-2xl border border-primary/40 bg-primary/5 p-5 transition-all hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-30px_rgba(255,107,91,0.45)]"
                 >
                   <p className="text-xs uppercase tracking-[0.2em] text-primary">
                     Continue as
@@ -132,6 +132,7 @@ export default async function SignInPage({ params }: Props) {
         </section>
 
         <aside className="hidden lg:flex relative items-center justify-center bg-foreground text-background overflow-hidden">
+          <div className="grain" />
           <div aria-hidden className="absolute inset-0">
             <div className="absolute -top-24 -right-24 size-[420px] rounded-full bg-primary/30 blur-3xl" />
             <div className="absolute bottom-0 left-0 size-[420px] rounded-full bg-accent/20 blur-3xl" />
@@ -145,9 +146,19 @@ export default async function SignInPage({ params }: Props) {
               becomes the clearest picture of your team you&rsquo;ve ever had.
             </p>
             <ul className="mt-8 space-y-3 text-sm text-background/80">
-              <li>· Adaptive daily prompts, no survey fatigue</li>
-              <li>· Trust, workload, safety, clarity, belonging</li>
-              <li>· Anonymous · aggregated at sample size 5+</li>
+              {[
+                "Adaptive daily prompts, no survey fatigue",
+                "Trust, workload, safety, clarity, belonging",
+                "Anonymous · aggregated at sample size 5+",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span
+                    aria-hidden
+                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+                  />
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
         </aside>
