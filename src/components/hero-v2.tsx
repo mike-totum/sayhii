@@ -49,7 +49,7 @@ export function HeroV2({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    fieldRef.current = createField(canvas, reduced);
+    fieldRef.current = createField(canvas, reduced, { formations: true });
     return () => fieldRef.current?.destroy();
   }, []);
 
