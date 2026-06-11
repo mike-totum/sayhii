@@ -22,7 +22,19 @@ import {
   FingerprintIcon,
 } from "@/components/feature-icons";
 import { HeroCheckin, StickFigure } from "@/components/hero-checkin";
+import { HeroV2 } from "@/components/hero-v2";
+import { Newsreader } from "next/font/google";
 import { sparkSeries } from "@/lib/portal-data";
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500"],
+});
+
+// A/B switch: true renders the dot-field editorial hero, false the
+// "say hii." greeting hero from main.
+const USE_V2_HERO = true;
 import {
   fmt,
   getDictionary,
@@ -38,9 +50,29 @@ export default async function Home({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
+  const h = dict.home.hero;
   return (
     <>
-      <Hero locale={locale} dict={dict} />
+      {USE_V2_HERO ? (
+        <HeroV2
+          locale={locale}
+          serifClass={newsreader.className}
+          contactHref={localePath(locale, "/contact")}
+          t={{
+            ...h.v2,
+            ctaPrimary: h.ctaPrimary,
+            ctaSecondary: h.ctaSecondary,
+            prompts: [h.checkin.prompt, ...h.checkin.morePrompts],
+            agree: h.checkin.agree,
+            disagree: h.checkin.disagree,
+            skip: h.checkin.skip,
+            another: h.checkin.another,
+            thanksTitle: h.checkin.thanksTitle,
+          }}
+        />
+      ) : (
+        <Hero locale={locale} dict={dict} />
+      )}
       <TaglineStrip dict={dict} />
       <Stats dict={dict} />
       <HowItWorks dict={dict} />

@@ -113,6 +113,15 @@ export const es: typeof en = {
           "Ahora imagina a cada empleado, todos los días. Esa es la señal.",
         another: "Prueba otra",
       },
+      v2: {
+        eyebrow: "Señal del equipo, a diario",
+        title: "Un millón de respuestas diminutas.\n*Una imagen clara.*",
+        sub: "sayhii le hace a cada empleado una pregunta de tres segundos al día. Las respuestas suman la imagen viva más clara de la confianza, la carga y la pertenencia que tu organización haya tenido.",
+        questionLabel: "La pregunta de hoy",
+        timeLabel: "0:03",
+        counterLabel: "respuestas esta semana",
+        joined: "Tu respuesta acaba de unirse a la imagen.",
+      },
       floatA: { eyebrow: "Lente", body: "*Individual*, equipo, organización" },
       floatB: {
         eyebrow: "La señal",

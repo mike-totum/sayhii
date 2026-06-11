@@ -106,6 +106,15 @@ export const en = {
         thanksBody: "Now imagine every employee, every day. That's the signal.",
         another: "Try another",
       },
+      v2: {
+        eyebrow: "Employee signal, daily",
+        title: "A million tiny answers.\n*One clear picture.*",
+        sub: "sayhii asks every employee one three-second question a day. The answers add up to the clearest live picture of trust, workload, and belonging your organization has ever had.",
+        questionLabel: "Today's question",
+        timeLabel: "0:03",
+        counterLabel: "answers this week",
+        joined: "Your answer just joined the picture.",
+      },
       floatA: { eyebrow: "Lens", body: "*Individual*, team, org" },
       floatB: {
         eyebrow: "The signal",
