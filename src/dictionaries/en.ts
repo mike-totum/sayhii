@@ -312,10 +312,14 @@ export const en = {
   blog: {
     eyebrow: "Blog",
     title: "Essays from *sayhii*.",
-    sub: "Authored on the sayhii blog. Click any post to read it on sayhii.io.",
+    sub: "Field notes on workforce, listening, and leadership — read the full essays right here.",
     latest: "Latest essay",
-    cta: "Read on sayhii.io",
+    cta: "Read the essay",
     pullQuote: '"sayhii *everyday*."',
+    readSuffix: "min read",
+    backToBlog: "All essays",
+    moreReading: "Keep reading",
+    shareLabel: "Share",
   },
   contact: {
     eyebrow: "Contact us",

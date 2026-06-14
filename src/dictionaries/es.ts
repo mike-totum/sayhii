@@ -322,10 +322,14 @@ export const es: typeof en = {
   blog: {
     eyebrow: "Blog",
     title: "Ensayos de *sayhii*.",
-    sub: "Publicados en el blog de sayhii. Haz clic en cualquier ensayo para leerlo en sayhii.io.",
+    sub: "Notas de campo sobre talento, escucha y liderazgo — lee los ensayos completos aquí.",
     latest: "Último ensayo",
-    cta: "Leer en sayhii.io",
+    cta: "Leer el ensayo",
     pullQuote: '"sayhii *todos los días*."',
+    readSuffix: "min de lectura",
+    backToBlog: "Todos los ensayos",
+    moreReading: "Sigue leyendo",
+    shareLabel: "Compartir",
   },
   contact: {
     eyebrow: "Contáctanos",
