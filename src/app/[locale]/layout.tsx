@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Hreflang } from "@/components/hreflang";
 import { getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
 
 type Props = {
@@ -32,6 +33,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <>
+      <Hreflang />
       <SetHtmlLang lang={typed} />
       {children}
     </>

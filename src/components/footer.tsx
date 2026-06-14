@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./logo";
+import { LocaleSwitch } from "./locale-switch";
 import { ArrowIcon } from "./icons";
 import { en } from "@/dictionaries/en";
 import { es } from "@/dictionaries/es";
@@ -99,12 +100,16 @@ export function Footer({ locale }: { locale: Locale }) {
             <span className="hidden md:inline">·</span>
             <p>{f.trademark}</p>
           </div>
-          <Link
-            href={localePath(locale, "/privacy")}
-            className="hover:text-foreground transition-colors"
-          >
-            {f.privacy}
-          </Link>
+          <div className="flex items-center gap-4">
+            <LocaleSwitch locale={locale} />
+            <span aria-hidden className="text-border">·</span>
+            <Link
+              href={localePath(locale, "/privacy")}
+              className="hover:text-foreground transition-colors"
+            >
+              {f.privacy}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { defaultLocale, locales } from "@/lib/i18n";
+import { defaultLocale, isLocale, locales } from "@/lib/i18n";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -21,8 +21,14 @@ export function proxy(request: NextRequest) {
   );
   if (hasLocale) return;
 
+  // A persisted manual choice (cookie) wins over browser auto-detection.
+  const saved = request.cookies.get("locale")?.value;
   const accept = request.headers.get("accept-language") ?? "";
-  const preferred = accept.toLowerCase().includes("es") ? "es" : defaultLocale;
+  const preferred = isLocale(saved ?? "")
+    ? (saved as string)
+    : accept.toLowerCase().includes("es")
+      ? "es"
+      : defaultLocale;
 
   const url = request.nextUrl.clone();
   url.pathname = `/${preferred}${pathname === "/" ? "" : pathname}`;

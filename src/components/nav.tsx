@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
+import { LocaleSwitch } from "./locale-switch";
 import { en } from "@/dictionaries/en";
 import { es } from "@/dictionaries/es";
-import { localePath, locales, type Locale } from "@/lib/i18n";
+import { localePath, type Locale } from "@/lib/i18n";
 
 type Props = { locale: Locale };
 
@@ -55,7 +56,6 @@ export function Nav({ locale }: Props) {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <LocaleSwitch locale={locale} />
           <Link
             href={`/${locale}/signin`}
             className="inline-flex h-9 items-center px-3 text-sm text-muted hover:text-foreground transition-colors"
@@ -71,7 +71,6 @@ export function Nav({ locale }: Props) {
         </div>
 
         <div className="md:hidden flex items-center gap-2">
-          <LocaleSwitch locale={locale} />
           <button
             aria-label={dict.nav.toggleMenu}
             aria-expanded={mobileOpen}
@@ -123,49 +122,12 @@ export function Nav({ locale }: Props) {
             >
               {dict.nav.cta}
             </Link>
+            <div className="pt-3 mt-3 border-t border-border">
+              <LocaleSwitch locale={locale} />
+            </div>
           </div>
         </div>
       )}
     </header>
-  );
-}
-
-function LocaleSwitch({ locale }: { locale: Locale }) {
-  const pathname = usePathname();
-
-  function pathFor(target: Locale) {
-    if (!pathname) return `/${target}`;
-    const segments = pathname.split("/");
-    if (segments[1] && (locales as readonly string[]).includes(segments[1])) {
-      segments[1] = target;
-      return segments.join("/") || `/${target}`;
-    }
-    return `/${target}${pathname === "/" ? "" : pathname}`;
-  }
-
-  return (
-    <div
-      role="group"
-      aria-label="Language"
-      className="inline-flex items-center rounded-[4px] border border-border bg-surface text-xs font-medium overflow-hidden"
-    >
-      {locales.map((l) => {
-        const active = l === locale;
-        return (
-          <Link
-            key={l}
-            href={pathFor(l)}
-            aria-current={active ? "true" : undefined}
-            className={`px-2.5 py-1 transition-colors ${
-              active
-                ? "bg-foreground text-background"
-                : "text-muted hover:text-foreground"
-            }`}
-          >
-            {l.toUpperCase()}
-          </Link>
-        );
-      })}
-    </div>
   );
 }
