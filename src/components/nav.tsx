@@ -7,7 +7,7 @@ import { Logo } from "./logo";
 import { LocaleSwitch } from "./locale-switch";
 import { en } from "@/dictionaries/en";
 import { es } from "@/dictionaries/es";
-import { localePath, type Locale } from "@/lib/i18n";
+import { localePath, logicalPath, type Locale } from "@/lib/i18n";
 
 type Props = { locale: Locale };
 
@@ -38,7 +38,7 @@ export function Nav({ locale }: Props) {
         <nav className="hidden md:flex items-center gap-1 text-sm">
           {links.map((l) => {
             const localized = localePath(locale, l.href);
-            const active = pathname === localized;
+            const active = logicalPath(pathname || "/") === l.href;
             return (
               <Link
                 key={l.href}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { locales, type Locale } from "@/lib/i18n";
+import { locales, localePath, logicalPath, type Locale } from "@/lib/i18n";
 
 const LABELS: Record<Locale, string> = {
   en: "English",
@@ -16,13 +16,7 @@ export function LocaleSwitch({ locale }: { locale: Locale }) {
   const pathname = usePathname();
 
   function pathFor(target: Locale) {
-    if (!pathname) return `/${target}`;
-    const segments = pathname.split("/");
-    if (segments[1] && (locales as readonly string[]).includes(segments[1])) {
-      segments[1] = target;
-      return segments.join("/") || `/${target}`;
-    }
-    return `/${target}${pathname === "/" ? "" : pathname}`;
+    return localePath(target, logicalPath(pathname || "/"));
   }
 
   function persist(target: Locale) {
