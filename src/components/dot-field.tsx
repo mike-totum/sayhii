@@ -59,12 +59,10 @@ const WAVE_MS = 700;
 const WAVE_RADIUS = 340;
 const BRUSH_RADIUS = 80;
 
-type Phase = { kind: "scatter" | "hii" | "stat" | "trend"; duration: number };
+type Phase = { kind: "scatter" | "hii" | "trend"; duration: number };
 const CYCLE: Phase[] = [
   { kind: "scatter", duration: 1800 },
   { kind: "hii", duration: 4500 },
-  { kind: "scatter", duration: 1400 },
-  { kind: "stat", duration: 4500 },
   { kind: "scatter", duration: 1400 },
   { kind: "trend", duration: 4500 },
 ];
@@ -197,23 +195,6 @@ export function createField(
     return pts;
   }
 
-  // The proof, in dots: the adoption stat.
-  function sampleStat(): Target[] {
-    const { cx, cy, s } = zone();
-    const size = s * 0.92;
-    const pts = samplePixels((octx) => {
-      octx.font = `italic ${size}px ${serifFamily}`;
-      octx.textAlign = "center";
-      octx.textBaseline = "middle";
-      octx.fillText("90%", cx, cy);
-    }, Math.max(3, Math.round(size / 40)));
-    // the % glyph carries the signal color
-    for (const p of pts) {
-      if (p.x > cx + size * 0.62) p.c = true;
-    }
-    return pts;
-  }
-
   // The signal: a baseline of quiet answers and a line trending up,
   // with the recent stretch in coral.
   function sampleTrend(): Target[] {
@@ -252,8 +233,7 @@ export function createField(
       }
       return;
     }
-    const targets =
-      kind === "hii" ? sampleWord() : kind === "stat" ? sampleStat() : sampleTrend();
+    const targets = kind === "hii" ? sampleWord() : sampleTrend();
     if (targets.length === 0) return;
     // shuffle dots so formation membership varies each cycle
     const order = dots.map((_, i) => i).sort(() => Math.random() - 0.5);
