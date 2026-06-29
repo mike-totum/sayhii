@@ -5,10 +5,10 @@ import { getStaff, hasModule } from "@/lib/admin-auth";
 import { NotesPanel } from "@/components/admin/notes-panel";
 import {
   getCustomer,
-  listNotes,
   type AccountStatus,
   type Participation,
 } from "@/lib/customers";
+import { listNotes } from "@/lib/notes-data";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
 
@@ -101,6 +101,7 @@ export default async function CustomerRecordPage({ params }: Props) {
         title="Notes"
         scope="user"
         subject={c.email}
+        organization={c.company}
         path={path}
         notes={userNotes}
       />
@@ -108,6 +109,7 @@ export default async function CustomerRecordPage({ params }: Props) {
         title={`Account notes · ${c.company}`}
         scope="company"
         subject={c.company}
+        organization={c.company}
         path={path}
         notes={companyNotes}
       />

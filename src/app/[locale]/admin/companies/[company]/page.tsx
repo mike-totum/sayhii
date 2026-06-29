@@ -6,10 +6,10 @@ import { NotesPanel } from "@/components/admin/notes-panel";
 import { SuppressionNote } from "@/components/admin/suppression-note";
 import {
   getCompany,
-  listNotes,
   type AccountStatus,
   type ParticipationStatus,
 } from "@/lib/customers";
+import { listNotes } from "@/lib/notes-data";
 
 type Props = { params: Promise<{ locale: string; company: string }> };
 
@@ -91,6 +91,7 @@ export default async function CompanyDetailPage({ params }: Props) {
         title="Account notes"
         scope="company"
         subject={detail.name}
+        organization={detail.name}
         path={path}
         notes={notes}
       />
