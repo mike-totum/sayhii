@@ -743,15 +743,18 @@ function Compare({ dict }: { dict: DictPart }) {
               </span>
             </h3>
             <div className="relative mt-6 flex h-[8.5rem] flex-col justify-center gap-3 rounded-md border border-background/15 bg-background/5 p-4">
-              <span className="max-w-[88%] self-start rounded-md rounded-bl-sm bg-primary px-4 py-2 text-sm font-medium leading-snug text-primary-foreground">
-                {c.newPrompt}
-              </span>
-              <div className="flex items-center justify-between gap-3 self-end">
-                <span aria-hidden className="flex items-center gap-1.5">
+              <div className="grid grid-cols-[auto_1fr] items-start gap-3">
+                <StickFigure className="w-11 shrink-0" />
+                <span className="relative self-start rounded-2xl rounded-bl-sm bg-primary px-4 py-2.5 text-sm font-medium leading-snug text-primary-foreground">
+                  {c.newPrompt}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span aria-hidden className="flex items-center gap-2 pl-1">
                   {[0, 1, 2, 3, 4].map((d) => (
                     <span
                       key={d}
-                      className={`size-2.5 rounded-full border ${
+                      className={`size-3 rounded-full border-2 ${
                         d === 1
                           ? "border-primary bg-primary"
                           : "border-background/30"
