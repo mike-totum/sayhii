@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { ogLogo } from "./og-logo";
 
 export const alt =
   "sayhii: a million tiny answers, one clear picture. Real-time employee insight in 3 seconds a day.";
@@ -103,20 +104,8 @@ export default async function Image() {
             fontSize: 26,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span>say</span>
-            <span style={{ fontStyle: "italic", color: "#ff4d2e" }}>hii</span>
-            <div
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: 7,
-                backgroundColor: "#ff4d2e",
-                marginLeft: 4,
-                marginTop: 10,
-              }}
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ogLogo} width={83} height={40} alt="sayhii" />
           <span style={{ color: "rgba(17,17,23,0.55)" }}>sayhii.io</span>
         </div>
 
