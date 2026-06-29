@@ -22,7 +22,7 @@ export async function getStaff(): Promise<Staff | null> {
   return {
     name: "Internal Staff",
     email: "staff@sayhii.io",
-    modules: ["customer-lookup"],
+    modules: ["customer-lookup", "team-tracking"],
   };
 }
 
