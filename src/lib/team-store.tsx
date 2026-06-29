@@ -1,26 +1,42 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import {
-  SEED_DATA,
-  type Department,
-  type Initiative,
-  type Person,
-  type TeamData,
-  type WeeklyGoal,
-  type WorkCard,
+import { createContext, useContext, useState } from "react";
+import type {
+  Department,
+  Initiative,
+  Person,
+  TeamData,
+  WeeklyGoal,
+  WorkCard,
 } from "./team";
+import {
+  createDepartment,
+  renameDepartmentAction,
+  createPerson,
+  updatePersonAction,
+  deletePersonAction,
+  createGoal,
+  updateGoalAction,
+  deleteGoalAction,
+  createInitiative,
+  updateInitiativeAction,
+  deleteInitiativeAction,
+  createCard,
+  updateCardAction,
+  deleteCardAction,
+} from "./team-actions";
 
-// Client-side store for Team Tracking. Seeded from SEED_DATA, persisted to
-// localStorage so adds/edits stick as you navigate.
-// TODO(team-backend): swap the load/save for sayhii-core fetches; the action
-// signatures below stay identical so views don't change.
+// Postgres-backed store: state is seeded from server data, mutations update
+// optimistically and persist via server actions. The useTeam() API is
+// unchanged from the prior localStorage version, so views didn't change.
 
-const KEY = "sayhii-team-v1";
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2);
+
+const persist = (p: Promise<unknown>) =>
+  p.catch((e) => console.error("[team] persist failed", e));
 
 type Ctx = {
   data: TeamData;
@@ -43,84 +59,110 @@ type Ctx = {
 
 const TeamContext = createContext<Ctx | null>(null);
 
-export function TeamProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<TeamData>(SEED_DATA);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setData(JSON.parse(raw) as TeamData);
-    } catch {
-      // ignore corrupt storage
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    try {
-      localStorage.setItem(KEY, JSON.stringify(data));
-    } catch {
-      // ignore quota/serialization errors
-    }
-  }, [data, ready]);
-
+export function TeamProvider({
+  initialData,
+  children,
+}: {
+  initialData: TeamData;
+  children: React.ReactNode;
+}) {
+  const [data, setData] = useState<TeamData>(initialData);
   const mut = (fn: (d: TeamData) => TeamData) => setData((prev) => fn(prev));
 
   const value: Ctx = {
     data,
-    ready,
-    addDepartment: (name) =>
-      mut((d) => ({ ...d, departments: [...d.departments, { id: uid(), name }] })),
-    renameDepartment: (id, name) =>
+    ready: true,
+
+    addDepartment: (name) => {
+      const dep: Department = { id: uid(), name };
+      mut((d) => ({ ...d, departments: [...d.departments, dep] }));
+      persist(createDepartment(dep));
+    },
+    renameDepartment: (id, name) => {
       mut((d) => ({
         ...d,
         departments: d.departments.map((x) => (x.id === id ? { ...x, name } : x)),
-      })),
-    addPerson: (p) => mut((d) => ({ ...d, people: [...d.people, { ...p, id: uid() }] })),
-    updatePerson: (id, patch) =>
+      }));
+      persist(renameDepartmentAction(id, name));
+    },
+
+    addPerson: (p) => {
+      const person: Person = { ...p, id: uid() };
+      mut((d) => ({ ...d, people: [...d.people, person] }));
+      persist(createPerson(person));
+    },
+    updatePerson: (id, patch) => {
       mut((d) => ({
         ...d,
         people: d.people.map((x) => (x.id === id ? { ...x, ...patch } : x)),
-      })),
-    deletePerson: (id) =>
+      }));
+      persist(updatePersonAction(id, patch));
+    },
+    deletePerson: (id) => {
       mut((d) => ({
         ...d,
         people: d.people.filter((x) => x.id !== id),
         goals: d.goals.filter((g) => g.personId !== id),
         cards: d.cards.map((c) => (c.assigneeId === id ? { ...c, assigneeId: null } : c)),
-        initiatives: d.initiatives.map((i) =>
-          i.ownerId === id ? { ...i, ownerId: "" } : i,
-        ),
-      })),
-    addGoal: (g) => mut((d) => ({ ...d, goals: [...d.goals, { ...g, id: uid() }] })),
-    updateGoal: (id, patch) =>
+        initiatives: d.initiatives.map((i) => (i.ownerId === id ? { ...i, ownerId: "" } : i)),
+      }));
+      persist(deletePersonAction(id));
+    },
+
+    addGoal: (g) => {
+      const goal: WeeklyGoal = { ...g, id: uid() };
+      mut((d) => ({ ...d, goals: [...d.goals, goal] }));
+      persist(createGoal(goal));
+    },
+    updateGoal: (id, patch) => {
       mut((d) => ({
         ...d,
         goals: d.goals.map((x) => (x.id === id ? { ...x, ...patch } : x)),
-      })),
-    deleteGoal: (id) => mut((d) => ({ ...d, goals: d.goals.filter((x) => x.id !== id) })),
-    addInitiative: (i) =>
-      mut((d) => ({ ...d, initiatives: [...d.initiatives, { ...i, id: uid() }] })),
-    updateInitiative: (id, patch) =>
+      }));
+      persist(updateGoalAction(id, patch));
+    },
+    deleteGoal: (id) => {
+      mut((d) => ({ ...d, goals: d.goals.filter((x) => x.id !== id) }));
+      persist(deleteGoalAction(id));
+    },
+
+    addInitiative: (i) => {
+      const initiative: Initiative = { ...i, id: uid() };
+      mut((d) => ({ ...d, initiatives: [...d.initiatives, initiative] }));
+      persist(createInitiative(initiative));
+    },
+    updateInitiative: (id, patch) => {
       mut((d) => ({
         ...d,
         initiatives: d.initiatives.map((x) => (x.id === id ? { ...x, ...patch } : x)),
-      })),
-    deleteInitiative: (id) =>
+      }));
+      persist(updateInitiativeAction(id, patch));
+    },
+    deleteInitiative: (id) => {
       mut((d) => ({
         ...d,
         initiatives: d.initiatives.filter((x) => x.id !== id),
         cards: d.cards.map((c) => (c.initiativeId === id ? { ...c, initiativeId: null } : c)),
-      })),
-    addCard: (c) => mut((d) => ({ ...d, cards: [...d.cards, { ...c, id: uid() }] })),
-    updateCard: (id, patch) =>
+      }));
+      persist(deleteInitiativeAction(id));
+    },
+
+    addCard: (c) => {
+      const card: WorkCard = { ...c, id: uid() };
+      mut((d) => ({ ...d, cards: [...d.cards, card] }));
+      persist(createCard(card));
+    },
+    updateCard: (id, patch) => {
       mut((d) => ({
         ...d,
         cards: d.cards.map((x) => (x.id === id ? { ...x, ...patch } : x)),
-      })),
-    deleteCard: (id) => mut((d) => ({ ...d, cards: d.cards.filter((x) => x.id !== id) })),
+      }));
+      persist(updateCardAction(id, patch));
+    },
+    deleteCard: (id) => {
+      mut((d) => ({ ...d, cards: d.cards.filter((x) => x.id !== id) }));
+      persist(deleteCardAction(id));
+    },
   };
 
   return <TeamContext.Provider value={value}>{children}</TeamContext.Provider>;
