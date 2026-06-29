@@ -22,6 +22,7 @@ import {
   FingerprintIcon,
 } from "@/components/feature-icons";
 import { HeroCheckin, StickFigure } from "@/components/hero-checkin";
+import { CompareCheckinDemo } from "@/components/compare-checkin-demo";
 import { HeroV2 } from "@/components/hero-v2";
 import { DotSurface } from "@/components/dot-field";
 import { sparkSeries } from "@/lib/spark";
@@ -742,34 +743,7 @@ function Compare({ dict }: { dict: DictPart }) {
                 {c.newTitle.replace(/^sayhii/, "")}
               </span>
             </h3>
-            <div className="relative mt-6 flex h-[8.5rem] flex-col justify-center gap-3 rounded-md border border-background/15 bg-background/5 p-4">
-              <div className="grid grid-cols-[auto_1fr] items-start gap-3">
-                <StickFigure className="w-11 shrink-0" />
-                <span className="relative self-start rounded-2xl rounded-bl-sm bg-primary px-4 py-2.5 text-sm font-medium leading-snug text-primary-foreground">
-                  {c.newPrompt}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span aria-hidden className="flex items-center gap-2 pl-1">
-                  {[0, 1, 2, 3, 4].map((d) => (
-                    <span
-                      key={d}
-                      className={`size-3 rounded-full border-2 ${
-                        d === 1
-                          ? "border-primary bg-primary"
-                          : "border-background/30"
-                      }`}
-                    />
-                  ))}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-xs font-medium">
-                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-accent text-white">
-                    <CheckIcon className="size-2.5" />
-                  </span>
-                  {c.newDone}
-                </span>
-              </div>
-            </div>
+            <CompareCheckinDemo prompt={c.newPrompt} done={c.newDone} />
             <ul className="relative mt-6 space-y-4">
               {c.newPoints.map((point) => (
                 <li key={point} className="flex items-start gap-3">
