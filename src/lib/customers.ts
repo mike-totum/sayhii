@@ -21,7 +21,7 @@ export type Participation = {
   lastActiveDays: number | null; // days since last answerDate; null = never
   currentPhase: number;
   totalPhases: number;
-  phaseProgressPct: number; // answered ÷ expected for the current phase
+  phaseProgressPct: number | null; // answered ÷ expected; null when unknown
   overdue: boolean;
 };
 

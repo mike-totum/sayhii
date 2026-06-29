@@ -9,6 +9,7 @@ import {
   type Participation,
 } from "@/lib/customers";
 import { listNotes } from "@/lib/notes-data";
+import { getParticipation } from "@/lib/core-api";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
 
@@ -34,10 +35,13 @@ export default async function CustomerRecordPage({ params }: Props) {
   }
 
   const path = `/${locale}/admin/customers/${encodeURIComponent(c.email)}`;
-  const [userNotes, companyNotes] = await Promise.all([
+  const [userNotes, companyNotes, liveParticipation] = await Promise.all([
     listNotes("user", c.email),
     listNotes("company", c.company),
+    getParticipation(c.email),
   ]);
+  // Real participation from sayhii-core when available; stub otherwise.
+  const participation = liveParticipation ?? c.participation;
 
   return (
     <div className="mx-auto max-w-3xl px-6 lg:px-10 py-12 space-y-6">
@@ -93,7 +97,7 @@ export default async function CustomerRecordPage({ params }: Props) {
             participation only — no answer content
           </span>
         </div>
-        <Engagement p={c.participation} />
+        <Engagement p={participation} />
       </section>
 
       {/* Zone 4 — Notes */}
@@ -135,7 +139,10 @@ function Engagement({ p }: { p: Participation }) {
           value={p.lastActiveDays === null ? "never" : `${p.lastActiveDays}d ago`}
         />
         <Field label="Phase" value={`${p.currentPhase} of ${p.totalPhases}`} />
-        <Field label="Phase progress" value={`${p.phaseProgressPct}%`} />
+        <Field
+          label="Phase progress"
+          value={p.phaseProgressPct === null ? "—" : `${p.phaseProgressPct}%`}
+        />
         <Field
           label="Overdue"
           value={p.overdue ? "⚠ yes" : "no"}
