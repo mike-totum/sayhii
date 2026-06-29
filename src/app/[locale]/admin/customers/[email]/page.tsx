@@ -56,7 +56,12 @@ export default async function CustomerRecordPage({ params }: Props) {
             </div>
             <p className="mt-1 text-sm text-muted">{c.email}</p>
             <p className="mt-1 text-sm text-muted">
-              {c.company}
+              <Link
+                href={`/${locale}/admin/companies/${encodeURIComponent(c.company)}`}
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                {c.company}
+              </Link>
               {c.department ? ` › ${c.department}` : ""}
               {c.managerEmail ? ` › reports to ${c.managerEmail}` : ""}
             </p>

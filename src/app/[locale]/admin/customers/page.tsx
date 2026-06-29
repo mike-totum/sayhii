@@ -27,9 +27,17 @@ export default async function CustomersPage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
-        Customer Lookup
-      </p>
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
+          Customer Lookup
+        </p>
+        <Link
+          href={`/${locale}/admin/companies`}
+          className="text-sm text-muted hover:text-foreground transition-colors"
+        >
+          Browse companies →
+        </Link>
+      </div>
       <h1 className="mt-2 font-serif text-3xl tracking-tight">Find a customer</h1>
       <p className="mt-3 text-muted max-w-xl leading-relaxed">
         Search by email or name, or filter by company. Email is the fastest path
