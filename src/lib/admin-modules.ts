@@ -17,7 +17,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     id: "customer-lookup",
     label: "Customer Lookup",
     href: "/admin/customers",
-    status: "in-progress",
+    status: "live",
     description:
       "Search any customer, view who they are and their participation, and log interactions.",
   },
