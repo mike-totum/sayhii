@@ -1,17 +1,16 @@
+import Image from "next/image";
+
 type Props = { className?: string };
 
+// Official sayhii trademark logo. Used throughout via this shared component.
 export function Logo({ className = "" }: Props) {
   return (
-    <span
-      className={`inline-flex items-baseline gap-0 text-2xl font-semibold tracking-tight ${className}`}
-      aria-label="sayhii"
-    >
-      <span>say</span>
-      <span className="font-serif italic text-primary">hii</span>
-      <span
-        aria-hidden
-        className="ml-0.5 inline-block size-1.5 rounded-full bg-primary translate-y-[-2px] animate-pulse-soft"
-      />
-    </span>
+    <Image
+      src="/brand/sayhii-logo.png"
+      alt="sayhii"
+      width={464}
+      height={240}
+      className={`h-7 w-auto ${className}`}
+    />
   );
 }
