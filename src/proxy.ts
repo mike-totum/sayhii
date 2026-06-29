@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, isLocale } from "@/lib/i18n";
 
 const PUBLIC_FILE = /\.(.*)$/;
-// Authenticated / share sections stay locale-prefixed; they aren't indexed
-// marketing pages, so clean URLs don't matter there.
-const APP_SECTIONS = new Set(["portal", "signin", "b"]);
+// Authenticated sections stay locale-prefixed; they aren't indexed marketing
+// pages, so clean URLs don't matter there.
+const APP_SECTIONS = new Set(["admin"]);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

@@ -24,7 +24,7 @@ import {
 import { HeroCheckin, StickFigure } from "@/components/hero-checkin";
 import { HeroV2 } from "@/components/hero-v2";
 import { DotSurface } from "@/components/dot-field";
-import { sparkSeries } from "@/lib/portal-data";
+import { sparkSeries } from "@/lib/spark";
 
 // A/B switch: true renders the dot-field editorial hero, false the
 // "say hii." greeting hero from main.
