@@ -743,15 +743,29 @@ function Compare({ dict }: { dict: DictPart }) {
               </span>
             </h3>
             <div className="relative mt-6 flex h-[8.5rem] flex-col justify-center gap-3 rounded-md border border-background/15 bg-background/5 p-4">
-              <span className="self-start rounded-md rounded-bl-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-                say<span className="font-serif italic">hii</span>
+              <span className="max-w-[88%] self-start rounded-md rounded-bl-sm bg-primary px-4 py-2 text-sm font-medium leading-snug text-primary-foreground">
+                {c.newPrompt}
               </span>
-              <span className="inline-flex items-center gap-2 self-end rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-xs font-medium">
-                <span className="inline-flex size-4 items-center justify-center rounded-full bg-accent text-white">
-                  <CheckIcon className="size-2.5" />
+              <div className="flex items-center justify-between gap-3 self-end">
+                <span aria-hidden className="flex items-center gap-1.5">
+                  {[0, 1, 2, 3, 4].map((d) => (
+                    <span
+                      key={d}
+                      className={`size-2.5 rounded-full border ${
+                        d === 1
+                          ? "border-primary bg-primary"
+                          : "border-background/30"
+                      }`}
+                    />
+                  ))}
                 </span>
-                {c.newDone}
-              </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-xs font-medium">
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-accent text-white">
+                    <CheckIcon className="size-2.5" />
+                  </span>
+                  {c.newDone}
+                </span>
+              </div>
             </div>
             <ul className="relative mt-6 space-y-4">
               {c.newPoints.map((point) => (

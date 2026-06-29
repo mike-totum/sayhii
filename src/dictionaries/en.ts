@@ -245,6 +245,7 @@ export const en = {
       ],
       oldNote: "Question 14 of 60",
       newTitle: "sayhii, everyday",
+      newPrompt: "My workload this week feels sustainable",
       newPoints: [
         "Three seconds a day, 12.5 minutes a year",
         "Signals update in real time, every single day",
