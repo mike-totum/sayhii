@@ -9,7 +9,7 @@ import {
   type Participation,
 } from "@/lib/customers";
 import { listNotes } from "@/lib/notes-data";
-import { getParticipation } from "@/lib/core-api";
+import { getParticipation, getCustomerCore } from "@/lib/core-api";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
 
@@ -21,7 +21,7 @@ export default async function CustomerRecordPage({ params }: Props) {
   if (!hasModule(staff, "customer-lookup")) notFound();
 
   const email = decodeURIComponent(raw);
-  const c = await getCustomer(email);
+  const c = (await getCustomerCore(email)) ?? (await getCustomer(email));
 
   if (!c) {
     return (

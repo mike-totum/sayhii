@@ -9,6 +9,7 @@ import {
   type AccountStatus,
   type ParticipationStatus,
 } from "@/lib/customers";
+import { getCompanyCore } from "@/lib/core-api";
 import { listNotes } from "@/lib/notes-data";
 
 type Props = { params: Promise<{ locale: string; company: string }> };
@@ -21,7 +22,7 @@ export default async function CompanyDetailPage({ params }: Props) {
   if (!hasModule(staff, "customer-lookup")) notFound();
 
   const company = decodeURIComponent(raw);
-  const detail = await getCompany(company);
+  const detail = (await getCompanyCore(company)) ?? (await getCompany(company));
   if (!detail) {
     return (
       <div className="mx-auto max-w-3xl px-6 lg:px-10 py-12">

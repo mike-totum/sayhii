@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { getStaff, hasModule } from "@/lib/admin-auth";
 import { getCompanies } from "@/lib/customers";
+import { getCompaniesCore } from "@/lib/core-api";
 import { SuppressionNote } from "@/components/admin/suppression-note";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -14,7 +15,7 @@ export default async function CompaniesPage({ params }: Props) {
   const staff = await getStaff();
   if (!hasModule(staff, "customer-lookup")) notFound();
 
-  const companies = await getCompanies();
+  const companies = (await getCompaniesCore()) ?? (await getCompanies());
 
   return (
     <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">
