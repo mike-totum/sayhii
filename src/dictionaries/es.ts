@@ -255,6 +255,7 @@ export const es: typeof en = {
       ],
       oldNote: "Pregunta 14 de 60",
       newTitle: "sayhii, todos los días",
+      newPrompt: "Mi carga de trabajo esta semana se siente sostenible",
       newPoints: [
         "Tres segundos al día, 12.5 minutos al año",
         "Señales que se actualizan en tiempo real, todos los días",
