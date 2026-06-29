@@ -1,23 +1,19 @@
 import "server-only";
-import { drizzle } from "drizzle-orm/aws-data-api/pg";
-import { RDSDataClient } from "@aws-sdk/client-rds-data";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import * as schema from "./schema";
 
-// Admin-portal Postgres (Aurora Serverless v2) over the RDS Data API.
-// HTTPS + IAM, no public DB endpoint or connection pool — serverless-safe.
-// Configured via env (set in Vercel from the provisioned cluster):
-//   RDS_RESOURCE_ARN, RDS_SECRET_ARN, RDS_DATABASE, AWS_REGION
-const rds = new RDSDataClient({ region: process.env.AWS_REGION ?? "us-east-1" });
+// Admin-portal Postgres (Neon, provisioned via the Vercel Marketplace).
+// The Vercel integration injects the connection string as an env var.
+const connectionString =
+  process.env.DATABASE_URL ?? process.env.POSTGRES_URL ?? "";
 
-export const db = drizzle(rds, {
-  database: process.env.RDS_DATABASE ?? "sayhii_admin",
-  secretArn: process.env.RDS_SECRET_ARN ?? "",
-  resourceArn: process.env.RDS_RESOURCE_ARN ?? "",
-  schema,
-});
+export const isDbConfigured = Boolean(connectionString);
 
-export const isDbConfigured = Boolean(
-  process.env.RDS_RESOURCE_ARN && process.env.RDS_SECRET_ARN,
-);
+// neon() is lazy — constructing it without a real URL is fine; it only fails
+// when a query actually runs, so the app still builds before the DB exists.
+const sql = neon(connectionString || "postgres://placeholder/placeholder");
+
+export const db = drizzle(sql, { schema });
 
 export { schema };

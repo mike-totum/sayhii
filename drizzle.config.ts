@@ -1,15 +1,13 @@
 import { defineConfig } from "drizzle-kit";
 
-// Migrations target Aurora Serverless v2 (PostgreSQL) over the RDS Data API.
-// The three RDS_* values come from the provisioned cluster (set in Vercel).
+// Migrations target Neon Postgres (provisioned via the Vercel Marketplace).
+// DATABASE_URL is injected by the Vercel integration; pull it locally with
+// `vercel env pull .env.local` before running migrations.
 export default defineConfig({
   schema: "./src/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
-  driver: "aws-data-api",
   dbCredentials: {
-    database: process.env.RDS_DATABASE ?? "sayhii_admin",
-    secretArn: process.env.RDS_SECRET_ARN ?? "",
-    resourceArn: process.env.RDS_RESOURCE_ARN ?? "",
+    url: process.env.DATABASE_URL ?? process.env.POSTGRES_URL ?? "",
   },
 });
