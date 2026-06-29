@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,14 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500"],
   style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sayhii.io"),
   title: "sayhii",
   description:
     "Real-time employee insight in 3 seconds a day.",
@@ -32,7 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      // lang is set per-locale by SetHtmlLang in [locale]/layout.tsx before
+      // hydration; suppress the expected attribute mismatch on this element.
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}

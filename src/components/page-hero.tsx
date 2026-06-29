@@ -1,41 +1,31 @@
+import { DotSurface } from "./dot-field";
+
 type Props = {
   eyebrow: string;
   title: React.ReactNode;
   sub?: React.ReactNode;
+  /* kept for call-site compatibility; the editorial system has one tone */
   tone?: "warm" | "sage" | "sky";
 };
 
-const tones = {
-  warm: { a: "bg-warm", b: "bg-accent-soft" },
-  sage: { a: "bg-accent-soft", b: "bg-sky" },
-  sky: { a: "bg-sky", b: "bg-warm" },
-};
-
-export function PageHero({ eyebrow, title, sub, tone = "warm" }: Props) {
-  const t = tones[tone];
+export function PageHero({ eyebrow, title, sub }: Props) {
   return (
-    <section className="relative overflow-hidden border-b border-border/60">
-      <div className="grain" />
-      <div aria-hidden className="absolute inset-0 -z-10">
-        <div
-          className={`absolute -top-32 -right-24 size-[460px] rounded-full ${t.a} blur-3xl opacity-70`}
-        />
-        <div
-          className={`absolute top-40 -left-32 size-[380px] rounded-full ${t.b} blur-3xl opacity-70`}
-        />
-      </div>
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-20 pb-20 lg:pt-28 lg:pb-24">
-        <span className="text-xs uppercase tracking-[0.2em] text-muted">
+    <section className="relative overflow-hidden border-b border-border">
+      <DotSurface density={2200} />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="border-b border-border py-4 text-[11px] uppercase tracking-[0.25em] text-muted rise">
           {eyebrow}
-        </span>
-        <h1 className="mt-5 text-5xl lg:text-7xl tracking-tight font-semibold leading-[1.05] max-w-4xl">
-          {title}
-        </h1>
-        {sub && (
-          <p className="mt-6 max-w-2xl text-lg text-muted leading-relaxed">
-            {sub}
-          </p>
-        )}
+        </div>
+        <div className="pt-12 pb-16 lg:pt-16 lg:pb-20">
+          <h1 className="rise rise-1 font-serif font-normal text-5xl lg:text-7xl tracking-tight leading-[1.05] max-w-4xl">
+            {title}
+          </h1>
+          {sub && (
+            <p className="rise rise-2 mt-6 max-w-2xl text-lg text-muted leading-relaxed">
+              {sub}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

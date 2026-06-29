@@ -17,11 +17,23 @@ export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];
 }
 
+// The default locale (English) lives at clean, unprefixed URLs (/, /blog);
+// other locales are prefixed (/es, /es/blog).
 export function localePath(locale: Locale, path: string): string {
   if (path.startsWith("http") || path.startsWith("mailto:")) return path;
   if (path.startsWith("#")) return path;
   const clean = path.startsWith("/") ? path : `/${path}`;
+  if (locale === defaultLocale) return clean;
   return `/${locale}${clean === "/" ? "" : clean}`;
+}
+
+// Strip any leading locale segment to get the locale-independent path. Used to
+// compare/active-match and to rebuild URLs regardless of whether the runtime
+// handed us a clean ("/blog") or internally-rewritten ("/en/blog") pathname.
+export function logicalPath(pathname: string): string {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] && isLocale(parts[0])) parts.shift();
+  return "/" + parts.join("/");
 }
 
 import type { ReactNode } from "react";

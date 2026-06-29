@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
+import { Reveal } from "@/components/reveal";
 import { fmt, getDictionary, isLocale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -29,14 +30,18 @@ export default async function PrivacyPage({ params }: Props) {
 
       <section className="mx-auto max-w-3xl px-6 lg:px-10 py-16 lg:py-20">
         {p.note && (
-          <p className="mb-10 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted">
+          <p className="mb-10 rounded-md border border-border bg-surface px-5 py-4 text-sm text-muted">
             {p.note}
           </p>
         )}
         <div className="space-y-12">
           {p.sections.map((s) => (
-            <div key={s.h}>
-              <h2 className="text-2xl lg:text-3xl tracking-tight font-semibold leading-snug">
+            <Reveal key={s.h}>
+              <h2 className="flex items-baseline gap-3 text-2xl lg:text-3xl tracking-tight font-semibold leading-snug">
+                <span
+                  aria-hidden
+                  className="size-2 shrink-0 rounded-full bg-primary translate-y-[-3px]"
+                />
                 {s.h}
               </h2>
               <div className="mt-4 space-y-4 text-foreground/85 leading-relaxed">
@@ -46,14 +51,14 @@ export default async function PrivacyPage({ params }: Props) {
                   ) : (
                     <blockquote
                       key={i}
-                      className="rounded-2xl border-l-4 border-primary bg-warm/40 px-5 py-4 text-foreground"
+                      className="rounded-md border-l-4 border-primary bg-warm/40 px-5 py-4 text-foreground"
                     >
                       {para.quote}
                     </blockquote>
                   ),
                 )}
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>

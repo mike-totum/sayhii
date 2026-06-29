@@ -6,27 +6,27 @@ import type { en } from "./en";
 export const es: typeof en = {
   meta: {
     home: {
-      title: "sayhii — Datos más profundos. Empleados más felices. Menos rotación.",
+      title: "sayhii | Datos más profundos. Empleados más felices. Menos rotación.",
       description:
-        "Información de empleados en tiempo real, en 3 segundos al día. sayhii saca a la superficie la confianza, la carga de trabajo, la seguridad psicológica, la claridad y la pertenencia — para que los líderes actúen antes de que la gente se vaya.",
+        "Información de empleados en tiempo real, en 3 segundos al día. sayhii saca a la superficie la confianza, la carga de trabajo, la seguridad psicológica, la claridad y la pertenencia, para que los líderes actúen antes de que la gente se vaya.",
     },
     notes: {
-      title: "Notas del Terreno — sayhii",
+      title: "Notas del Terreno | sayhii",
       description:
         "Workforce Navigator: ideas de CIOs, líderes de RR. HH. y expertos del sector para optimizar tu estrategia frente a un equipo en constante cambio.",
     },
     blog: {
-      title: "Blog — sayhii",
+      title: "Blog | sayhii",
       description:
         "Ensayos de sayhii sobre talento, escucha y liderazgo.",
     },
     contact: {
-      title: "Comienza hoy — sayhii",
+      title: "Comienza hoy | sayhii",
       description:
         "Contacta a sayhii. hi@sayhii.io · 100 S. Clinton Ave, Rochester, NY 14604.",
     },
     privacy: {
-      title: "Política de Privacidad — sayhii",
+      title: "Política de Privacidad | sayhii",
       description:
         "Cómo sayhii recopila, utiliza y protege la información personal en nuestro sitio web y aplicaciones.",
     },
@@ -77,53 +77,191 @@ export const es: typeof en = {
   home: {
     hero: {
       eyebrow: "Todo comienza con sayhii",
+      greetings: [
+        "hii",
+        "hola",
+        "bonjour",
+        "ciao",
+        "hallo",
+        "olá",
+        "hej",
+        "namaste",
+        "こんにちは",
+        "안녕",
+        "salut",
+        "habari",
+      ],
       title: "Datos más profundos.\n*Empleados* más felices.\nMenos rotación.",
-      body: "sayhii es una plataforma de retroalimentación e información en tiempo real que ayuda a los líderes a identificar, priorizar y resolver preocupaciones de los empleados e ineficiencias operativas — antes de que se conviertan en problemas sistémicos.",
+      body: "sayhii es una plataforma de retroalimentación e información en tiempo real que ayuda a los líderes a identificar, priorizar y resolver preocupaciones de los empleados e ineficiencias operativas antes de que se conviertan en problemas sistémicos.",
       ctaPrimary: "Agenda una charla de 30 min",
-      ctaSecondary: "Lee las Notas del Terreno",
+      ctaSecondary: "Mira cómo funciona",
       adoption: "*90%+* de adopción diaria",
       checkin: {
         prompt:
           "Me mantienen adecuadamente al tanto de los temas importantes dentro de mi empresa",
+        morePrompts: [
+          "Mi carga de trabajo de esta semana se siente sostenible",
+          "Sé exactamente qué quiere lograr mi equipo este trimestre",
+          "Me siento cómodo planteando una inquietud a mi manager",
+        ],
         agree: "De acuerdo",
         disagree: "En desacuerdo",
         skip: "Omitir",
+        tryIt: "Demo en vivo: toca una",
+        thanksTitle: "Eso es todo. *{s} segundos*.",
+        thanksBody:
+          "Ahora imagina a cada empleado, todos los días. Esa es la señal.",
+        another: "Prueba otra",
+      },
+      v2: {
+        eyebrow: "Señal del equipo, a diario",
+        title: "Un millón de respuestas diminutas.\n*Una imagen clara.*",
+        sub: "sayhii le hace a cada empleado una pregunta de tres segundos al día. Las respuestas suman la imagen viva más clara de la confianza, la carga y la pertenencia que tu organización haya tenido.",
+        questionLabel: "La pregunta de hoy",
+        timeLabel: "0:03",
+        counterLabel: "respuestas esta semana",
+        joined: "Tu respuesta acaba de unirse a la imagen.",
       },
       floatA: { eyebrow: "Lente", body: "*Individual*, equipo, organización" },
       floatB: {
         eyebrow: "La señal",
         body: "Confianza · Carga · Seguridad · Claridad · Pertenencia",
       },
+      floatC: { eyebrow: "Confianza del equipo", body: "+4.2% este trimestre" },
+      scrollCue: "Tres segundos, explicados",
     },
     tagline: {
       eyebrow: "La promesa",
       body: "Empodera a tu equipo. *Elimina* los puntos ciegos.",
     },
     stats: [
-      { value: "90%+", label: "Adopción diaria" },
-      { value: "3 seg", label: "Al día · solo 12.5 minutos al año" },
       {
-        value: "< 4 hrs",
-        label: "De tiempo técnico para implementar en toda la organización",
+        prefix: "",
+        value: 90,
+        suffix: "%+",
+        label: "Adopción diaria",
+        sub: "La gente realmente responde, porque cuesta tres segundos, no cuarenta minutos.",
+      },
+      {
+        prefix: "",
+        value: 3,
+        suffix: " seg",
+        label: "Al día, por empleado",
+        sub: "Son 12.5 minutos al año. Menos que una sola encuesta anual.",
+      },
+      {
+        prefix: "< ",
+        value: 4,
+        suffix: " hrs",
+        label: "Para implementar en toda la organización",
+        sub: "De tiempo técnico total. En marcha antes de tu próxima reunión general.",
       },
     ],
+    how: {
+      eyebrow: "Cómo funciona",
+      title: "Tres segundos de entrada. *Claridad* de salida.",
+      sub: "Sin encuestas que lanzar. Sin campañas que coordinar. sayhii vive dentro del día que tu gente ya tiene.",
+      steps: [
+        {
+          time: "9:02 am",
+          tag: "Cada empleado, cada día",
+          title: "Una pregunta. Un toque.",
+          body: "Cada persona recibe una sola pregunta adaptativa elegida para ella, no sacada de una plantilla. Responde en tres segundos y sigue con su día.",
+        },
+        {
+          time: "9:02:03 am",
+          tag: "Anónimo · agregado a partir de 5",
+          title: "Las señales se actualizan en tiempo real.",
+          body: "Cada respuesta afina la imagen en vivo de la confianza, la carga, la seguridad, la claridad y la pertenencia a nivel individual, de equipo y de organización.",
+        },
+        {
+          time: "Viernes",
+          tag: "Información → acción",
+          title: "Los líderes actúan antes de que sea sistémico.",
+          body: "sayhii convierte las señales de la semana en acciones priorizadas e informes en lenguaje claro, para que los líderes sepan exactamente dónde intervenir, y cuándo.",
+        },
+      ],
+    },
+    product: {
+      eyebrow: "La plataforma",
+      title: "De una respuesta de 3 segundos a la *historia completa*.",
+      sub: "Signos vitales, scorecards, temas, acciones e informes trimestrales en vivo: un portal que convierte micro-señales diarias en la imagen más clara de tu equipo que hayas tenido.",
+      capabilities: ["Vitales", "Scorecard", "Temas", "Acciones", "Informes"],
+      mock: {
+        greeting: "Buenos días, *Jamie*.",
+        insightEyebrow: "La señal de esta semana · Requiere atención",
+        insightTitle: "La carga de trabajo bajó −3.1%",
+        insightBody:
+          "Concentrado en dos equipos. Abre el tema para ver las preguntas con menor puntaje y qué líderes deberían saberlo.",
+        insightCta: "Abrir tema",
+        tiles: [
+          { label: "Bienestar org", sub: "Estable · últimos 6 meses" },
+          { label: "Compromiso", sub: "vs 6 meses anteriores" },
+          { label: "Participación", sub: "Check-ins diarios" },
+        ],
+        actionEyebrow: "La acción de esta semana",
+        actionTitle:
+          "Agenda 1:1s con los dos líderes de equipo que cargan más peso",
+        actionMeta: "Sugerido para ti · 20 min",
+        floatCard: {
+          eyebrow: "Informe trimestral",
+          body: "En vivo · se escribe solo",
+        },
+      },
+    },
     listenAgain: {
       eyebrow: "Una nota de sayhii",
-      body: "Si los correos no funcionan, el problema no es la bandeja de entrada — es cómo nos comunicamos. *sayhii* ayuda a los equipos a escuchar de nuevo.",
+      body: "Si los correos no funcionan, el problema no es la bandeja de entrada. Es cómo nos comunicamos. *sayhii* ayuda a los equipos a escuchar de nuevo.",
     },
     signals: {
       eyebrow: "Las señales",
       title: "Lo que cuesta ver suele ser lo que *más importa*.",
-      sub: "sayhii transforma micro-señales diarias de 3 segundos en información clara y accionable a nivel individual, de equipo y de organización — dando a los líderes visibilidad sobre las necesidades fundamentales que en silencio dan forma al desempeño, la cultura y la retención.",
-      names: [
-        "Confianza",
-        "Carga de trabajo",
-        "Seguridad psicológica",
-        "Claridad",
-        "Pertenencia",
+      sub: "sayhii transforma micro-señales diarias de 3 segundos en información clara y accionable a nivel individual, de equipo y de organización, dando a los líderes visibilidad sobre las necesidades fundamentales que en silencio dan forma al desempeño, la cultura y la retención.",
+      items: [
+        {
+          name: "Confianza",
+          desc: "¿La gente cree lo que dice el liderazgo, y dice lo que cree?",
+        },
+        {
+          name: "Carga de trabajo",
+          desc: "Quién carga demasiado en silencio, semanas antes de que se lea como burnout.",
+        },
+        {
+          name: "Seguridad psicológica",
+          desc: "Si las verdades difíciles salen en las reuniones, o en las entrevistas de salida.",
+        },
+        {
+          name: "Claridad",
+          desc: "¿Todos saben qué es lo más importante ahora mismo, y por qué importa?",
+        },
+        {
+          name: "Pertenencia",
+          desc: "La diferencia entre un trabajo que la gente tiene y un lugar donde la gente se queda.",
+        },
       ],
       outro:
         "sayhii saca esas señales a la superficie en tiempo real, permitiendo decisiones más rápidas, mejores resultados y un equipo más sano y resiliente.",
+    },
+    compare: {
+      eyebrow: "Jubila la encuesta anual",
+      title: "Una vez al año es *demasiado tarde*.",
+      sub: "Para cuando llegan los resultados anuales, la persona que más necesitabas escuchar ya decidió irse.",
+      oldTitle: "La encuesta anual",
+      oldPoints: [
+        "Cuarenta minutos, una vez al año",
+        "Los resultados llegan seis semanas después, ya obsoletos",
+        "Los promedios organizacionales esconden al equipo que sufre",
+        "Planes de acción que se apagan para el Q2",
+      ],
+      oldNote: "Pregunta 14 de 60",
+      newTitle: "sayhii, todos los días",
+      newPoints: [
+        "Tres segundos al día, 12.5 minutos al año",
+        "Señales que se actualizan en tiempo real, todos los días",
+        "Lentes individual, de equipo y de organización",
+        "Acciones priorizadas e informes, cada semana",
+      ],
+      newDone: "Listo. Tres segundos.",
     },
     uniquely: {
       eyebrow: "Únicamente sayhii",
@@ -137,12 +275,12 @@ export const es: typeof en = {
         {
           eyebrow: "Porque la ciencia importa",
           title: "Patente en trámite, por diseño.",
-          body: "Solo hay una solución que combina múltiples perspectivas de datos humanos — patente en trámite — para guiar los planes de tus líderes y las prioridades humanas. Esa solución es sayhii.",
+          body: "Solo hay una solución que combina múltiples perspectivas de datos humanos (patente en trámite) para guiar los planes de tus líderes y las prioridades humanas. Esa solución es sayhii.",
         },
         {
           eyebrow: "Porque lo único para todos no le queda a nadie",
           title: "El 100% de tus empleados son únicos.",
-          body: "Con solo una pregunta al día, sayhii aprende a cada una de tus personas como individuos y les pregunta lo que necesitan para convertirse en su mejor versión — dentro y fuera de la oficina.",
+          body: "Con solo una pregunta al día, sayhii aprende a cada una de tus personas como individuos y les pregunta lo que necesitan para convertirse en su mejor versión, dentro y fuera de la oficina.",
         },
       ],
     },
@@ -170,7 +308,7 @@ export const es: typeof en = {
   notes: {
     eyebrow: "Notas del Terreno",
     title: "*Workforce* Navigator.",
-    sub: "Bienvenido a Notas del Terreno — tu recurso de confianza para navegar el panorama cambiante de la gestión del capital humano. En cada edición reunimos las ideas de CIOs, líderes de RR. HH. y expertos del sector para ayudarte a optimizar tu estrategia frente a un equipo en constante cambio.",
+    sub: "Bienvenido a Notas del Terreno, tu recurso de confianza para navegar el panorama cambiante de la gestión del capital humano. En cada edición reunimos las ideas de CIOs, líderes de RR. HH. y expertos del sector para ayudarte a optimizar tu estrategia frente a un equipo en constante cambio.",
     available: "Ediciones disponibles",
     open: "Abrir el PDF en sayhii.io",
     issueLabels: {
@@ -184,10 +322,14 @@ export const es: typeof en = {
   blog: {
     eyebrow: "Blog",
     title: "Ensayos de *sayhii*.",
-    sub: "Publicados en el blog de sayhii. Haz clic en cualquier ensayo para leerlo en sayhii.io.",
+    sub: "Notas de campo sobre talento, escucha y liderazgo — lee los ensayos completos aquí.",
     latest: "Último ensayo",
-    cta: "Leer en sayhii.io",
+    cta: "Leer el ensayo",
     pullQuote: '"sayhii *todos los días*."',
+    readSuffix: "min de lectura",
+    backToBlog: "Todos los ensayos",
+    moreReading: "Sigue leyendo",
+    shareLabel: "Compartir",
   },
   contact: {
     eyebrow: "Contáctanos",
@@ -227,11 +369,11 @@ export const es: typeof en = {
         email: "Por favor usa un correo de trabajo válido.",
         company: "Por favor ingresa el nombre de tu empresa.",
         headcount:
-          "El tamaño del equipo nos ayuda a prepararnos — un número aproximado está bien.",
+          "El tamaño del equipo nos ayuda a prepararnos. Un número aproximado está bien.",
       },
       delivery: {
         delivered:
-          "No pudimos entregar tu solicitud. Por favor escríbenos directamente a hi@sayhii.io — disculpa el inconveniente.",
+          "No pudimos entregar tu solicitud. Por favor escríbenos directamente a hi@sayhii.io. Disculpa el inconveniente.",
         network:
           "Hubo un problema de red. Por favor escríbenos directamente a hi@sayhii.io.",
       },
@@ -243,7 +385,7 @@ export const es: typeof en = {
         "Una persona real del equipo de sayhii te responderá desde",
       bodyLink: "hi@sayhii.io",
       bodyAfter: ".",
-      meanwhile: "Mientras tanto — hojea las últimas",
+      meanwhile: "Mientras tanto, hojea las últimas",
       notesLink: "Notas del Terreno",
       or: "o",
       essaysLink: "ensayos de sayhii",

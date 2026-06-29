@@ -31,13 +31,16 @@ export function AnimatedNumber({
   format = "int",
   className = "",
 }: Props) {
-  const [shown, setShown] = useState(0);
+  // SSR renders the final value so crawlers and no-JS users see real numbers;
+  // the count-up only runs client-side once the element scrolls into view.
+  const [shown, setShown] = useState(value);
   const ref = useRef<HTMLSpanElement | null>(null);
   const startedRef = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const start = () => {
       if (startedRef.current) return;

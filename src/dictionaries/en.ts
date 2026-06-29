@@ -1,26 +1,26 @@
 export const en = {
   meta: {
     home: {
-      title: "sayhii — Deeper data. Happier employees. Less turnover.",
+      title: "sayhii | Deeper data. Happier employees. Less turnover.",
       description:
-        "Real-time employee insight in 3 seconds a day. sayhii surfaces trust, workload, psychological safety, clarity, and belonging — so leaders can act before people leave.",
+        "Real-time employee insight in 3 seconds a day. sayhii surfaces trust, workload, psychological safety, clarity, and belonging, so leaders can act before people leave.",
     },
     notes: {
-      title: "Notes from the Field — sayhii",
+      title: "Notes from the Field | sayhii",
       description:
         "Workforce Navigator: insights from CIOs, HR leaders, and industry experts to help you optimize your strategy for an ever-changing workforce.",
     },
     blog: {
-      title: "Blog — sayhii",
+      title: "Blog | sayhii",
       description: "Essays from sayhii on workforce, listening, and leadership.",
     },
     contact: {
-      title: "Get Started Today — sayhii",
+      title: "Get Started Today | sayhii",
       description:
         "Contact sayhii. hi@sayhii.io · 100 S. Clinton Ave, Rochester, NY 14604.",
     },
     privacy: {
-      title: "Privacy Policy — sayhii",
+      title: "Privacy Policy | sayhii",
       description:
         "How sayhii collects, uses, and protects personal information across our website and applications.",
     },
@@ -71,50 +71,187 @@ export const en = {
   home: {
     hero: {
       eyebrow: "It all starts with sayhii",
+      greetings: [
+        "hii",
+        "hola",
+        "bonjour",
+        "ciao",
+        "hallo",
+        "olá",
+        "hej",
+        "namaste",
+        "こんにちは",
+        "안녕",
+        "salut",
+        "habari",
+      ],
       title: "Deeper data.\nHappier *employees*.\nLess turnover.",
-      body: "sayhii is a real-time feedback and insight platform that helps leaders identify, prioritize, and resolve employee concerns and operational inefficiencies — before they become systemic problems.",
+      body: "sayhii is a real-time feedback and insight platform that helps leaders identify, prioritize, and resolve employee concerns and operational inefficiencies before they become systemic problems.",
       ctaPrimary: "Schedule a 30-min chat",
-      ctaSecondary: "Read the field notes",
+      ctaSecondary: "See how it works",
       adoption: "*90%+* daily adoption",
       checkin: {
         prompt:
           "I am kept adequately up-to-date about important issues within my company",
+        morePrompts: [
+          "My workload this week feels sustainable",
+          "I know exactly what my team is trying to win this quarter",
+          "I feel comfortable raising a concern with my manager",
+        ],
         agree: "Agree",
         disagree: "Disagree",
         skip: "Skip",
+        tryIt: "Live demo: tap one",
+        thanksTitle: "That's it. *{s} seconds*.",
+        thanksBody: "Now imagine every employee, every day. That's the signal.",
+        another: "Try another",
+      },
+      v2: {
+        eyebrow: "Employee signal, daily",
+        title: "A million tiny answers.\n*One clear picture.*",
+        sub: "sayhii asks every employee one three-second question a day. The answers add up to the clearest live picture of trust, workload, and belonging your organization has ever had.",
+        questionLabel: "Today's question",
+        timeLabel: "0:03",
+        counterLabel: "answers this week",
+        joined: "Your answer just joined the picture.",
       },
       floatA: { eyebrow: "Lens", body: "*Individual*, team, org" },
       floatB: {
         eyebrow: "The signal",
         body: "Trust · Workload · Safety · Clarity · Belonging",
       },
+      floatC: { eyebrow: "Team trust", body: "+4.2% this quarter" },
+      scrollCue: "Three seconds, explained",
     },
     tagline: {
       eyebrow: "The promise",
       body: "Empower your workforce. *Eliminate* blind spots.",
     },
     stats: [
-      { value: "90%+", label: "Daily adoption" },
-      { value: "3 sec", label: "A day · just 12.5 minutes a year" },
-      { value: "< 4 hrs", label: "Of technical time to roll out system-wide" },
+      {
+        prefix: "",
+        value: 90,
+        suffix: "%+",
+        label: "Daily adoption",
+        sub: "People actually answer, because it costs three seconds, not forty minutes.",
+      },
+      {
+        prefix: "",
+        value: 3,
+        suffix: " sec",
+        label: "A day, per employee",
+        sub: "That's 12.5 minutes a year. Less than one annual survey.",
+      },
+      {
+        prefix: "< ",
+        value: 4,
+        suffix: " hrs",
+        label: "To roll out system-wide",
+        sub: "Of total technical time. Live before your next all-hands.",
+      },
     ],
+    how: {
+      eyebrow: "How it works",
+      title: "Three seconds in. *Clarity* out.",
+      sub: "No surveys to launch. No campaigns to run. sayhii lives inside the day your people already have.",
+      steps: [
+        {
+          time: "9:02 am",
+          tag: "Every employee, every day",
+          title: "One question. One tap.",
+          body: "Each person gets a single adaptive question chosen for them, not pulled from a template. Answer in three seconds and get on with the day.",
+        },
+        {
+          time: "9:02:03 am",
+          tag: "Anonymous · aggregated at 5+",
+          title: "Signals update in real time.",
+          body: "Every answer sharpens the live picture of trust, workload, safety, clarity, and belonging at the individual, team, and organizational level.",
+        },
+        {
+          time: "Friday",
+          tag: "Insight → action",
+          title: "Leaders act before it's systemic.",
+          body: "sayhii turns the week's signals into prioritized actions and plain-language briefings, so managers know exactly where to lean in, and when.",
+        },
+      ],
+    },
+    product: {
+      eyebrow: "The platform",
+      title: "From a 3-second answer to the *whole story*.",
+      sub: "Vitals, scorecards, themes, actions, and live quarterly briefings: one portal that turns daily micro-signals into the clearest picture of your workforce you've ever had.",
+      capabilities: ["Vitals", "Scorecard", "Themes", "Actions", "Briefings"],
+      mock: {
+        greeting: "Good morning, *Jamie*.",
+        insightEyebrow: "This week's signal · Needs attention",
+        insightTitle: "Workload strain moved −3.1%",
+        insightBody:
+          "Concentrated in two teams. Open the theme to see the lowest-scoring questions and which managers should know.",
+        insightCta: "Open theme",
+        tiles: [
+          { label: "Org wellness", sub: "Steady · last 6 months" },
+          { label: "Engagement", sub: "vs prior 6 months" },
+          { label: "Participation", sub: "Daily check-ins" },
+        ],
+        actionEyebrow: "This week's action",
+        actionTitle:
+          "Schedule 1:1s with the two team leads carrying the heaviest load",
+        actionMeta: "Suggested for you · 20 min",
+        floatCard: { eyebrow: "Quarterly briefing", body: "Live · writes itself" },
+      },
+    },
     listenAgain: {
       eyebrow: "A note from sayhii",
-      body: "If emails aren't working, the problem isn't the inbox — it's how we're communicating. *sayhii* helps teams listen again.",
+      body: "If emails aren't working, the problem isn't the inbox. It's how we're communicating. *sayhii* helps teams listen again.",
     },
     signals: {
       eyebrow: "The signals",
       title: "What's hard to see is often what *matters most*.",
-      sub: "sayhii transforms 3-second daily micro-signals into clear, actionable insights at the individual, team, and organizational level — giving leaders visibility into the foundational needs that quietly shape performance, culture, and retention.",
-      names: [
-        "Trust",
-        "Workload strain",
-        "Psychological safety",
-        "Clarity",
-        "Belonging",
+      sub: "sayhii transforms 3-second daily micro-signals into clear, actionable insights at the individual, team, and organizational level, giving leaders visibility into the foundational needs that quietly shape performance, culture, and retention.",
+      items: [
+        {
+          name: "Trust",
+          desc: "Do people believe what leadership says, and say what they believe?",
+        },
+        {
+          name: "Workload strain",
+          desc: "Who is quietly carrying too much, weeks before it reads as burnout.",
+        },
+        {
+          name: "Psychological safety",
+          desc: "Whether hard truths surface in meetings, or in exit interviews.",
+        },
+        {
+          name: "Clarity",
+          desc: "Does everyone know what matters most right now, and why it matters?",
+        },
+        {
+          name: "Belonging",
+          desc: "The difference between a job people have and a place people stay.",
+        },
       ],
       outro:
         "sayhii brings those signals to the surface in real time, enabling faster decisions, better outcomes, and a healthier, more resilient workforce.",
+    },
+    compare: {
+      eyebrow: "Retire the annual survey",
+      title: "Once a year is *too late*.",
+      sub: "By the time annual results land, the person you most needed to hear has already decided to leave.",
+      oldTitle: "The annual survey",
+      oldPoints: [
+        "Forty minutes, once a year",
+        "Results arrive six weeks later, already stale",
+        "Org-level averages hide the team that's struggling",
+        "Action plans that fizzle out by Q2",
+      ],
+      oldNote: "Question 14 of 60",
+      newTitle: "sayhii, everyday",
+      newPoints: [
+        "Three seconds a day, 12.5 minutes a year",
+        "Signals update in real time, every single day",
+        "Individual, team, and organizational lenses",
+        "Prioritized actions and briefings, every week",
+      ],
+      newDone: "Done. Three seconds.",
     },
     uniquely: {
       eyebrow: "Uniquely sayhii",
@@ -128,12 +265,12 @@ export const en = {
         {
           eyebrow: "Because being science-backed matters",
           title: "Patent-pending, by design.",
-          body: "There's only one solution that combines multiple human data perspectives — patent pending — to drive your leaders' plans and human priorities. That solution is sayhii.",
+          body: "There's only one solution that combines multiple human data perspectives (patent pending) to drive your leaders' plans and human priorities. That solution is sayhii.",
         },
         {
           eyebrow: "Because one-size-fits-all isn't a fit",
           title: "100% of your employees are unique.",
-          body: "With just one question a day, sayhii learns each of your people as individuals and prompts them with what they need to do to become the best versions of themselves — inside the office and out.",
+          body: "With just one question a day, sayhii learns each of your people as individuals and prompts them with what they need to do to become the best versions of themselves, inside the office and out.",
         },
       ],
     },
@@ -161,7 +298,7 @@ export const en = {
   notes: {
     eyebrow: "Notes from the Field",
     title: "*Workforce* Navigator.",
-    sub: "Welcome to Notes from the Field — your trusted resource for navigating the evolving landscape of human capital management. In each issue, we bring together insights from CIOs, HR leaders, and industry experts to help you optimize your strategy for an ever-changing workforce.",
+    sub: "Welcome to Notes from the Field, your trusted resource for navigating the evolving landscape of human capital management. In each issue, we bring together insights from CIOs, HR leaders, and industry experts to help you optimize your strategy for an ever-changing workforce.",
     available: "Available issues",
     open: "Open the PDF on sayhii.io",
     issueLabels: {
@@ -175,10 +312,14 @@ export const en = {
   blog: {
     eyebrow: "Blog",
     title: "Essays from *sayhii*.",
-    sub: "Authored on the sayhii blog. Click any post to read it on sayhii.io.",
+    sub: "Field notes on workforce, listening, and leadership — read the full essays right here.",
     latest: "Latest essay",
-    cta: "Read on sayhii.io",
+    cta: "Read the essay",
     pullQuote: '"sayhii *everyday*."',
+    readSuffix: "min read",
+    backToBlog: "All essays",
+    moreReading: "Keep reading",
+    shareLabel: "Share",
   },
   contact: {
     eyebrow: "Contact us",
@@ -216,11 +357,11 @@ export const en = {
         email: "Please use a valid work email.",
         company: "Please enter your company.",
         headcount:
-          "Headcount helps us prep — even a rough number is fine.",
+          "Headcount helps us prep. Even a rough number is fine.",
       },
       delivery: {
         delivered:
-          "We couldn't deliver your request. Please email hi@sayhii.io directly — sorry about that.",
+          "We couldn't deliver your request. Please email hi@sayhii.io directly. Sorry about that.",
         network:
           "Network hiccup on our end. Please email hi@sayhii.io directly.",
       },
@@ -231,7 +372,7 @@ export const en = {
       bodyPrefix: "A real person on the sayhii team will email you back from",
       bodyLink: "hi@sayhii.io",
       bodyAfter: ".",
-      meanwhile: "In the meantime — flip through the latest",
+      meanwhile: "In the meantime, flip through the latest",
       notesLink: "Notes from the Field",
       or: "or",
       essaysLink: "essays from sayhii",

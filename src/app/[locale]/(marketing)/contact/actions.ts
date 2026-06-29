@@ -40,7 +40,7 @@ export async function requestWalkthrough(
   const inboundTo = process.env.SAYHII_INBOX_EMAIL ?? "hi@sayhii.io";
   const fromAddress = process.env.SAYHII_FROM_EMAIL ?? "noreply@sayhii.io";
 
-  const subject = `New walkthrough request — ${data.company}`;
+  const subject = `New walkthrough request: ${data.company}`;
   const body = [
     `Name: ${data.name}`,
     `Email: ${data.email}`,
