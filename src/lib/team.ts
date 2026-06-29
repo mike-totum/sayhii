@@ -1,9 +1,7 @@
-// Team Tracking data layer (admin module #2). Internal sayhii staff only.
-//
-// TODO(team-backend): replace stubs with sayhii-core endpoints + small DynamoDB
-// tables (Person, Department, WeeklyGoal, Initiative, WorkCard). All functions
-// are async so the swap to fetch() is transparent. Drag-and-drop mutations are
-// local-only until those endpoints exist.
+// Team Tracking domain types, seed data, and pure selectors (admin module #2).
+// Internal sayhii staff only. The live data + mutations are owned by the client
+// store (team-store.tsx); this file holds types, the initial seed, and pure
+// derivations. TODO(team-backend): seed/persist via sayhii-core endpoints.
 
 export type Department = { id: string; name: string };
 
@@ -52,25 +50,48 @@ export type WorkCard = {
   departmentId: string;
   column: WorkColumn;
   title: string;
+  description: string;
   assigneeId: string | null;
   initiativeId: string | null;
   dueDate: string | null;
 };
 
+export const INITIATIVE_STATUSES: { id: InitiativeStatus; label: string }[] = [
+  { id: "not_started", label: "Not started" },
+  { id: "on_track", label: "On track" },
+  { id: "at_risk", label: "At risk" },
+  { id: "done", label: "Done" },
+];
+
+export const GOAL_STATUSES: { id: GoalStatus; label: string }[] = [
+  { id: "on_track", label: "On track" },
+  { id: "done", label: "Done" },
+  { id: "missed", label: "Missed" },
+];
+
 export const CURRENT_WEEK_LABEL = "Week of Jun 23";
 
+// All the data the store holds.
+export type TeamData = {
+  departments: Department[];
+  people: Person[];
+  goals: WeeklyGoal[];
+  initiatives: Initiative[];
+  cards: WorkCard[];
+};
+
 // ---------------------------------------------------------------------------
-// Stub data — illustrative only.
+// Seed (illustrative). The store uses this until localStorage / the API exists.
 // ---------------------------------------------------------------------------
 
-const DEPARTMENTS: Department[] = [
+export const SEED_DEPARTMENTS: Department[] = [
   { id: "eng", name: "Engineering" },
   { id: "product", name: "Product & Design" },
   { id: "cs", name: "Customer Success" },
   { id: "gtm", name: "Go-to-Market" },
 ];
 
-const PEOPLE: Person[] = [
+export const SEED_PEOPLE: Person[] = [
   { id: "p1", name: "Dana Lee", email: "dana@sayhii.io", role: "Eng Lead", departmentId: "eng" },
   { id: "p2", name: "Sam Rivera", email: "sam@sayhii.io", role: "Engineer", departmentId: "eng" },
   { id: "p3", name: "Wei Zhang", email: "wei@sayhii.io", role: "Engineer", departmentId: "eng" },
@@ -82,7 +103,7 @@ const PEOPLE: Person[] = [
   { id: "p9", name: "Robin Diaz", email: "robin@sayhii.io", role: "Marketing", departmentId: "gtm" },
 ];
 
-const GOALS: WeeklyGoal[] = [
+export const SEED_GOALS: WeeklyGoal[] = [
   { id: "g1", personId: "p1", type: "professional", text: "Ship the participation endpoint to dev", status: "done" },
   { id: "g2", personId: "p1", type: "personal", text: "Leave by 5pm three days this week", status: "on_track" },
   { id: "g3", personId: "p2", type: "professional", text: "Close out the notes table migration", status: "on_track" },
@@ -92,48 +113,44 @@ const GOALS: WeeklyGoal[] = [
   { id: "g7", personId: "p8", type: "professional", text: "Advance the Globex renewal", status: "missed" },
 ];
 
-const INITIATIVES: Initiative[] = [
+export const SEED_INITIATIVES: Initiative[] = [
   { id: "i1", title: "Internal admin portal", ownerId: "p1", departmentIds: ["eng", "cs"], status: "on_track", targetDate: "Aug 2026", progress: 55, summary: "Customer Lookup + Team Tracking modules." },
   { id: "i2", title: "k-anonymity reporting fix", ownerId: "p2", departmentIds: ["eng"], status: "at_risk", targetDate: "Jul 2026", progress: 30, summary: "Close the identity re-exposure in the reporting layer." },
   { id: "i3", title: "Q3 GTM push", ownerId: "p9", departmentIds: ["gtm"], status: "not_started", targetDate: "Sep 2026", progress: 0, summary: "Campaign + 5 target logos." },
   { id: "i4", title: "Mobile app launch", ownerId: "p4", departmentIds: ["product", "eng"], status: "on_track", targetDate: "Jul 2026", progress: 70, summary: "Expo build to the app stores." },
 ];
 
-const WORK_CARDS: WorkCard[] = [
-  { id: "w1", departmentId: "eng", column: "in_progress", title: "Wire frontend to participation API", assigneeId: "p2", initiativeId: "i1", dueDate: "Jul 5" },
-  { id: "w2", departmentId: "eng", column: "backlog", title: "Provision CustomerNote table", assigneeId: "p3", initiativeId: "i1", dueDate: null },
-  { id: "w3", departmentId: "eng", column: "review", title: "Participation endpoint PR", assigneeId: "p1", initiativeId: "i1", dueDate: null },
-  { id: "w4", departmentId: "eng", column: "done", title: "Strip demo portal", assigneeId: "p1", initiativeId: "i1", dueDate: null },
-  { id: "w5", departmentId: "eng", column: "backlog", title: "Rotate leaked Power BI secret", assigneeId: "p2", initiativeId: "i2", dueDate: "Jul 1" },
-  { id: "w6", departmentId: "cs", column: "in_progress", title: "Globex renewal call", assigneeId: "p6", initiativeId: null, dueDate: "Jul 2" },
-  { id: "w7", departmentId: "cs", column: "backlog", title: "Draft onboarding checklist", assigneeId: "p7", initiativeId: null, dueDate: null },
-  { id: "w8", departmentId: "product", column: "in_progress", title: "Mobile store assets", assigneeId: "p5", initiativeId: "i4", dueDate: "Jul 8" },
-  { id: "w9", departmentId: "gtm", column: "backlog", title: "Q3 campaign brief", assigneeId: "p9", initiativeId: "i3", dueDate: null },
+export const SEED_WORK_CARDS: WorkCard[] = [
+  { id: "w1", departmentId: "eng", column: "in_progress", title: "Wire frontend to participation API", description: "", assigneeId: "p2", initiativeId: "i1", dueDate: "Jul 5" },
+  { id: "w2", departmentId: "eng", column: "backlog", title: "Provision CustomerNote table", description: "", assigneeId: "p3", initiativeId: "i1", dueDate: null },
+  { id: "w3", departmentId: "eng", column: "review", title: "Participation endpoint PR", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null },
+  { id: "w4", departmentId: "eng", column: "done", title: "Strip demo portal", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null },
+  { id: "w5", departmentId: "eng", column: "backlog", title: "Rotate leaked Power BI secret", description: "", assigneeId: "p2", initiativeId: "i2", dueDate: "Jul 1" },
+  { id: "w6", departmentId: "cs", column: "in_progress", title: "Globex renewal call", description: "", assigneeId: "p6", initiativeId: null, dueDate: "Jul 2" },
+  { id: "w7", departmentId: "cs", column: "backlog", title: "Draft onboarding checklist", description: "", assigneeId: "p7", initiativeId: null, dueDate: null },
+  { id: "w8", departmentId: "product", column: "in_progress", title: "Mobile store assets", description: "", assigneeId: "p5", initiativeId: "i4", dueDate: "Jul 8" },
+  { id: "w9", departmentId: "gtm", column: "backlog", title: "Q3 campaign brief", description: "", assigneeId: "p9", initiativeId: "i3", dueDate: null },
 ];
 
+export const SEED_DATA: TeamData = {
+  departments: SEED_DEPARTMENTS,
+  people: SEED_PEOPLE,
+  goals: SEED_GOALS,
+  initiatives: SEED_INITIATIVES,
+  cards: SEED_WORK_CARDS,
+};
+
+// ---------------------------------------------------------------------------
+// Pure selectors
 // ---------------------------------------------------------------------------
 
-export async function listDepartments(): Promise<Department[]> {
-  return DEPARTMENTS;
+export function deptName(departments: Department[], id: string): string {
+  return departments.find((d) => d.id === id)?.name ?? "—";
 }
 
-export async function listPeople(): Promise<Person[]> {
-  return PEOPLE;
-}
-
-export async function listGoals(departmentId?: string): Promise<WeeklyGoal[]> {
-  if (!departmentId) return GOALS;
-  const ids = new Set(PEOPLE.filter((p) => p.departmentId === departmentId).map((p) => p.id));
-  return GOALS.filter((g) => ids.has(g.personId));
-}
-
-export async function listInitiatives(departmentId?: string): Promise<Initiative[]> {
-  if (!departmentId) return INITIATIVES;
-  return INITIATIVES.filter((i) => i.departmentIds.includes(departmentId));
-}
-
-export async function listWorkCards(departmentId: string): Promise<WorkCard[]> {
-  return WORK_CARDS.filter((c) => c.departmentId === departmentId);
+export function personName(people: Person[], id: string | null): string {
+  if (!id) return "Unassigned";
+  return people.find((p) => p.id === id)?.name ?? "—";
 }
 
 export type DeptOverview = {
@@ -145,14 +162,14 @@ export type DeptOverview = {
   openWork: number;
 };
 
-export async function getOverview(): Promise<DeptOverview[]> {
-  return DEPARTMENTS.map((department) => {
-    const people = PEOPLE.filter((p) => p.departmentId === department.id);
+export function computeOverview(data: TeamData): DeptOverview[] {
+  return data.departments.map((department) => {
+    const people = data.people.filter((p) => p.departmentId === department.id);
     const personIds = new Set(people.map((p) => p.id));
-    const goals = GOALS.filter((g) => personIds.has(g.personId));
+    const goals = data.goals.filter((g) => personIds.has(g.personId));
     const done = goals.filter((g) => g.status === "done").length;
-    const inits = INITIATIVES.filter((i) => i.departmentIds.includes(department.id));
-    const openWork = WORK_CARDS.filter((c) => c.departmentId === department.id && c.column !== "done").length;
+    const inits = data.initiatives.filter((i) => i.departmentIds.includes(department.id));
+    const openWork = data.cards.filter((c) => c.departmentId === department.id && c.column !== "done").length;
     return {
       department,
       headcount: people.length,
@@ -162,9 +179,4 @@ export async function getOverview(): Promise<DeptOverview[]> {
       openWork,
     };
   });
-}
-
-// lookups
-export function deptName(departments: Department[], id: string): string {
-  return departments.find((d) => d.id === id)?.name ?? "—";
 }

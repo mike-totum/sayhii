@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
-import { getOverview, CURRENT_WEEK_LABEL } from "@/lib/team";
+import { useParams } from "next/navigation";
+import { useTeam } from "@/lib/team-store";
+import { computeOverview, CURRENT_WEEK_LABEL } from "@/lib/team";
 
-type Props = { params: Promise<{ locale: string }> };
-
-export default async function TeamOverviewPage({ params }: Props) {
-  const { locale } = await params;
-  const rows = await getOverview();
+export default function TeamOverviewPage() {
+  const { locale } = useParams<{ locale: string }>();
+  const { data } = useTeam();
+  const rows = computeOverview(data);
 
   return (
     <div>
@@ -60,9 +63,7 @@ function Stat({
     <div>
       <p className="text-xs text-muted">{label}</p>
       <p className="mt-0.5 font-serif text-2xl tabular-nums">{value}</p>
-      {hint && (
-        <p className={`text-[11px] ${alert ? "text-primary" : "text-muted"}`}>{hint}</p>
-      )}
+      {hint && <p className={`text-[11px] ${alert ? "text-primary" : "text-muted"}`}>{hint}</p>}
     </div>
   );
 }

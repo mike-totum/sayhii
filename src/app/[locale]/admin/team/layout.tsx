@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { getStaff, hasModule } from "@/lib/admin-auth";
 import { TeamTabs } from "@/components/admin/team-tabs";
+import { TeamProvider } from "@/lib/team-store";
 
 type Props = {
   children: React.ReactNode;
@@ -21,7 +22,9 @@ export default async function TeamLayout({ children, params }: Props) {
         Team Tracking
       </p>
       <TeamTabs locale={locale} />
-      <div className="mt-6">{children}</div>
+      <TeamProvider>
+        <div className="mt-6">{children}</div>
+      </TeamProvider>
     </div>
   );
 }

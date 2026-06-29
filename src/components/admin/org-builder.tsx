@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -11,39 +12,29 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { useTeam } from "@/lib/team-store";
 import type { Department, Person } from "@/lib/team";
 
-// Drag people between departments to configure who belongs where.
-// TODO(team-backend): persist moves via PATCH /team/people/{id} { departmentId }.
-export function OrgBuilder({
-  departments,
-  initialPeople,
-}: {
-  departments: Department[];
-  initialPeople: Person[];
-}) {
-  const [people, setPeople] = useState(initialPeople);
+export function OrgBuilder() {
+  const { data, updatePerson } = useTeam();
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
 
   function onDragEnd(e: DragEndEvent) {
     const personId = String(e.active.id);
     const deptId = e.over ? String(e.over.id) : null;
-    if (!deptId) return;
-    setPeople((prev) =>
-      prev.map((p) => (p.id === personId ? { ...p, departmentId: deptId } : p)),
-    );
+    if (deptId) updatePerson(personId, { departmentId: deptId });
   }
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {departments.map((d) => (
+        {data.departments.map((d) => (
           <DeptColumn
             key={d.id}
             dept={d}
-            members={people.filter((p) => p.departmentId === d.id)}
+            members={data.people.filter((p) => p.departmentId === d.id)}
           />
         ))}
       </div>
@@ -77,8 +68,10 @@ function DeptColumn({ dept, members }: { dept: Department; members: Person[] }) 
 }
 
 function PersonCard({ person }: { person: Person }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: person.id });
+  const { locale } = useParams<{ locale: string }>();
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: person.id,
+  });
   return (
     <div
       ref={setNodeRef}
@@ -86,12 +79,20 @@ function PersonCard({ person }: { person: Person }) {
         transform: CSS.Translate.toString(transform),
         opacity: isDragging ? 0.4 : 1,
       }}
-      {...listeners}
-      {...attributes}
-      className="rounded-[6px] border border-border bg-background px-3 py-2 cursor-grab active:cursor-grabbing touch-none"
+      className="flex items-center justify-between gap-2 rounded-[6px] border border-border bg-background px-3 py-2 touch-none"
     >
-      <p className="text-sm font-medium leading-tight">{person.name}</p>
-      <p className="text-xs text-muted">{person.role}</p>
+      <div {...listeners} {...attributes} className="min-w-0 flex-1 cursor-grab active:cursor-grabbing">
+        <p className="text-sm font-medium leading-tight truncate">{person.name}</p>
+        <p className="text-xs text-muted truncate">{person.role}</p>
+      </div>
+      <Link
+        href={`/${locale}/admin/team/people/${person.id}`}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="shrink-0 text-muted hover:text-foreground transition-colors text-sm px-1"
+        aria-label={`Open ${person.name}`}
+      >
+        ›
+      </Link>
     </div>
   );
 }
