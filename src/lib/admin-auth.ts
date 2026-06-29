@@ -13,6 +13,12 @@ export type Staff = {
 };
 
 export async function getStaff(): Promise<Staff | null> {
+  // SAFETY: until Auth0 is wired, keep the portal closed in production so an
+  // unauthenticated /admin is never exposed on the public site. It stays open
+  // in local dev and Vercel previews (which are team-auth protected) for
+  // development. TODO(phase-1): replace with the real Auth0 session + grants.
+  if (process.env.VERCEL_ENV === "production") return null;
+
   return {
     name: "Internal Staff",
     email: "staff@sayhii.io",
