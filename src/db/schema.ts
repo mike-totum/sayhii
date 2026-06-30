@@ -110,9 +110,11 @@ export const initiativeDepartments = pgTable(
 
 export const workCards = pgTable("work_cards", {
   id: uuid("id").primaryKey().defaultRandom(),
-  departmentId: uuid("department_id")
-    .notNull()
-    .references(() => departments.id, { onDelete: "cascade" }),
+  // A task's department follows its owner (person); optional so people without
+  // a department can still have tasks.
+  departmentId: uuid("department_id").references(() => departments.id, {
+    onDelete: "set null",
+  }),
   column: workColumn("column").notNull().default("backlog"),
   title: text("title").notNull(),
   description: text("description").notNull().default(""),

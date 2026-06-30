@@ -100,9 +100,12 @@ export function CardDetail({ cardId, onClose }: { cardId: string; onClose: () =>
             </Field>
             <Field label="Department">
               <Select
-                value={card.departmentId}
-                onChange={(v) => updateCard(card.id, { departmentId: v })}
-                options={data.departments.map((d) => ({ value: d.id, label: d.name }))}
+                value={card.departmentId ?? ""}
+                onChange={(v) => updateCard(card.id, { departmentId: v || null })}
+                options={[
+                  { value: "", label: "Follows owner" },
+                  ...data.departments.map((d) => ({ value: d.id, label: d.name })),
+                ]}
               />
             </Field>
             <Field label="Initiative">

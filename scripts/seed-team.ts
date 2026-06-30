@@ -59,7 +59,7 @@ async function main() {
   await db.insert(workCards).values(
     SEED_DATA.cards.map((c) => ({
       id: randomUUID(),
-      departmentId: dep.get(c.departmentId)!,
+      departmentId: c.departmentId ? dep.get(c.departmentId) ?? null : null,
       column: c.column,
       title: c.title,
       description: c.description,

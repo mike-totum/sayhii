@@ -22,7 +22,7 @@ export async function getStaff(): Promise<Staff | null> {
   // without Google), closed on any real deploy.
   if (!isAuthConfigured) {
     if (process.env.NODE_ENV === "production") return null;
-    return { name: "Local Dev", email: "dev@sayhii.io", modules: STAFF_MODULES };
+    return { name: "Michael Bomhoff", email: "michael.bomhoff@sayhii.io", modules: STAFF_MODULES };
   }
 
   // Real session. The signIn callback already enforces the domain; we re-check

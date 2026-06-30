@@ -18,7 +18,7 @@ export function AdminSidebar({
   const home = norm("/admin");
 
   return (
-    <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-border bg-surface/60">
+    <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-white/60 bg-white/55 backdrop-blur-xl">
       <div className="px-6 h-16 flex items-center border-b border-border">
         <Link href={home} className="flex items-center gap-2">
           <Logo />
