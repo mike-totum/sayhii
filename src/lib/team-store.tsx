@@ -9,6 +9,7 @@ import type {
   WeeklyGoal,
   WorkCard,
 } from "./team";
+import type { TeamIdentity } from "./team-data";
 import {
   createDepartment,
   renameDepartmentAction,
@@ -44,6 +45,7 @@ const persist = (p: Promise<unknown>) =>
 
 type Ctx = {
   data: TeamData;
+  me: TeamIdentity | null;
   ready: boolean;
   addDepartment: (name: string) => void;
   renameDepartment: (id: string, name: string) => void;
@@ -70,9 +72,11 @@ const TeamContext = createContext<Ctx | null>(null);
 
 export function TeamProvider({
   initialData,
+  me = null,
   children,
 }: {
   initialData: TeamData;
+  me?: TeamIdentity | null;
   children: React.ReactNode;
 }) {
   const [data, setData] = useState<TeamData>(initialData);
@@ -80,6 +84,7 @@ export function TeamProvider({
 
   const value: Ctx = {
     data,
+    me,
     ready: true,
 
     addDepartment: (name) => {

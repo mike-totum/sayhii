@@ -13,19 +13,28 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useTeam } from "@/lib/team-store";
-import type { Department, Person } from "@/lib/team";
+import type { Person } from "@/lib/team";
+import { PersonAvatar } from "./person-chip";
+
+const UNASSIGNED = "__unassigned__";
 
 export function OrgBuilder() {
-  const { data, updatePerson } = useTeam();
+  const { data, me, updatePerson } = useTeam();
+  const isAdmin = !!me?.isAdmin;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
 
   function onDragEnd(e: DragEndEvent) {
+    if (!isAdmin) return;
     const personId = String(e.active.id);
-    const deptId = e.over ? String(e.over.id) : null;
-    if (deptId) updatePerson(personId, { departmentId: deptId });
+    const target = e.over ? String(e.over.id) : null;
+    if (target) updatePerson(personId, { departmentId: target === UNASSIGNED ? "" : target });
   }
+
+  const active = data.people.filter((p) => p.active);
+  const deptIds = new Set(data.departments.map((d) => d.id));
+  const unassigned = active.filter((p) => !p.departmentId || !deptIds.has(p.departmentId));
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
@@ -33,44 +42,62 @@ export function OrgBuilder() {
         {data.departments.map((d) => (
           <DeptColumn
             key={d.id}
-            dept={d}
-            members={data.people.filter((p) => p.departmentId === d.id)}
+            id={d.id}
+            name={d.name}
+            members={active.filter((p) => p.departmentId === d.id)}
+            draggable={isAdmin}
           />
         ))}
+        {(unassigned.length > 0 || isAdmin) && (
+          <DeptColumn id={UNASSIGNED} name="Unassigned" members={unassigned} draggable={isAdmin} />
+        )}
       </div>
     </DndContext>
   );
 }
 
-function DeptColumn({ dept, members }: { dept: Department; members: Person[] }) {
-  const { setNodeRef, isOver } = useDroppable({ id: dept.id });
+function DeptColumn({
+  id,
+  name,
+  members,
+  draggable,
+}: {
+  id: string;
+  name: string;
+  members: Person[];
+  draggable: boolean;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id });
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-md border p-3 min-h-44 transition-colors ${
-        isOver ? "border-primary bg-warm/40" : "border-border bg-surface"
+      className={`rounded-2xl glass-well p-3 min-h-44 transition-colors ${
+        isOver ? "ring-2 ring-primary/50 bg-warm/50" : ""
       }`}
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium">{dept.name}</h3>
+        <h3 className="text-sm font-medium">{name}</h3>
         <span className="text-xs text-muted">{members.length}</span>
       </div>
       <div className="space-y-2">
         {members.map((p) => (
-          <PersonCard key={p.id} person={p} />
+          <PersonCard key={p.id} person={p} draggable={draggable} />
         ))}
         {members.length === 0 && (
-          <p className="text-xs text-muted py-6 text-center">Drop people here</p>
+          <p className="text-xs text-muted py-6 text-center">
+            {draggable ? "Drop people here" : "No one yet"}
+          </p>
         )}
       </div>
     </div>
   );
 }
 
-function PersonCard({ person }: { person: Person }) {
+function PersonCard({ person, draggable }: { person: Person; draggable: boolean }) {
   const { locale } = useParams<{ locale: string }>();
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: person.id,
+    disabled: !draggable,
   });
   return (
     <div
@@ -79,11 +106,27 @@ function PersonCard({ person }: { person: Person }) {
         transform: CSS.Translate.toString(transform),
         opacity: isDragging ? 0.4 : 1,
       }}
-      className="flex items-center justify-between gap-2 rounded-[6px] border border-border bg-background px-3 py-2 touch-none"
+      className="flex items-center justify-between gap-2 rounded-xl glass px-3 py-2 touch-none"
     >
-      <div {...listeners} {...attributes} className="min-w-0 flex-1 cursor-grab active:cursor-grabbing">
-        <p className="text-sm font-medium leading-tight truncate">{person.name}</p>
-        <p className="text-xs text-muted truncate">{person.role}</p>
+      <div
+        {...listeners}
+        {...attributes}
+        className={`flex min-w-0 flex-1 items-center gap-2 ${
+          draggable ? "cursor-grab active:cursor-grabbing" : ""
+        }`}
+      >
+        <PersonAvatar person={person} size={26} />
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-sm font-medium leading-tight">
+            <span className="truncate">{person.name}</span>
+            {person.accessRole === "admin" && (
+              <span className="rounded-full bg-foreground px-1.5 text-[9px] uppercase tracking-wide text-background">
+                Admin
+              </span>
+            )}
+          </p>
+          <p className="text-xs text-muted truncate">{person.role || "—"}</p>
+        </div>
       </div>
       <Link
         href={`/${locale}/admin/team/people/${person.id}`}

@@ -12,7 +12,37 @@ import {
   workCardSubtasks,
   workCardComments,
 } from "@/db/schema";
-import { SEED_DATA, type TeamData, type Subtask, type CardComment } from "./team";
+import { SEED_DATA, type TeamData, type Subtask, type CardComment, type Person, type TeamRole } from "./team";
+import { getStaff } from "./admin-auth";
+
+// Always-admins, independent of any people row, so the team can be bootstrapped
+// before anyone has been added. Lowercase emails.
+const BOOTSTRAP_ADMINS = new Set(["michael.bomhoff@sayhii.io", "dev@sayhii.io"]);
+
+export type TeamIdentity = {
+  email: string;
+  name: string;
+  personId: string | null; // the people row that is "me", if any
+  role: TeamRole;
+  isAdmin: boolean;
+};
+
+// Resolves the signed-in staffer to their Team Tracking person + role.
+export async function getTeamIdentity(people: Person[]): Promise<TeamIdentity | null> {
+  const staff = await getStaff();
+  if (!staff) return null;
+  const email = staff.email.toLowerCase();
+  const row = people.find((p) => p.email.toLowerCase() === email && p.active);
+  const bootstrap = BOOTSTRAP_ADMINS.has(email);
+  const role: TeamRole = bootstrap ? "admin" : row?.accessRole ?? "member";
+  return {
+    email,
+    name: row?.name ?? staff.name,
+    personId: row?.id ?? null,
+    role,
+    isAdmin: role === "admin",
+  };
+}
 
 // Loads the full Team Tracking dataset from Postgres. Falls back to seed data
 // if the DB isn't configured (so the app still renders).
@@ -76,7 +106,10 @@ export async function getTeamData(): Promise<TeamData> {
       email: p.email,
       role: p.role,
       color: p.color,
+      photoUrl: p.photoUrl,
       departmentId: p.departmentId ?? "",
+      accessRole: p.accessRole,
+      active: p.active,
     })),
     goals: goals.map((g) => ({
       id: g.id,

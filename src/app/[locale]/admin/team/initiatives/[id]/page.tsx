@@ -34,7 +34,7 @@ export default function InitiativeDetailPage() {
     <div className="max-w-2xl space-y-6">
       <Back locale={locale} />
 
-      <header className="rounded-md border border-border bg-surface p-5 space-y-4">
+      <header className="rounded-2xl glass p-5 space-y-4">
         <input
           value={initiative.title}
           onChange={(e) => updateInitiative(initiative.id, { title: e.target.value })}
@@ -90,12 +90,12 @@ export default function InitiativeDetailPage() {
         </Labeled>
       </header>
 
-      <section className="rounded-md border border-border bg-surface p-5">
+      <section className="rounded-2xl glass p-5">
         <h2 className="text-sm font-medium mb-3">Linked work ({linked.length})</h2>
         <ul className="space-y-1.5">
           {linked.map((c) => (
             <li key={c.id} className="flex items-center justify-between gap-2 text-sm">
-              <Link href={`/${locale}/admin/team/boards?dept=${c.departmentId}`} className="hover:text-primary truncate">
+              <Link href={`/${locale}/admin/team/work`} className="hover:text-primary truncate">
                 {c.title}
               </Link>
               <span className="text-xs text-muted shrink-0">{c.column.replace("_", " ")}</span>
@@ -108,11 +108,11 @@ export default function InitiativeDetailPage() {
       <button
         onClick={() => {
           deleteInitiative(initiative.id);
-          router.push(`/${locale}/admin/team/initiatives`);
+          router.push(`/${locale}/admin/team/work`);
         }}
         className="text-sm text-primary hover:underline"
       >
-        Delete initiative
+        Delete epic
       </button>
     </div>
   );
@@ -129,8 +129,8 @@ function Labeled({ label, children }: { label: string; children: React.ReactNode
 
 function Back({ locale }: { locale: string }) {
   return (
-    <Link href={`/${locale}/admin/team/initiatives`} className="text-sm text-muted hover:text-foreground transition-colors">
-      ← Initiatives
+    <Link href={`/${locale}/admin/team/work`} className="text-sm text-muted hover:text-foreground transition-colors">
+      ← Work
     </Link>
   );
 }

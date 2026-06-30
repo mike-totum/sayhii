@@ -192,6 +192,74 @@ body {
 .rise-5 { animation-delay: 300ms; }
 .rise-6 { animation-delay: 360ms; }
 
+/* ---- Glass surfaces (admin) -------------------------------------------- */
+/* Frosted panes for the internal portal. Reads over the ambient backdrop. */
+.glass {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(255, 255, 255, 0.55)
+  );
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 1px rgba(17, 17, 23, 0.03),
+    0 14px 40px -26px rgba(17, 17, 23, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* A warmer, dimmer pane for nested wells / column backgrounds. */
+.glass-well {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(245, 241, 233, 0.34)
+  );
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-hover {
+  transition:
+    transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.glass-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 4px rgba(17, 17, 23, 0.05),
+    0 26px 56px -28px rgba(17, 17, 23, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Ambient mesh behind glass — soft color so the blur has something to bend. */
+.ambient-mesh {
+  position: absolute;
+  inset: -10% -10% auto -10%;
+  height: 460px;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(60px);
+  opacity: 0.5;
+  background:
+    radial-gradient(40% 60% at 12% 20%, rgba(255, 77, 46, 0.16), transparent 70%),
+    radial-gradient(36% 56% at 82% 8%, rgba(47, 125, 84, 0.14), transparent 70%),
+    radial-gradient(50% 60% at 60% 40%, rgba(120, 140, 220, 0.12), transparent 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ambient-mesh { animation: float-slow 14s ease-in-out infinite; }
+}
+
+@keyframes recognize-burst {
+  0% { transform: scale(0.4) translateY(0); opacity: 0; }
+  35% { transform: scale(1.25) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(-10px); opacity: 0; }
+}
+.animate-recognize { animation: recognize-burst 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
 .grain {
   position: absolute;
   inset: 0;

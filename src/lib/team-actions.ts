@@ -32,7 +32,10 @@ export async function createPerson(p: Person) {
     email: p.email,
     role: p.role,
     color: p.color,
+    photoUrl: p.photoUrl ?? null,
     departmentId: p.departmentId || null,
+    accessRole: p.accessRole,
+    active: p.active,
   });
 }
 export async function updatePersonAction(id: string, patch: Partial<Person>) {
@@ -41,7 +44,10 @@ export async function updatePersonAction(id: string, patch: Partial<Person>) {
   if (patch.email !== undefined) set.email = patch.email;
   if (patch.role !== undefined) set.role = patch.role;
   if (patch.color !== undefined) set.color = patch.color;
+  if (patch.photoUrl !== undefined) set.photoUrl = patch.photoUrl;
   if (patch.departmentId !== undefined) set.departmentId = patch.departmentId || null;
+  if (patch.accessRole !== undefined) set.accessRole = patch.accessRole;
+  if (patch.active !== undefined) set.active = patch.active;
   if (Object.keys(set).length) await db.update(people).set(set).where(eq(people.id, id));
 }
 export async function deletePersonAction(id: string) {

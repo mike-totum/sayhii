@@ -15,6 +15,8 @@ import {
 
 // ---- enums ----------------------------------------------------------------
 
+// Portal access role within Team Tracking (distinct from a person's job title).
+export const teamRole = pgEnum("team_role", ["admin", "member"]);
 export const goalType = pgEnum("goal_type", ["personal", "professional"]);
 export const goalStatus = pgEnum("goal_status", ["on_track", "done", "missed"]);
 export const initiativeStatus = pgEnum("initiative_status", [
@@ -57,9 +59,15 @@ export const people = pgTable("people", {
   // Per-person color used for owner/tag chips across the board. Hex string;
   // auto-assigned on create, editable.
   color: text("color").notNull().default("#6366f1"),
+  // Photo URL (e.g. from Google profile); falls back to color-initials avatar.
+  photoUrl: text("photo_url"),
   departmentId: uuid("department_id").references(() => departments.id, {
     onDelete: "set null",
   }),
+  // Access role + lifecycle. admin manages the team; member self-serves.
+  // Deactivate (active=false) instead of deleting so history stays attributable.
+  accessRole: teamRole("access_role").notNull().default("member"),
+  active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

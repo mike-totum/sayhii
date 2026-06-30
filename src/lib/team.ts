@@ -5,13 +5,19 @@
 
 export type Department = { id: string; name: string };
 
+// Access role within the portal (distinct from `role`, which is a job title).
+export type TeamRole = "admin" | "member";
+
 export type Person = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: string; // job title
   color: string; // hex; drives owner/tag chips across the board
+  photoUrl?: string | null;
   departmentId: string;
+  accessRole: TeamRole; // admin manages the team; member self-serves
+  active: boolean; // deactivate instead of delete to keep history
 };
 
 // A spread of distinct, legible chip colors. New people cycle through these.
@@ -125,7 +131,12 @@ export const SEED_DEPARTMENTS: Department[] = [
 
 const seedPerson = (
   id: string, name: string, email: string, role: string, departmentId: string, i: number,
-): Person => ({ id, name, email, role, departmentId, color: PERSON_COLORS[i % PERSON_COLORS.length] });
+): Person => ({
+  id, name, email, role, departmentId,
+  color: PERSON_COLORS[i % PERSON_COLORS.length],
+  accessRole: i === 0 ? "admin" : "member",
+  active: true,
+});
 
 export const SEED_PEOPLE: Person[] = [
   seedPerson("p1", "Dana Lee", "dana@sayhii.io", "Eng Lead", "eng", 0),

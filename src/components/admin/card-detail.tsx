@@ -29,15 +29,15 @@ export function CardDetail({ cardId, onClose }: { cardId: string; onClose: () =>
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4 sm:p-8"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/30 p-4 backdrop-blur-sm sm:p-8"
       onClick={onClose}
     >
       <div
-        className="my-auto w-full max-w-3xl rounded-lg border border-border bg-surface shadow-xl"
+        className="my-auto w-full max-w-3xl rounded-2xl glass shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* header */}
-        <div className="flex items-start gap-3 border-b border-border p-5">
+        <div className="flex items-start gap-3 border-b border-white/50 p-5">
           <PriorityPicker
             value={card.priority}
             onChange={(priority) => updateCard(card.id, { priority })}
@@ -130,7 +130,7 @@ export function CardDetail({ cardId, onClose }: { cardId: string; onClose: () =>
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-border p-4">
+        <div className="flex items-center justify-between border-t border-white/50 p-4">
           <button
             onClick={() => {
               deleteCard(card.id);
@@ -138,7 +138,7 @@ export function CardDetail({ cardId, onClose }: { cardId: string; onClose: () =>
             }}
             className="text-sm text-primary hover:underline"
           >
-            Delete card
+            Delete issue
           </button>
           <button
             onClick={onClose}
