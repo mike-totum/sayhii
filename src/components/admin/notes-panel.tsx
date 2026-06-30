@@ -8,12 +8,14 @@ export function NotesPanel({
   title,
   scope,
   subject,
+  organization,
   path,
   notes,
 }: {
   title: string;
   scope: NoteScope;
   subject: string;
+  organization: string;
   path: string; // current page path, for revalidation
   notes: Note[];
 }) {
@@ -44,6 +46,7 @@ export function NotesPanel({
         >
           <input type="hidden" name="scope" value={scope} />
           <input type="hidden" name="subject" value={subject} />
+          <input type="hidden" name="organization" value={organization} />
           <input type="hidden" name="path" value={path} />
           <input type="hidden" name="visibility" value={visibility} />
           <textarea

@@ -21,4 +21,12 @@ export const ADMIN_MODULES: AdminModule[] = [
     description:
       "Search any customer, view who they are and their participation, and log interactions.",
   },
+  {
+    id: "team-tracking",
+    label: "Team Tracking",
+    href: "/admin/team",
+    status: "live",
+    description:
+      "Weekly goals, major initiatives, and per-department work boards — visibility across the company.",
+  },
 ];

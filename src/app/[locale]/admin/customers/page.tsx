@@ -8,6 +8,7 @@ import {
   type AccountStatus,
   type ParticipationStatus,
 } from "@/lib/customers";
+import { searchCustomersCore, getCompaniesCore } from "@/lib/core-api";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -22,8 +23,11 @@ export default async function CustomersPage({ params, searchParams }: Props) {
   if (!hasModule(staff, "customer-lookup")) notFound();
 
   const { q = "", company = "" } = await searchParams;
-  const companies = await listCompanies();
-  const results = await searchCustomers(q, company || undefined);
+  const companies =
+    (await getCompaniesCore())?.map((c) => c.name) ?? (await listCompanies());
+  const results =
+    (await searchCustomersCore(q, company || undefined)) ??
+    (await searchCustomers(q, company || undefined));
 
   return (
     <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">

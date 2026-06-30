@@ -21,7 +21,7 @@ export type Participation = {
   lastActiveDays: number | null; // days since last answerDate; null = never
   currentPhase: number;
   totalPhases: number;
-  phaseProgressPct: number; // answered ÷ expected for the current phase
+  phaseProgressPct: number | null; // answered ÷ expected; null when unknown
   overdue: boolean;
 };
 
@@ -202,45 +202,6 @@ function mk(
   };
 }
 
-const STUB_NOTES: Note[] = [
-  {
-    id: "n1",
-    scope: "user",
-    subject: "jordan.rivera@acme.com",
-    authorName: "Matthew",
-    authorEmail: "matthew@sayhii.io",
-    createdAtLabel: "Jun 24",
-    body: "Asked how to reset their join key. Walked them through it.",
-    visibility: "public",
-    tags: ["onboarding"],
-    pinned: true,
-  },
-  {
-    id: "n2",
-    scope: "user",
-    subject: "jordan.rivera@acme.com",
-    authorName: "Matthew",
-    authorEmail: "matthew@sayhii.io",
-    createdAtLabel: "May 02",
-    body: "Confused about seat count on Acme's invoice — looped in billing.",
-    visibility: "public",
-    tags: ["billing"],
-    pinned: false,
-  },
-  {
-    id: "n3",
-    scope: "company",
-    subject: "Acme Corp",
-    authorName: "Matthew",
-    authorEmail: "matthew@sayhii.io",
-    createdAtLabel: "Apr 18",
-    body: "Renewal conversation in Q3. Main contact is Dana Lee (People Ops).",
-    visibility: "public",
-    tags: ["account"],
-    pinned: true,
-  },
-];
-
 export async function searchCustomers(query: string, company?: string): Promise<CustomerSummary[]> {
   const q = query.trim().toLowerCase();
   return STUB.filter((c) => {
@@ -257,13 +218,6 @@ export async function searchCustomers(query: string, company?: string): Promise<
 export async function getCustomer(email: string): Promise<CustomerRecord | null> {
   const e = email.trim().toLowerCase();
   return STUB.find((c) => c.email.toLowerCase() === e) ?? null;
-}
-
-export async function listNotes(scope: NoteScope, subject: string): Promise<Note[]> {
-  const s = subject.trim().toLowerCase();
-  return STUB_NOTES.filter(
-    (n) => n.scope === scope && n.subject.toLowerCase() === s,
-  ).sort((a, b) => Number(b.pinned) - Number(a.pinned));
 }
 
 export async function listCompanies(): Promise<string[]> {

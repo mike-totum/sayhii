@@ -1,10 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { signOut as authSignOut } from "@/auth";
 
-// TODO(phase-1): clear the Auth0 session / call the Auth0 logout endpoint.
-// No real session exists yet, so this just returns to the marketing site.
+// Ends the Google SSO session and returns to the portal, which then shows the
+// sign-in screen. When no OAuth client is configured (local dev), this is a
+// no-op session-wise and just redirects.
 export async function signOut(formData: FormData) {
   const locale = String(formData.get("locale") ?? "en");
-  redirect(`/${locale}`);
+  await authSignOut({ redirectTo: `/${locale}/admin` });
 }
