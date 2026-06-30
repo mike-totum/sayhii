@@ -10,6 +10,7 @@ import {
 } from "@/lib/customers";
 import { listNotes } from "@/lib/notes-data";
 import { getParticipation, getCustomerCore } from "@/lib/core-api";
+import { getActivationStatus, type ActivationMonth } from "@/lib/activation-api";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
 
@@ -35,11 +36,13 @@ export default async function CustomerRecordPage({ params }: Props) {
   }
 
   const path = `/${locale}/admin/customers/${encodeURIComponent(c.email)}`;
-  const [userNotes, companyNotes, liveParticipation] = await Promise.all([
-    listNotes("user", c.email),
-    listNotes("company", c.company),
-    getParticipation(c.email),
-  ]);
+  const [userNotes, companyNotes, liveParticipation, activation] =
+    await Promise.all([
+      listNotes("user", c.email),
+      listNotes("company", c.company),
+      getParticipation(c.email),
+      getActivationStatus(c.email),
+    ]);
   // Real participation from sayhii-core when available; stub otherwise.
   const participation = liveParticipation ?? c.participation;
 
@@ -100,6 +103,19 @@ export default async function CustomerRecordPage({ params }: Props) {
         <Engagement p={participation} />
       </section>
 
+      {/* Zone 3.5 — Monthly activation (answered vs expected, from Snowflake) */}
+      {activation && activation.length > 0 && (
+        <section className="rounded-md border border-border bg-surface p-6">
+          <div className="flex items-center justify-between gap-3">
+            <SectionTitle>Monthly activation</SectionTitle>
+            <span className="text-[11px] text-muted">
+              answered vs expected · 90-day window
+            </span>
+          </div>
+          <ActivationHistory months={activation} />
+        </section>
+      )}
+
       {/* Zone 4 — Notes */}
       <NotesPanel
         title="Notes"
@@ -150,6 +166,51 @@ function Engagement({ p }: { p: Participation }) {
       </dl>
     </div>
   );
+}
+
+function ActivationHistory({ months }: { months: ActivationMonth[] }) {
+  return (
+    <div className="mt-4 space-y-2">
+      {months.map((m) => {
+        const pct = m.expected > 0 ? Math.round((m.answered / m.expected) * 100) : null;
+        return (
+          <div
+            key={m.monthId}
+            className="grid grid-cols-[6.5rem_1fr_auto] items-center gap-3 text-sm"
+          >
+            <span className="text-muted">{formatMonthId(m.monthId)}</span>
+            <span className="font-medium tabular-nums">
+              {m.answered} <span className="text-muted">/ {m.expected}</span>
+              {pct !== null && (
+                <span className="ml-2 text-xs text-muted">{pct}%</span>
+              )}
+            </span>
+            <span
+              className={`inline-flex items-center justify-self-end text-[11px] rounded-full border px-2.5 py-0.5 ${
+                m.eligible
+                  ? "bg-accent-soft/70 text-foreground border-accent/40"
+                  : "bg-amber-100 text-foreground border-amber-200"
+              }`}
+            >
+              {m.eligible ? "Eligible" : "Below 80%"}
+            </span>
+          </div>
+        );
+      })}
+      <p className="pt-1 text-[11px] text-muted">
+        Eligible = answered ≥ 80% of expected (weekdays in the window). This is
+        what determines whether a monthly activation is sent.
+      </p>
+    </div>
+  );
+}
+
+// "202606" -> "Jun 2026"
+function formatMonthId(monthId: string): string {
+  const m = /^(\d{4})(\d{2})$/.exec(monthId);
+  if (!m) return monthId;
+  const date = new Date(Number(m[1]), Number(m[2]) - 1, 1);
+  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
 function ScoreRing({ score }: { score: number }) {
