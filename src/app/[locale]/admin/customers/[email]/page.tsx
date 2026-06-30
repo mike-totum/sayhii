@@ -109,7 +109,7 @@ export default async function CustomerRecordPage({ params }: Props) {
           <div className="flex items-center justify-between gap-3">
             <SectionTitle>Monthly activation</SectionTitle>
             <span className="text-[11px] text-muted">
-              answered vs expected · 90-day window
+              sent status · answered vs expected
             </span>
           </div>
           <ActivationHistory months={activation} />
@@ -176,33 +176,67 @@ function ActivationHistory({ months }: { months: ActivationMonth[] }) {
         return (
           <div
             key={m.monthId}
-            className="grid grid-cols-[6.5rem_1fr_auto] items-center gap-3 text-sm"
+            className="grid grid-cols-[5.5rem_auto_1fr] items-center gap-3 text-sm"
           >
             <span className="text-muted">{formatMonthId(m.monthId)}</span>
-            <span className="font-medium tabular-nums">
-              {m.answered} <span className="text-muted">/ {m.expected}</span>
+            <span className="tabular-nums">
+              <span className="font-medium">{m.answered}</span>
+              <span className="text-muted"> / {m.expected}</span>
               {pct !== null && (
-                <span className="ml-2 text-xs text-muted">{pct}%</span>
+                <span className="ml-1.5 text-xs text-muted">{pct}%</span>
               )}
+              <span
+                className={`ml-1.5 text-[11px] ${m.eligible ? "text-muted" : "text-amber-700"}`}
+              >
+                {m.eligible ? "· eligible" : "· below 80%"}
+              </span>
             </span>
-            <span
-              className={`inline-flex items-center justify-self-end text-[11px] rounded-full border px-2.5 py-0.5 ${
-                m.eligible
-                  ? "bg-accent-soft/70 text-foreground border-accent/40"
-                  : "bg-amber-100 text-foreground border-amber-200"
-              }`}
-            >
-              {m.eligible ? "Eligible" : "Below 80%"}
-            </span>
+            <SendBadge month={m} />
           </div>
         );
       })}
       <p className="pt-1 text-[11px] text-muted">
-        Eligible = answered ≥ 80% of expected (weekdays in the window). This is
-        what determines whether a monthly activation is sent.
+        <strong className="font-medium text-foreground">Sent</strong> = the
+        activation was delivered. Eligible = answered ≥ 80% of expected
+        (weekdays in the window), which is what qualifies a user to be sent one.
       </p>
     </div>
   );
+}
+
+// The answer to "did they get it." Sent is the headline; other statuses
+// explain why an eligible user didn't receive one (blocked, rejected, still
+// in review, or a delivery failure).
+function SendBadge({ month }: { month: ActivationMonth }) {
+  const base =
+    "inline-flex items-center justify-self-end text-[11px] rounded-full border px-2.5 py-0.5";
+  if (month.sent) {
+    return (
+      <span className={`${base} bg-accent-soft/70 text-foreground border-accent/40`}>
+        Sent{month.sentAt ? ` · ${formatSentAt(month.sentAt)}` : ""}
+      </span>
+    );
+  }
+  const map: Record<string, { label: string; cls: string }> = {
+    FAILED: { label: "Send failed", cls: "bg-rose-100 text-foreground border-rose-200" },
+    QA_BLOCKED: { label: "QA blocked", cls: "bg-amber-100 text-foreground border-amber-200" },
+    REJECTED: { label: "Rejected", cls: "bg-amber-100 text-foreground border-amber-200" },
+    PENDING_APPROVAL: { label: "In review", cls: "bg-surface text-muted border-border" },
+    APPROVED: { label: "Approved, not yet sent", cls: "bg-surface text-muted border-border" },
+  };
+  const v = month.sentStatus ? map[month.sentStatus] : undefined;
+  const { label, cls } = v ?? {
+    label: "Not sent",
+    cls: "bg-surface text-muted border-border",
+  };
+  return <span className={`${base} ${cls}`}>{label}</span>;
+}
+
+// "2025-12-03T..." -> "Dec 3"
+function formatSentAt(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 // "202606" -> "Jun 2026"

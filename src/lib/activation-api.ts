@@ -20,6 +20,12 @@ export type ActivationMonth = {
   expected: number;
   answeredPct: number | null;
   eligible: boolean;
+  // Whether we actually sent the activation, from the approvals table (the send
+  // system of record). Independent of eligibility: a user can be eligible but
+  // not sent (QA-blocked, rejected, still pending, or a delivery failure).
+  sent: boolean;
+  sentStatus: string | null; // SENT | FAILED | APPROVED | PENDING_APPROVAL | REJECTED | QA_BLOCKED | null
+  sentAt: string | null; // ISO timestamp when sent
 };
 
 export async function getActivationStatus(
