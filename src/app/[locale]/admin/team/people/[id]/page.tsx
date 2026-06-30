@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useTeam } from "@/lib/team-store";
 import {
   GOAL_STATUSES,
+  currentWeekMonday,
   type GoalStatus,
   type GoalType,
   type TeamRole,
@@ -154,7 +155,7 @@ export default function PersonDetailPage() {
           {goals.length === 0 && <li className="text-sm text-muted">No goals yet.</li>}
         </ul>
         {canEdit && (
-          <AddGoal onAdd={(type, text) => addGoal({ personId: person.id, type, text, status: "on_track" })} />
+          <AddGoal onAdd={(type, text) => addGoal({ personId: person.id, type, text, status: "on_track", weekOf: currentWeekMonday() })} />
         )}
       </section>
 

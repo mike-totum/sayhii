@@ -61,6 +61,7 @@ export async function createGoal(g: WeeklyGoal) {
     type: g.type,
     text: g.text,
     status: g.status,
+    weekOf: g.weekOf,
   });
 }
 export async function updateGoalAction(id: string, patch: Partial<WeeklyGoal>) {

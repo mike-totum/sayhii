@@ -117,6 +117,7 @@ export async function getTeamData(): Promise<TeamData> {
       type: g.type,
       text: g.text,
       status: g.status,
+      weekOf: g.weekOf,
     })),
     initiatives: inits.map((i) => ({
       id: i.id,

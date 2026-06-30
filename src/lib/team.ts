@@ -34,7 +34,8 @@ export type WeeklyGoal = {
   personId: string;
   type: GoalType;
   text: string;
-  status: GoalStatus;
+  status: GoalStatus; // on_track = set (this week); done = Hit; missed = Missed
+  weekOf: string; // Monday of the goal's week, "YYYY-MM-DD"
 };
 
 export type InitiativeStatus = "not_started" | "on_track" | "at_risk" | "done";
@@ -107,7 +108,40 @@ export const GOAL_STATUSES: { id: GoalStatus; label: string }[] = [
   { id: "missed", label: "Missed" },
 ];
 
-export const CURRENT_WEEK_LABEL = "Week of Jun 23";
+// ---------------------------------------------------------------------------
+// Week helpers. A "week" is keyed by its Monday as "YYYY-MM-DD". The weekly
+// ritual: set this week's goals at the Monday meeting, grade last week's.
+// ---------------------------------------------------------------------------
+
+function toISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function mondayOf(d: Date): string {
+  const date = new Date(d);
+  const day = date.getDay(); // 0 Sun .. 6 Sat
+  date.setDate(date.getDate() + (day === 0 ? -6 : 1 - day));
+  date.setHours(0, 0, 0, 0);
+  return toISODate(date);
+}
+
+export function currentWeekMonday(): string {
+  return mondayOf(new Date());
+}
+
+export function addWeeks(weekOf: string, n: number): string {
+  const d = new Date(`${weekOf}T00:00:00`);
+  d.setDate(d.getDate() + n * 7);
+  return toISODate(d);
+}
+
+export function weekLabel(weekOf: string): string {
+  const d = new Date(`${weekOf}T00:00:00`);
+  return `Week of ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+}
 
 // All the data the store holds.
 export type TeamData = {
@@ -150,14 +184,18 @@ export const SEED_PEOPLE: Person[] = [
   seedPerson("p9", "Robin Diaz", "robin@sayhii.io", "Marketing", "gtm", 8),
 ];
 
+const SEED_WK_NOW = currentWeekMonday();
+const SEED_WK_PREV = addWeeks(SEED_WK_NOW, -1);
 export const SEED_GOALS: WeeklyGoal[] = [
-  { id: "g1", personId: "p1", type: "professional", text: "Ship the participation endpoint to dev", status: "done" },
-  { id: "g2", personId: "p1", type: "personal", text: "Leave by 5pm three days this week", status: "on_track" },
-  { id: "g3", personId: "p2", type: "professional", text: "Close out the notes table migration", status: "on_track" },
-  { id: "g4", personId: "p4", type: "professional", text: "Finalize Team Tracking spec", status: "on_track" },
-  { id: "g5", personId: "p4", type: "personal", text: "Run 3x", status: "missed" },
-  { id: "g6", personId: "p6", type: "professional", text: "Onboard 2 new accounts", status: "on_track" },
-  { id: "g7", personId: "p8", type: "professional", text: "Advance the Globex renewal", status: "missed" },
+  // last week — graded
+  { id: "g1", personId: "p1", type: "professional", text: "Ship the participation endpoint to dev", status: "done", weekOf: SEED_WK_PREV },
+  { id: "g5", personId: "p4", type: "personal", text: "Run 3x", status: "missed", weekOf: SEED_WK_PREV },
+  { id: "g7", personId: "p8", type: "professional", text: "Advance the Globex renewal", status: "missed", weekOf: SEED_WK_PREV },
+  // this week — set
+  { id: "g2", personId: "p1", type: "personal", text: "Leave by 5pm three days this week", status: "on_track", weekOf: SEED_WK_NOW },
+  { id: "g3", personId: "p2", type: "professional", text: "Close out the notes table migration", status: "on_track", weekOf: SEED_WK_NOW },
+  { id: "g4", personId: "p4", type: "professional", text: "Finalize Team Tracking spec", status: "on_track", weekOf: SEED_WK_NOW },
+  { id: "g6", personId: "p6", type: "professional", text: "Onboard 2 new accounts", status: "on_track", weekOf: SEED_WK_NOW },
 ];
 
 export const SEED_INITIATIVES: Initiative[] = [
