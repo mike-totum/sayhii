@@ -1,9 +1,10 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { getStaff } from "@/lib/admin-auth";
 import { ADMIN_MODULES } from "@/lib/admin-modules";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { AdminTopbar } from "@/components/admin/topbar";
+import { AdminSignIn } from "@/components/admin/sign-in";
 
 type Props = {
   children: React.ReactNode;
@@ -15,9 +16,9 @@ export default async function AdminLayout({ children, params }: Props) {
   if (!isLocale(locale)) notFound();
 
   const staff = await getStaff();
-  // TODO(phase-1): when unauthenticated, redirect to the Auth0 login instead
-  // of the marketing home.
-  if (!staff) redirect(`/${locale}`);
+  // No valid session: show the Google sign-in screen in place (no redirect, so
+  // the /admin URL is preserved for post-login).
+  if (!staff) return <AdminSignIn locale={locale} />;
 
   const modules = ADMIN_MODULES.filter((m) => staff.modules.includes(m.id));
 

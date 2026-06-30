@@ -1,28 +1,40 @@
 // Internal admin-portal access.
 //
-// TODO(phase-1): replace this stub with real authentication — Auth0 on the
-// existing live sayhii tenant, Google SSO restricted to the sayhii domain,
-// with module grants read from the token's role/permission claims. Until that
-// lands, getStaff() returns a placeholder identity so the shell renders in
-// local development. THERE IS NO REAL AUTHENTICATION YET — do not deploy.
+// Real auth is Google Workspace SSO (see src/auth.ts), restricted to the
+// sayhii.io domain. getStaff() reads that session. Until an OAuth client is
+// configured (AUTH_GOOGLE_ID unset — e.g. local dev), it falls back to a dev
+// identity so the portal still renders locally; that fallback is never used on
+// a real production deploy.
+import { auth } from "@/auth";
 
 export type Staff = {
   name: string;
   email: string;
-  modules: string[]; // e.g. ["customer-lookup"] — from Auth0 permissions later
+  modules: string[]; // module grants; everyone @sayhii.io gets these for now
 };
 
+const STAFF_MODULES = ["customer-lookup", "team-tracking"];
+
+const isAuthConfigured = Boolean(process.env.AUTH_GOOGLE_ID);
+
 export async function getStaff(): Promise<Staff | null> {
-  // SAFETY: until Auth0 is wired, keep the portal closed in production so an
-  // unauthenticated /admin is never exposed on the public site. It stays open
-  // in local dev and Vercel previews (which are team-auth protected) for
-  // development. TODO(phase-1): replace with the real Auth0 session + grants.
-  if (process.env.VERCEL_ENV === "production") return null;
+  // No OAuth client configured yet: open in local dev (so the portal renders
+  // without Google), closed on any real deploy.
+  if (!isAuthConfigured) {
+    if (process.env.NODE_ENV === "production") return null;
+    return { name: "Local Dev", email: "dev@sayhii.io", modules: STAFF_MODULES };
+  }
+
+  // Real session. The signIn callback already enforces the domain; we re-check
+  // here so a stale/forged session can't slip a non-sayhii email through.
+  const session = await auth();
+  const email = (session?.user?.email ?? "").toLowerCase();
+  if (!email.endsWith("@sayhii.io")) return null;
 
   return {
-    name: "Internal Staff",
-    email: "staff@sayhii.io",
-    modules: ["customer-lookup", "team-tracking"],
+    name: session?.user?.name ?? email,
+    email,
+    modules: STAFF_MODULES,
   };
 }
 
