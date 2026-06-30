@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Three surfaces: Pulse (the sayhii layer), Work (epics ▸ issues), People.
+// Home = your personal dashboard; Pulse = the team Monday cockpit;
+// Work = epics ▸ issues; People = the roster.
 const TABS = [
-  { href: "/admin/team", label: "Pulse", exact: true },
+  { href: "/admin/team", label: "Home", exact: true },
+  { href: "/admin/team/pulse", label: "Pulse" },
   { href: "/admin/team/work", label: "Work" },
+  { href: "/admin/team/engineering", label: "Engineering" },
   { href: "/admin/team/people", label: "People" },
 ];
 

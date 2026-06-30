@@ -32,9 +32,9 @@ import { CardDetail } from "./card-detail";
 
 type GroupBy = "initiative" | "department" | "owner" | "none";
 const GROUP_OPTIONS: { id: GroupBy; label: string }[] = [
+  { id: "owner", label: "Person" },
   { id: "initiative", label: "Epic" },
   { id: "department", label: "Department" },
-  { id: "owner", label: "Owner" },
   { id: "none", label: "None" },
 ];
 const NONE = "__none__";
@@ -50,9 +50,11 @@ const STATUS_TONE: Record<InitiativeStatus, string> = {
 
 export function WorkBoard() {
   const { locale } = useParams<{ locale: string }>();
-  const { data, addCard, updateCard, addInitiative } = useTeam();
+  const { data, me, addCard, updateCard, addInitiative } = useTeam();
+  const myId = me?.personId ?? null;
+  const isAdmin = !!me?.isAdmin;
   const [view, setView] = useState<View>("board");
-  const [groupBy, setGroupBy] = useState<GroupBy>("initiative");
+  const [groupBy, setGroupBy] = useState<GroupBy>("owner");
   const [search, setSearch] = useState("");
   const [people, setPeople] = useState<string[]>([]);
   const [deptFilter, setDeptFilter] = useState("");
@@ -68,12 +70,19 @@ export function WorkBoard() {
     [data.people],
   );
 
+  // A task's department follows its owner (the person), falling back to any
+  // stored department. So filtering by dept catches everyone in that dept.
+  const deptOfCard = (c: WorkCard): string | null => {
+    const owner = c.ownerIds[0] ? personById.get(c.ownerIds[0]) : undefined;
+    return owner?.departmentId || c.departmentId || null;
+  };
+
   const q = search.trim().toLowerCase();
   const filtered = data.cards.filter((c) => {
     if (epicFocus && c.initiativeId !== epicFocus) return false;
     if (q && !c.title.toLowerCase().includes(q) && !c.description.toLowerCase().includes(q))
       return false;
-    if (deptFilter && c.departmentId !== deptFilter) return false;
+    if (deptFilter && deptOfCard(c) !== deptFilter) return false;
     if (priority && c.priority !== priority) return false;
     if (people.length) {
       const onCard = new Set([...c.ownerIds, ...c.taggedIds]);
@@ -87,10 +96,13 @@ export function WorkBoard() {
 
   const lanes: Lane[] = useMemo(() => {
     if (effectiveGroup === "department")
-      return data.departments.map((d) => ({ id: d.id, label: d.name }));
+      return [
+        ...data.departments.map((d) => ({ id: d.id, label: d.name })),
+        { id: NONE, label: "No department" },
+      ];
     if (effectiveGroup === "owner")
       return [
-        ...data.people.map((p) => ({ id: p.id, label: p.name })),
+        ...data.people.filter((p) => p.active).map((p) => ({ id: p.id, label: p.name })),
         { id: NONE, label: "Unassigned" },
       ];
     if (effectiveGroup === "initiative")
@@ -102,15 +114,19 @@ export function WorkBoard() {
   }, [effectiveGroup, data.departments, data.people, data.initiatives]);
 
   function laneOfCard(c: WorkCard): string {
-    if (effectiveGroup === "department") return c.departmentId;
+    if (effectiveGroup === "department") return deptOfCard(c) ?? NONE;
     if (effectiveGroup === "owner") return c.ownerIds[0] ?? NONE;
     if (effectiveGroup === "initiative") return c.initiativeId ?? NONE;
     return "__all__";
   }
 
-  const visibleLanes = lanes.filter(
-    (l) => effectiveGroup === "initiative" || filtered.some((c) => laneOfCard(c) === l.id),
-  );
+  // Person + epic groupings always show every lane (so everyone has a lane);
+  // the catch-all NONE lane only shows when it actually holds cards.
+  const visibleLanes = lanes.filter((l) => {
+    if (l.id === NONE) return filtered.some((c) => laneOfCard(c) === l.id);
+    if (effectiveGroup === "owner" || effectiveGroup === "initiative") return true;
+    return filtered.some((c) => laneOfCard(c) === l.id);
+  });
 
   function onDragEnd(e: DragEndEvent) {
     if (!e.over) return;
@@ -119,7 +135,7 @@ export function WorkBoard() {
     const card = data.cards.find((c) => c.id === cardId);
     if (!card) return;
     const patch: Partial<WorkCard> = { column };
-    if (effectiveGroup === "department" && laneId !== card.departmentId) patch.departmentId = laneId;
+    if (effectiveGroup === "department") patch.departmentId = laneId === NONE ? null : laneId;
     if (effectiveGroup === "owner")
       patch.ownerIds = laneId === NONE ? [] : [laneId, ...card.ownerIds.filter((o) => o !== laneId)];
     if (effectiveGroup === "initiative") patch.initiativeId = laneId === NONE ? null : laneId;
@@ -133,10 +149,44 @@ export function WorkBoard() {
   const filtersActive =
     search !== "" || deptFilter !== "" || priority !== "" || people.length > 0;
 
+  // Who can add into a lane: in the person view you add to your own lane (admins
+  // anywhere); other groupings are admin-only.
+  function canAddToLane(lane: Lane): boolean {
+    if (effectiveGroup === "owner") return isAdmin || lane.id === myId;
+    return isAdmin;
+  }
+
+  // A new task is owned by the lane's person (or you), and its department
+  // follows that person — no need to pick an owner or a department.
   function newIssue(column: WorkColumn, lane: Lane) {
-    addCard(
-      blankCard(column, lane, effectiveGroup, data.departments[0]?.id ?? "", epicFocus),
-    );
+    let ownerIds: string[] = [];
+    if (effectiveGroup === "owner" && lane.id !== NONE) ownerIds = [lane.id];
+    else if (myId) ownerIds = [myId];
+
+    const ownerDept = ownerIds[0] ? personById.get(ownerIds[0])?.departmentId || null : null;
+    const departmentId =
+      effectiveGroup === "department" && lane.id !== NONE && lane.id !== "__all__"
+        ? lane.id
+        : ownerDept;
+    const initiativeId =
+      epicFocus ?? (effectiveGroup === "initiative" && lane.id !== NONE ? lane.id : null);
+
+    addCard({
+      departmentId,
+      column,
+      title: "New task",
+      description: "",
+      assigneeId: ownerIds[0] ?? null,
+      ownerIds,
+      taggedIds: [],
+      initiativeId,
+      priority: "none",
+      labels: [],
+      startDate: null,
+      dueDate: null,
+      subtasks: [],
+      comments: [],
+    });
   }
 
   return (
@@ -191,7 +241,7 @@ export function WorkBoard() {
         </Select>
 
         <div className="flex items-center">
-          {data.people.map((p, i) => (
+          {data.people.filter((p) => p.active).map((p, i) => (
             <button
               key={p.id}
               onClick={() => togglePerson(p.id)}
@@ -246,14 +296,14 @@ export function WorkBoard() {
       </div>
 
       {/* ---- Issues ---- */}
-      {data.departments.length === 0 ? (
+      {data.people.filter((p) => p.active).length === 0 ? (
         <div className="rounded-2xl glass px-5 py-10 text-center">
           <p className="text-sm text-muted">
-            Add a department and a few people on the{" "}
+            Add people on the{" "}
             <Link href={`/${locale}/admin/team/people`} className="text-foreground underline">
               People
             </Link>{" "}
-            tab first — issues live in a department.
+            tab first — each person gets their own lane.
           </p>
         </div>
       ) : view === "board" ? (
@@ -266,6 +316,7 @@ export function WorkBoard() {
                 leadPerson={effectiveGroup === "owner" ? personById.get(lane.id) : undefined}
                 cards={filtered.filter((c) => laneOfCard(c) === lane.id)}
                 personById={personById}
+                canAdd={canAddToLane(lane)}
                 onOpen={setOpenCard}
                 onAdd={(column) => newIssue(column, lane)}
               />
@@ -280,6 +331,7 @@ export function WorkBoard() {
           cards={filtered}
           laneOfCard={laneOfCard}
           personById={personById}
+          canAdd={canAddToLane}
           onOpen={setOpenCard}
           onStatus={(id, column) => updateCard(id, { column })}
           onAdd={(lane) => newIssue("backlog", lane)}
@@ -404,6 +456,7 @@ function Swimlane({
   leadPerson,
   cards,
   personById,
+  canAdd,
   onOpen,
   onAdd,
 }: {
@@ -411,6 +464,7 @@ function Swimlane({
   leadPerson?: Person;
   cards: WorkCard[];
   personById: Map<string, Person>;
+  canAdd: boolean;
   onOpen: (id: string) => void;
   onAdd: (column: WorkColumn) => void;
 }) {
@@ -436,6 +490,7 @@ function Swimlane({
               label={col.label}
               cards={cards.filter((c) => c.column === col.id)}
               personById={personById}
+              canAdd={canAdd}
               onOpen={onOpen}
               onAdd={() => onAdd(col.id)}
             />
@@ -452,6 +507,7 @@ function ColumnCell({
   label,
   cards,
   personById,
+  canAdd,
   onOpen,
   onAdd,
 }: {
@@ -460,6 +516,7 @@ function ColumnCell({
   label: string;
   cards: WorkCard[];
   personById: Map<string, Person>;
+  canAdd: boolean;
   onOpen: (id: string) => void;
   onAdd: () => void;
 }) {
@@ -480,12 +537,14 @@ function ColumnCell({
           <BoardCard key={c.id} card={c} personById={personById} onOpen={() => onOpen(c.id)} />
         ))}
       </div>
-      <button
-        onClick={onAdd}
-        className="mt-1 w-full px-1 py-1 text-left text-[11px] text-muted hover:text-foreground"
-      >
-        + Add issue
-      </button>
+      {canAdd && (
+        <button
+          onClick={onAdd}
+          className="mt-1 w-full px-1 py-1 text-left text-[11px] text-muted hover:text-foreground"
+        >
+          + Add task
+        </button>
+      )}
     </div>
   );
 }
@@ -562,6 +621,7 @@ function ListView({
   cards,
   laneOfCard,
   personById,
+  canAdd,
   onOpen,
   onStatus,
   onAdd,
@@ -571,6 +631,7 @@ function ListView({
   cards: WorkCard[];
   laneOfCard: (c: WorkCard) => string;
   personById: Map<string, Person>;
+  canAdd: (lane: Lane) => boolean;
   onOpen: (id: string) => void;
   onStatus: (id: string, column: WorkColumn) => void;
   onAdd: (lane: Lane) => void;
@@ -588,9 +649,11 @@ function ListView({
                 <h3 className="text-sm font-medium">{lane.label}</h3>
                 <span className="rounded-full bg-white/50 px-1.5 text-xs text-muted">{rows.length}</span>
               </div>
-              <button onClick={() => onAdd(lane)} className="text-xs text-muted hover:text-foreground">
-                + Issue
-              </button>
+              {canAdd(lane) && (
+                <button onClick={() => onAdd(lane)} className="text-xs text-muted hover:text-foreground">
+                  + Task
+                </button>
+              )}
             </div>
             <div className="divide-y divide-white/40">
               {rows.map((c) => (
@@ -705,32 +768,3 @@ function Select({
   );
 }
 
-function blankCard(
-  column: WorkColumn,
-  lane: Lane,
-  groupBy: GroupBy,
-  fallbackDept: string,
-  epicFocus: string | null,
-): Omit<WorkCard, "id"> {
-  const departmentId =
-    groupBy === "department" && lane.id !== "__all__" && lane.id !== NONE ? lane.id : fallbackDept;
-  const ownerIds = groupBy === "owner" && lane.id !== NONE ? [lane.id] : [];
-  const initiativeId =
-    epicFocus ?? (groupBy === "initiative" && lane.id !== NONE ? lane.id : null);
-  return {
-    departmentId,
-    column,
-    title: "New issue",
-    description: "",
-    assigneeId: ownerIds[0] ?? null,
-    ownerIds,
-    taggedIds: [],
-    initiativeId,
-    priority: "none",
-    labels: [],
-    startDate: null,
-    dueDate: null,
-    subtasks: [],
-    comments: [],
-  };
-}

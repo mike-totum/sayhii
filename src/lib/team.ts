@@ -79,7 +79,7 @@ export type CardComment = {
 
 export type WorkCard = {
   id: string;
-  departmentId: string;
+  departmentId: string | null; // follows the owner's department; may be unset
   column: WorkColumn;
   title: string;
   description: string;

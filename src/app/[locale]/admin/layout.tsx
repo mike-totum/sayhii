@@ -23,7 +23,7 @@ export default async function AdminLayout({ children, params }: Props) {
   const modules = ADMIN_MODULES.filter((m) => staff.modules.includes(m.id));
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="admin-shell flex">
       <AdminSidebar locale={locale} modules={modules} />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar staff={staff} locale={locale} />
