@@ -10,8 +10,15 @@ export type Person = {
   name: string;
   email: string;
   role: string;
+  color: string; // hex; drives owner/tag chips across the board
   departmentId: string;
 };
+
+// A spread of distinct, legible chip colors. New people cycle through these.
+export const PERSON_COLORS = [
+  "#6366f1", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444",
+  "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#84cc16", "#e11d48",
+];
 
 export type GoalType = "personal" | "professional";
 export type GoalStatus = "on_track" | "done" | "missed";
@@ -45,15 +52,40 @@ export const WORK_COLUMNS: { id: WorkColumn; label: string }[] = [
   { id: "done", label: "Done" },
 ];
 
+export type CardPriority = "none" | "low" | "medium" | "high" | "urgent";
+export const CARD_PRIORITIES: { id: CardPriority; label: string; color: string }[] = [
+  { id: "none", label: "No priority", color: "#9ca3af" },
+  { id: "low", label: "Low", color: "#60a5fa" },
+  { id: "medium", label: "Medium", color: "#f59e0b" },
+  { id: "high", label: "High", color: "#f97316" },
+  { id: "urgent", label: "Urgent", color: "#ef4444" },
+];
+
+export type Subtask = { id: string; text: string; done: boolean };
+export type CardComment = {
+  id: string;
+  authorName: string;
+  authorEmail: string;
+  body: string;
+  createdAtLabel: string;
+};
+
 export type WorkCard = {
   id: string;
   departmentId: string;
   column: WorkColumn;
   title: string;
   description: string;
-  assigneeId: string | null;
+  assigneeId: string | null; // legacy; mirrors the first owner
+  ownerIds: string[]; // responsible
+  taggedIds: string[]; // collaborators / watchers / FYI
   initiativeId: string | null;
+  priority: CardPriority;
+  labels: string[];
+  startDate: string | null;
   dueDate: string | null;
+  subtasks: Subtask[];
+  comments: CardComment[];
 };
 
 export const INITIATIVE_STATUSES: { id: InitiativeStatus; label: string }[] = [
@@ -81,7 +113,7 @@ export type TeamData = {
 };
 
 // ---------------------------------------------------------------------------
-// Seed (illustrative). The store uses this until localStorage / the API exists.
+// Seed (illustrative). Used only as a fallback when the DB isn't configured.
 // ---------------------------------------------------------------------------
 
 export const SEED_DEPARTMENTS: Department[] = [
@@ -91,16 +123,20 @@ export const SEED_DEPARTMENTS: Department[] = [
   { id: "gtm", name: "Go-to-Market" },
 ];
 
+const seedPerson = (
+  id: string, name: string, email: string, role: string, departmentId: string, i: number,
+): Person => ({ id, name, email, role, departmentId, color: PERSON_COLORS[i % PERSON_COLORS.length] });
+
 export const SEED_PEOPLE: Person[] = [
-  { id: "p1", name: "Dana Lee", email: "dana@sayhii.io", role: "Eng Lead", departmentId: "eng" },
-  { id: "p2", name: "Sam Rivera", email: "sam@sayhii.io", role: "Engineer", departmentId: "eng" },
-  { id: "p3", name: "Wei Zhang", email: "wei@sayhii.io", role: "Engineer", departmentId: "eng" },
-  { id: "p4", name: "Priya Nair", email: "priya@sayhii.io", role: "Product Lead", departmentId: "product" },
-  { id: "p5", name: "Jordan Fox", email: "jordan@sayhii.io", role: "Designer", departmentId: "product" },
-  { id: "p6", name: "Matthew Cole", email: "matthew@sayhii.io", role: "Customer Success", departmentId: "cs" },
-  { id: "p7", name: "Tess Obi", email: "tess@sayhii.io", role: "CS Specialist", departmentId: "cs" },
-  { id: "p8", name: "Chris Park", email: "chris@sayhii.io", role: "Account Exec", departmentId: "gtm" },
-  { id: "p9", name: "Robin Diaz", email: "robin@sayhii.io", role: "Marketing", departmentId: "gtm" },
+  seedPerson("p1", "Dana Lee", "dana@sayhii.io", "Eng Lead", "eng", 0),
+  seedPerson("p2", "Sam Rivera", "sam@sayhii.io", "Engineer", "eng", 1),
+  seedPerson("p3", "Wei Zhang", "wei@sayhii.io", "Engineer", "eng", 2),
+  seedPerson("p4", "Priya Nair", "priya@sayhii.io", "Product Lead", "product", 3),
+  seedPerson("p5", "Jordan Fox", "jordan@sayhii.io", "Designer", "product", 4),
+  seedPerson("p6", "Matthew Cole", "matthew@sayhii.io", "Customer Success", "cs", 5),
+  seedPerson("p7", "Tess Obi", "tess@sayhii.io", "CS Specialist", "cs", 6),
+  seedPerson("p8", "Chris Park", "chris@sayhii.io", "Account Exec", "gtm", 7),
+  seedPerson("p9", "Robin Diaz", "robin@sayhii.io", "Marketing", "gtm", 8),
 ];
 
 export const SEED_GOALS: WeeklyGoal[] = [
@@ -120,16 +156,28 @@ export const SEED_INITIATIVES: Initiative[] = [
   { id: "i4", title: "Mobile app launch", ownerId: "p4", departmentIds: ["product", "eng"], status: "on_track", targetDate: "Jul 2026", progress: 70, summary: "Expo build to the app stores." },
 ];
 
+const seedCard = (c: Omit<WorkCard, "ownerIds" | "taggedIds" | "priority" | "labels" | "startDate" | "subtasks" | "comments"> &
+  Partial<Pick<WorkCard, "ownerIds" | "taggedIds" | "priority" | "labels" | "subtasks">>): WorkCard => ({
+  ownerIds: c.assigneeId ? [c.assigneeId] : [],
+  taggedIds: [],
+  priority: "none",
+  labels: [],
+  startDate: null,
+  subtasks: [],
+  comments: [],
+  ...c,
+});
+
 export const SEED_WORK_CARDS: WorkCard[] = [
-  { id: "w1", departmentId: "eng", column: "in_progress", title: "Wire frontend to participation API", description: "", assigneeId: "p2", initiativeId: "i1", dueDate: "Jul 5" },
-  { id: "w2", departmentId: "eng", column: "backlog", title: "Provision CustomerNote table", description: "", assigneeId: "p3", initiativeId: "i1", dueDate: null },
-  { id: "w3", departmentId: "eng", column: "review", title: "Participation endpoint PR", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null },
-  { id: "w4", departmentId: "eng", column: "done", title: "Strip demo portal", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null },
-  { id: "w5", departmentId: "eng", column: "backlog", title: "Rotate leaked Power BI secret", description: "", assigneeId: "p2", initiativeId: "i2", dueDate: "Jul 1" },
-  { id: "w6", departmentId: "cs", column: "in_progress", title: "Globex renewal call", description: "", assigneeId: "p6", initiativeId: null, dueDate: "Jul 2" },
-  { id: "w7", departmentId: "cs", column: "backlog", title: "Draft onboarding checklist", description: "", assigneeId: "p7", initiativeId: null, dueDate: null },
-  { id: "w8", departmentId: "product", column: "in_progress", title: "Mobile store assets", description: "", assigneeId: "p5", initiativeId: "i4", dueDate: "Jul 8" },
-  { id: "w9", departmentId: "gtm", column: "backlog", title: "Q3 campaign brief", description: "", assigneeId: "p9", initiativeId: "i3", dueDate: null },
+  seedCard({ id: "w1", departmentId: "eng", column: "in_progress", title: "Wire frontend to participation API", description: "", assigneeId: "p2", ownerIds: ["p2", "p1"], taggedIds: ["p4"], priority: "high", labels: ["backend"], initiativeId: "i1", dueDate: "Jul 5", subtasks: [{ id: "s1", text: "Add core-api client", done: true }, { id: "s2", text: "Wire detail card", done: false }] }),
+  seedCard({ id: "w2", departmentId: "eng", column: "backlog", title: "Provision CustomerNote table", description: "", assigneeId: "p3", priority: "medium", initiativeId: "i1", dueDate: null }),
+  seedCard({ id: "w3", departmentId: "eng", column: "review", title: "Participation endpoint PR", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null }),
+  seedCard({ id: "w4", departmentId: "eng", column: "done", title: "Strip demo portal", description: "", assigneeId: "p1", initiativeId: "i1", dueDate: null }),
+  seedCard({ id: "w5", departmentId: "eng", column: "backlog", title: "Rotate leaked Power BI secret", description: "", assigneeId: "p2", priority: "urgent", labels: ["security"], initiativeId: "i2", dueDate: "Jul 1" }),
+  seedCard({ id: "w6", departmentId: "cs", column: "in_progress", title: "Globex renewal call", description: "", assigneeId: "p6", taggedIds: ["p8"], priority: "high", initiativeId: null, dueDate: "Jul 2" }),
+  seedCard({ id: "w7", departmentId: "cs", column: "backlog", title: "Draft onboarding checklist", description: "", assigneeId: "p7", initiativeId: null, dueDate: null }),
+  seedCard({ id: "w8", departmentId: "product", column: "in_progress", title: "Mobile store assets", description: "", assigneeId: "p5", taggedIds: ["p4"], initiativeId: "i4", dueDate: "Jul 8" }),
+  seedCard({ id: "w9", departmentId: "gtm", column: "backlog", title: "Q3 campaign brief", description: "", assigneeId: "p9", initiativeId: "i3", dueDate: null }),
 ];
 
 export const SEED_DATA: TeamData = {
@@ -151,6 +199,10 @@ export function deptName(departments: Department[], id: string): string {
 export function personName(people: Person[], id: string | null): string {
   if (!id) return "Unassigned";
   return people.find((p) => p.id === id)?.name ?? "—";
+}
+
+export function personById(people: Person[], id: string): Person | undefined {
+  return people.find((p) => p.id === id);
 }
 
 export type DeptOverview = {

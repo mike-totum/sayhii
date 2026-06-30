@@ -24,6 +24,10 @@ import {
   createCard,
   updateCardAction,
   deleteCardAction,
+  addSubtaskAction,
+  updateSubtaskAction,
+  deleteSubtaskAction,
+  addCommentAction,
 } from "./team-actions";
 
 // Postgres-backed store: state is seeded from server data, mutations update
@@ -55,6 +59,11 @@ type Ctx = {
   addCard: (c: Omit<WorkCard, "id">) => void;
   updateCard: (id: string, patch: Partial<WorkCard>) => void;
   deleteCard: (id: string) => void;
+  addSubtask: (cardId: string, text: string) => void;
+  toggleSubtask: (cardId: string, subtaskId: string, done: boolean) => void;
+  updateSubtask: (cardId: string, subtaskId: string, text: string) => void;
+  deleteSubtask: (cardId: string, subtaskId: string) => void;
+  addComment: (cardId: string, body: string) => void;
 };
 
 const TeamContext = createContext<Ctx | null>(null);
@@ -103,7 +112,12 @@ export function TeamProvider({
         ...d,
         people: d.people.filter((x) => x.id !== id),
         goals: d.goals.filter((g) => g.personId !== id),
-        cards: d.cards.map((c) => (c.assigneeId === id ? { ...c, assigneeId: null } : c)),
+        cards: d.cards.map((c) => ({
+          ...c,
+          assigneeId: c.assigneeId === id ? null : c.assigneeId,
+          ownerIds: c.ownerIds.filter((o) => o !== id),
+          taggedIds: c.taggedIds.filter((t) => t !== id),
+        })),
         initiatives: d.initiatives.map((i) => (i.ownerId === id ? { ...i, ownerId: "" } : i)),
       }));
       persist(deletePersonAction(id));
@@ -162,6 +176,69 @@ export function TeamProvider({
     deleteCard: (id) => {
       mut((d) => ({ ...d, cards: d.cards.filter((x) => x.id !== id) }));
       persist(deleteCardAction(id));
+    },
+
+    addSubtask: (cardId, text) => {
+      const sub = { id: uid(), text, done: false };
+      let position = 0;
+      mut((d) => ({
+        ...d,
+        cards: d.cards.map((c) => {
+          if (c.id !== cardId) return c;
+          position = c.subtasks.length;
+          return { ...c, subtasks: [...c.subtasks, sub] };
+        }),
+      }));
+      persist(addSubtaskAction(cardId, sub.id, text, position));
+    },
+    toggleSubtask: (cardId, subtaskId, done) => {
+      mut((d) => ({
+        ...d,
+        cards: d.cards.map((c) =>
+          c.id === cardId
+            ? { ...c, subtasks: c.subtasks.map((s) => (s.id === subtaskId ? { ...s, done } : s)) }
+            : c,
+        ),
+      }));
+      persist(updateSubtaskAction(subtaskId, { done }));
+    },
+    updateSubtask: (cardId, subtaskId, text) => {
+      mut((d) => ({
+        ...d,
+        cards: d.cards.map((c) =>
+          c.id === cardId
+            ? { ...c, subtasks: c.subtasks.map((s) => (s.id === subtaskId ? { ...s, text } : s)) }
+            : c,
+        ),
+      }));
+      persist(updateSubtaskAction(subtaskId, { text }));
+    },
+    deleteSubtask: (cardId, subtaskId) => {
+      mut((d) => ({
+        ...d,
+        cards: d.cards.map((c) =>
+          c.id === cardId
+            ? { ...c, subtasks: c.subtasks.filter((s) => s.id !== subtaskId) }
+            : c,
+        ),
+      }));
+      persist(deleteSubtaskAction(subtaskId));
+    },
+    addComment: (cardId, body) => {
+      const comment = {
+        id: uid(),
+        authorName: "You",
+        authorEmail: "",
+        body,
+        createdAtLabel: "now",
+      };
+      mut((d) => ({
+        ...d,
+        cards: d.cards.map((c) =>
+          c.id === cardId ? { ...c, comments: [...c.comments, comment] } : c,
+        ),
+      }));
+      persist(addCommentAction(cardId, comment.id, body));
     },
   };
 

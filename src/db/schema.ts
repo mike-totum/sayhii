@@ -29,6 +29,15 @@ export const workColumn = pgEnum("work_column", [
   "review",
   "done",
 ]);
+export const cardPriority = pgEnum("card_priority", [
+  "none",
+  "low",
+  "medium",
+  "high",
+  "urgent",
+]);
+// owner = responsible; tagged = collaborator / watcher / FYI.
+export const cardPersonRole = pgEnum("card_person_role", ["owner", "tagged"]);
 export const noteScope = pgEnum("note_scope", ["user", "company"]);
 export const noteVisibility = pgEnum("note_visibility", ["personal", "public"]);
 
@@ -45,6 +54,9 @@ export const people = pgTable("people", {
   name: text("name").notNull(),
   email: text("email").notNull().default(""),
   role: text("role").notNull().default(""),
+  // Per-person color used for owner/tag chips across the board. Hex string;
+  // auto-assigned on create, editable.
+  color: text("color").notNull().default("#6366f1"),
   departmentId: uuid("department_id").references(() => departments.id, {
     onDelete: "set null",
   }),
@@ -96,12 +108,56 @@ export const workCards = pgTable("work_cards", {
   column: workColumn("column").notNull().default("backlog"),
   title: text("title").notNull(),
   description: text("description").notNull().default(""),
+  // assigneeId kept for back-compat; multi-owner now lives in workCardPeople.
   assigneeId: uuid("assignee_id").references(() => people.id, { onDelete: "set null" }),
   initiativeId: uuid("initiative_id").references(() => initiatives.id, {
     onDelete: "set null",
   }),
+  priority: cardPriority("priority").notNull().default("none"),
+  labels: text("labels").array().notNull().default([]),
+  startDate: text("start_date"),
   dueDate: text("due_date"),
   position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Owners + tagged collaborators on a card (the colored chips). role splits the
+// two; a person appears at most once per role on a card.
+export const workCardPeople = pgTable(
+  "work_card_people",
+  {
+    cardId: uuid("card_id")
+      .notNull()
+      .references(() => workCards.id, { onDelete: "cascade" }),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => people.id, { onDelete: "cascade" }),
+    role: cardPersonRole("role").notNull().default("owner"),
+  },
+  (t) => [primaryKey({ columns: [t.cardId, t.personId, t.role] })],
+);
+
+// Checklist / subtasks on a card, with progress.
+export const workCardSubtasks = pgTable("work_card_subtasks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => workCards.id, { onDelete: "cascade" }),
+  text: text("text").notNull(),
+  done: boolean("done").notNull().default(false),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Comments / activity log on a card; author asserted from the staff session.
+export const workCardComments = pgTable("work_card_comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => workCards.id, { onDelete: "cascade" }),
+  authorName: text("author_name").notNull(),
+  authorEmail: text("author_email").notNull(),
+  body: text("body").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

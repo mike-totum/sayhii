@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTeam } from "@/lib/team-store";
+import { PERSON_COLORS } from "@/lib/team";
 import { OrgBuilder } from "@/components/admin/org-builder";
 
 export default function TeamPeoplePage() {
@@ -43,7 +44,10 @@ export default function TeamPeoplePage() {
         <AddPerson
           departments={data.departments}
           onAdd={(p) => {
-            addPerson(p);
+            addPerson({
+              ...p,
+              color: PERSON_COLORS[data.people.length % PERSON_COLORS.length],
+            });
             setAdding(null);
           }}
         />
