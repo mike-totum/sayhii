@@ -14,6 +14,14 @@ export type AdminModule = {
 
 export const ADMIN_MODULES: AdminModule[] = [
   {
+    id: "dashboard",
+    label: "Dashboard",
+    href: "/admin/dashboard",
+    status: "live",
+    description:
+      "Your personal home — this week's goals and the work assigned to you, at a glance.",
+  },
+  {
     id: "customer-lookup",
     label: "Customer Lookup",
     href: "/admin/customers",
