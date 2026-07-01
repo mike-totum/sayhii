@@ -30,6 +30,7 @@ export const en = {
     blog: "Blog",
     contact: "Contact",
     cta: "Schedule a 30-min chat",
+    login: "Login",
     toggleMenu: "Toggle menu",
     languageLabel: "Language",
   },

@@ -5,6 +5,11 @@ const PUBLIC_FILE = /\.(.*)$/;
 // Authenticated sections stay locale-prefixed; they aren't indexed marketing
 // pages, so clean URLs don't matter there.
 const APP_SECTIONS = new Set(["admin"]);
+// The internal portal lives on its own subdomain; the public marketing site
+// must not serve it. These only match the real production hosts, so localhost
+// and *.vercel.app previews are unaffected (portal stays reachable for testing).
+const ADMIN_HOST = "admin.sayhii.io";
+const PUBLIC_HOSTS = new Set(["sayhii.io", "www.sayhii.io"]);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -43,6 +48,23 @@ export function proxy(request: NextRequest) {
     url.pathname = path;
     return url;
   };
+
+  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+
+  // Admin subdomain serves ONLY the portal — bounce anything else to /admin.
+  if (host === ADMIN_HOST && !isApp) {
+    return NextResponse.redirect(to(`/${preferred}/admin`));
+  }
+
+  // Public marketing domain must never expose the portal — send /admin to the
+  // admin subdomain instead (so old links still land somewhere sensible).
+  if (PUBLIC_HOSTS.has(host) && isApp) {
+    const url = new URL(request.url);
+    url.protocol = "https:";
+    url.host = ADMIN_HOST;
+    url.port = "";
+    return NextResponse.redirect(url);
+  }
 
   // App sections: keep them locale-prefixed; add a locale only if missing.
   if (isApp) {

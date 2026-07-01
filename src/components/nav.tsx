@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { LocaleSwitch } from "./locale-switch";
@@ -13,14 +13,32 @@ type Props = { locale: Locale };
 
 const dicts = { en, es } as const;
 
+// The two customer-facing apps this landing page hands off to. (The internal
+// /admin portal is intentionally not listed here — it's staff-only.)
+const PORTALS = [
+  { label: "Client Portal", hint: "Clients & employees", href: "https://portal.sayhii.io/#/sign-in" },
+  { label: "Partner Portal", hint: "Partners", href: "https://www.sayhii.io/partner-portal" },
+];
+
 export function Nav({ locale }: Props) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const loginRef = useRef<HTMLDivElement | null>(null);
   const dict = dicts[locale];
 
   useEffect(() => {
     setMobileOpen(false);
+    setLoginOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (!loginRef.current?.contains(e.target as Node)) setLoginOpen(false);
+    }
+    if (loginOpen) document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [loginOpen]);
 
   const links = [
     { href: "/notes", label: dict.nav.notes },
@@ -55,7 +73,37 @@ export function Nav({ locale }: Props) {
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
+          <div className="relative" ref={loginRef}>
+            <button
+              onClick={() => setLoginOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={loginOpen}
+              className="inline-flex h-9 items-center gap-1 rounded-[4px] border border-border px-3 text-sm font-medium text-foreground hover:border-foreground/30 transition-colors"
+            >
+              {dict.nav.login}
+              <svg viewBox="0 0 24 24" fill="none" className={`size-4 text-muted transition-transform ${loginOpen ? "rotate-180" : ""}`} aria-hidden>
+                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {loginOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-[6px] border border-border bg-surface shadow-[0_20px_50px_-20px_rgba(15,17,23,0.3)]"
+              >
+                {PORTALS.map((p) => (
+                  <a
+                    key={p.href}
+                    href={p.href}
+                    className="block px-4 py-3 hover:bg-background transition-colors"
+                  >
+                    <span className="block text-sm font-medium">{p.label}</span>
+                    <span className="block text-xs text-muted">{p.hint}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
           <Link
             href={localePath(locale, "/contact")}
             className="inline-flex h-9 items-center rounded-[4px] bg-foreground text-background px-4 text-sm font-medium hover:bg-primary transition-colors"
@@ -110,6 +158,14 @@ export function Nav({ locale }: Props) {
             >
               {dict.nav.cta}
             </Link>
+            <div className="pt-3 mt-3 border-t border-border">
+              <p className="mb-1 text-xs uppercase tracking-[0.16em] text-muted">{dict.nav.login}</p>
+              {PORTALS.map((p) => (
+                <a key={p.href} href={p.href} className="block py-2 text-base font-medium hover:text-primary transition-colors">
+                  {p.label}
+                </a>
+              ))}
+            </div>
             <div className="pt-3 mt-3 border-t border-border">
               <LocaleSwitch locale={locale} />
             </div>
