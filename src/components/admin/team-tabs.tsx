@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Pulse = the team Monday cockpit; Work = epics ▸ issues; People = the roster.
+// Pulse = the team Monday cockpit; Work = epics ▸ issues; Manage = the roster.
 // (The personal dashboard is now its own standalone sidebar module.)
-// People is roster management — admins only.
+// Manage is roster + people management (invite, roles, departments) — admins only.
 const TABS = [
   { href: "/admin/team/pulse", label: "Pulse" },
   { href: "/admin/team/work", label: "Work" },
   { href: "/admin/team/engineering", label: "Engineering" },
-  { href: "/admin/team/people", label: "People", adminOnly: true },
+  { href: "/admin/team/people", label: "Manage", adminOnly: true },
 ];
 
 export function TeamTabs({ locale, isAdmin = false }: { locale: string; isAdmin?: boolean }) {

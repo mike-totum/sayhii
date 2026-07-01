@@ -41,7 +41,7 @@ export default function DashboardPage() {
           record yet.{" "}
           {me?.isAdmin ? (
             <Link href={`/${locale}/admin/team/people`} className="text-foreground underline">
-              Add yourself on People
+              Add yourself on Manage
             </Link>
           ) : (
             "Ask an admin to add you."
