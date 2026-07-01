@@ -13,7 +13,7 @@ export type Staff = {
   modules: string[]; // module grants; everyone @sayhii.io gets these for now
 };
 
-const STAFF_MODULES = ["customer-lookup", "team-tracking"];
+const STAFF_MODULES = ["dashboard", "customer-lookup", "team-tracking"];
 
 const isAuthConfigured = Boolean(process.env.AUTH_GOOGLE_ID);
 
