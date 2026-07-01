@@ -21,7 +21,7 @@ export default function PersonDetailPage() {
   if (!person) {
     return (
       <div>
-        <Back locale={locale} />
+        <Back locale={locale} isAdmin={!!me?.isAdmin} />
         <p className="mt-6 text-muted">This person no longer exists.</p>
       </div>
     );
@@ -35,7 +35,7 @@ export default function PersonDetailPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <Back locale={locale} />
+      <Back locale={locale} isAdmin={isAdmin} />
 
       <header className="rounded-2xl glass p-5 space-y-4">
         <div className="flex items-center gap-4">
@@ -251,10 +251,14 @@ function Labeled({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function Back({ locale }: { locale: string }) {
+function Back({ locale, isAdmin }: { locale: string; isAdmin: boolean }) {
+  // Admins came from the Manage roster; members reach a profile from their
+  // dashboard (Manage is admin-only, so don't send them into its wall).
+  const href = isAdmin ? `/${locale}/admin/team/people` : `/${locale}/admin/dashboard`;
+  const label = isAdmin ? "← Manage" : "← Dashboard";
   return (
-    <Link href={`/${locale}/admin/team/people`} className="text-sm text-muted hover:text-foreground transition-colors">
-      ← People
+    <Link href={href} className="text-sm text-muted hover:text-foreground transition-colors">
+      {label}
     </Link>
   );
 }

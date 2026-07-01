@@ -27,7 +27,7 @@ export default function TeamPeoplePage() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-serif text-3xl tracking-tight">People</h1>
+        <h1 className="font-serif text-3xl tracking-tight">Manage</h1>
         {isAdmin && (
           <div className="flex items-center gap-2">
             <button
