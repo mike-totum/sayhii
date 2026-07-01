@@ -5,18 +5,20 @@ import { usePathname } from "next/navigation";
 
 // Pulse = the team Monday cockpit; Work = epics ▸ issues; People = the roster.
 // (The personal dashboard is now its own standalone sidebar module.)
+// People is roster management — admins only.
 const TABS = [
   { href: "/admin/team/pulse", label: "Pulse" },
   { href: "/admin/team/work", label: "Work" },
   { href: "/admin/team/engineering", label: "Engineering" },
-  { href: "/admin/team/people", label: "People" },
+  { href: "/admin/team/people", label: "People", adminOnly: true },
 ];
 
-export function TeamTabs({ locale }: { locale: string }) {
+export function TeamTabs({ locale, isAdmin = false }: { locale: string; isAdmin?: boolean }) {
   const pathname = usePathname();
+  const tabs = TABS.filter((t) => !t.adminOnly || isAdmin);
   return (
     <nav className="mt-4 inline-flex gap-1 rounded-full glass p-1">
-      {TABS.map((t) => {
+      {tabs.map((t) => {
         const href = `/${locale}${t.href}`;
         const active = pathname?.startsWith(href);
         return (
