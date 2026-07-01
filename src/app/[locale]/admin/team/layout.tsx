@@ -33,7 +33,7 @@ export default async function TeamLayout({ children, params }: Props) {
         </p>
         {onRoster ? (
           <>
-            <TeamTabs locale={locale} />
+            <TeamTabs locale={locale} isAdmin={!!me?.isAdmin} />
             <TeamProvider initialData={initialData} me={me}>
               <div className="mt-7">{children}</div>
             </TeamProvider>

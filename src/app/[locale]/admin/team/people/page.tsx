@@ -10,6 +10,20 @@ export default function TeamPeoplePage() {
   const [adding, setAdding] = useState<"person" | "dept" | null>(null);
   const isAdmin = !!me?.isAdmin;
 
+  // People is roster management (invite, assign roles, org structure) — admins
+  // only. The tab is hidden for members; this guards direct navigation too.
+  if (!isAdmin) {
+    return (
+      <div className="rounded-2xl glass px-6 py-12 text-center">
+        <h1 className="font-serif text-2xl tracking-tight">Admins only</h1>
+        <p className="mx-auto mt-2 max-w-md text-sm text-muted">
+          The people roster is managed by team admins. Ask an admin if you need to
+          be added or moved.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
