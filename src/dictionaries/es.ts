@@ -36,6 +36,7 @@ export const es: typeof en = {
     blog: "Blog",
     contact: "Contacto",
     cta: "Agenda una charla de 30 min",
+    login: "Iniciar sesión",
     toggleMenu: "Abrir menú",
     languageLabel: "Idioma",
   },
