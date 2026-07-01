@@ -13,6 +13,7 @@ import type { TeamIdentity } from "./team-data";
 import {
   createDepartment,
   renameDepartmentAction,
+  deleteDepartmentAction,
   createPerson,
   updatePersonAction,
   deletePersonAction,
@@ -49,6 +50,7 @@ type Ctx = {
   ready: boolean;
   addDepartment: (name: string) => void;
   renameDepartment: (id: string, name: string) => void;
+  deleteDepartment: (id: string) => void;
   addPerson: (p: Omit<Person, "id">) => void;
   updatePerson: (id: string, patch: Partial<Person>) => void;
   deletePerson: (id: string) => void;
@@ -98,6 +100,25 @@ export function TeamProvider({
         departments: d.departments.map((x) => (x.id === id ? { ...x, name } : x)),
       }));
       persist(renameDepartmentAction(id, name));
+    },
+    deleteDepartment: (id) => {
+      // Mirror the DB's FK behavior: people/cards become unassigned, the
+      // department drops off initiatives. Nothing else is removed.
+      mut((d) => ({
+        ...d,
+        departments: d.departments.filter((x) => x.id !== id),
+        people: d.people.map((p) =>
+          p.departmentId === id ? { ...p, departmentId: "" } : p,
+        ),
+        cards: d.cards.map((c) =>
+          c.departmentId === id ? { ...c, departmentId: null } : c,
+        ),
+        initiatives: d.initiatives.map((i) => ({
+          ...i,
+          departmentIds: i.departmentIds.filter((x) => x !== id),
+        })),
+      }));
+      persist(deleteDepartmentAction(id));
     },
 
     addPerson: (p) => {

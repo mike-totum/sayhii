@@ -19,7 +19,7 @@ import { PersonAvatar } from "./person-chip";
 const UNASSIGNED = "__unassigned__";
 
 export function OrgBuilder() {
-  const { data, me, updatePerson } = useTeam();
+  const { data, me, updatePerson, deleteDepartment } = useTeam();
   const isAdmin = !!me?.isAdmin;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -39,15 +39,31 @@ export function OrgBuilder() {
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {data.departments.map((d) => (
-          <DeptColumn
-            key={d.id}
-            id={d.id}
-            name={d.name}
-            members={active.filter((p) => p.departmentId === d.id)}
-            draggable={isAdmin}
-          />
-        ))}
+        {data.departments.map((d) => {
+          const members = active.filter((p) => p.departmentId === d.id);
+          return (
+            <DeptColumn
+              key={d.id}
+              id={d.id}
+              name={d.name}
+              members={members}
+              draggable={isAdmin}
+              onDelete={
+                isAdmin
+                  ? () => {
+                      const msg =
+                        members.length > 0
+                          ? `Delete "${d.name}"? Its ${members.length} member${
+                              members.length === 1 ? "" : "s"
+                            } will move to Unassigned.`
+                          : `Delete "${d.name}"?`;
+                      if (confirm(msg)) deleteDepartment(d.id);
+                    }
+                  : undefined
+              }
+            />
+          );
+        })}
         {(unassigned.length > 0 || isAdmin) && (
           <DeptColumn id={UNASSIGNED} name="Unassigned" members={unassigned} draggable={isAdmin} />
         )}
@@ -61,11 +77,13 @@ function DeptColumn({
   name,
   members,
   draggable,
+  onDelete,
 }: {
   id: string;
   name: string;
   members: Person[];
   draggable: boolean;
+  onDelete?: () => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
   return (
@@ -77,7 +95,20 @@ function DeptColumn({
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium">{name}</h3>
-        <span className="text-xs text-muted">{members.length}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted">{members.length}</span>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="text-muted hover:text-red-600 transition-colors text-sm leading-none"
+              aria-label={`Delete ${name}`}
+              title={`Delete ${name}`}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       <div className="space-y-2">
         {members.map((p) => (

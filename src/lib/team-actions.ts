@@ -24,6 +24,12 @@ export async function createDepartment(d: Department) {
 export async function renameDepartmentAction(id: string, name: string) {
   await db.update(departments).set({ name }).where(eq(departments.id, id));
 }
+export async function deleteDepartmentAction(id: string) {
+  // FKs handle the fallout: people.department_id + work_cards.department_id are
+  // set null, initiative_departments rows cascade away. People/cards/initiatives
+  // themselves are untouched — they just become unassigned.
+  await db.delete(departments).where(eq(departments.id, id));
+}
 
 export async function createPerson(p: Person) {
   await db.insert(people).values({
