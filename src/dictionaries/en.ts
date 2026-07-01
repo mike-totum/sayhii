@@ -68,6 +68,7 @@ export const en = {
     trademark:
       "sayhii name and logo are registered trademarks and the property of sayhii inc.",
     privacy: "Privacy",
+    internal: "Internal",
   },
   home: {
     hero: {

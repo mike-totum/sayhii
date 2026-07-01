@@ -74,6 +74,7 @@ export const es: typeof en = {
     trademark:
       "El nombre y el logotipo de sayhii son marcas registradas y propiedad de sayhii inc.",
     privacy: "Privacidad",
+    internal: "Internal",
   },
   home: {
     hero: {
