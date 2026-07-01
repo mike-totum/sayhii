@@ -111,7 +111,7 @@ export function Footer({ locale }: { locale: Locale }) {
             </Link>
             <span aria-hidden className="text-border">·</span>
             <a
-              href="https://admin.sayhii.io"
+              href="https://sayhii-redesign.vercel.app/admin"
               className="hover:text-foreground transition-colors"
             >
               {f.internal}
