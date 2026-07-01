@@ -109,6 +109,13 @@ export function Footer({ locale }: { locale: Locale }) {
             >
               {f.privacy}
             </Link>
+            <span aria-hidden className="text-border">·</span>
+            <a
+              href="https://admin.sayhii.io"
+              className="hover:text-foreground transition-colors"
+            >
+              {f.internal}
+            </a>
           </div>
         </div>
       </div>
