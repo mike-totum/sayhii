@@ -11,16 +11,15 @@ import {
   type NavItem,
 } from "./admin-nav";
 
-// Desktop navigation. One flat, relevance-gated list: everyone gets
-// Home · Pulse · Work; Engineering/Customers/Manage appear only for the
-// people they belong to. Sections keep it scannable without adding depth.
+// Desktop navigation. One flat list — 5-person company, everyone sees every
+// tool; Manage (admin-only) sits under its own small label.
 
 export function AdminSidebar({ locale, nav }: { locale: string; nav: NavFlags }) {
   const pathname = usePathname();
   const prefix = `/${locale}`;
   const items = buildNav(nav);
 
-  const sections: NavItem["section"][] = ["you", "team", "tools", "admin"];
+  const sections: NavItem["section"][] = ["main", "admin"];
 
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-white/60 bg-white/55 backdrop-blur-xl lg:sticky lg:top-0 lg:h-screen">
