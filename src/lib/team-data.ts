@@ -1,5 +1,5 @@
 import "server-only";
-import { asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db, isDbConfigured } from "@/db";
 import {
   departments,
@@ -12,6 +12,9 @@ import {
   workCardSubtasks,
   workCardComments,
 } from "@/db/schema";
+
+// Alias: getTeamIdentity's `people` parameter shadows the schema table.
+const peopleTable = people;
 import { SEED_DATA, type TeamData, type Subtask, type CardComment, type Person, type TeamRole } from "./team";
 import { getStaff } from "./admin-auth";
 
@@ -34,6 +37,24 @@ export async function getTeamIdentity(people: Person[]): Promise<TeamIdentity | 
   const email = staff.email.toLowerCase();
   const row = people.find((p) => p.email.toLowerCase() === email && p.active);
   const bootstrap = BOOTSTRAP_ADMINS.has(email);
+
+  // Keep the roster photo in sync with the Google profile picture — set on
+  // first sign-in, self-heals if the person changes their Google photo.
+  // A manual upload (data: URL) always wins; the sync never overwrites it.
+  if (
+    isDbConfigured &&
+    row &&
+    staff.image &&
+    row.photoUrl !== staff.image &&
+    !row.photoUrl?.startsWith("data:")
+  ) {
+    row.photoUrl = staff.image;
+    void db
+      .update(peopleTable)
+      .set({ photoUrl: staff.image })
+      .where(eq(peopleTable.id, row.id))
+      .catch((e) => console.error("[team] photo sync failed", e));
+  }
   const role: TeamRole = bootstrap ? "admin" : row?.accessRole ?? "member";
   return {
     email,

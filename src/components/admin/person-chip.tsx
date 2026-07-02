@@ -28,7 +28,7 @@ export function PersonAvatar({
   return (
     <span
       title={title ?? person.name}
-      className={`inline-flex shrink-0 items-center justify-center rounded-full font-semibold text-white ${
+      className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold text-white ${
         ring ? "ring-2 ring-surface" : ""
       }`}
       style={{
@@ -38,7 +38,18 @@ export function PersonAvatar({
         fontSize: Math.round(size * 0.42),
       }}
     >
-      {initialsOf(person.name)}
+      {person.photoUrl ? (
+        // Google profile photo (synced at sign-in); initials fall back.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={person.photoUrl}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="size-full object-cover"
+        />
+      ) : (
+        initialsOf(person.name)
+      )}
     </span>
   );
 }

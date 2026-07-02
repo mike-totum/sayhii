@@ -21,6 +21,7 @@ import { SetCell, GradeButtons, StreakStrip } from "@/components/admin/goal-cell
 import { CardDetail } from "@/components/admin/card-detail";
 import { EmptyState } from "@/components/admin/empty-state";
 import { WorkIcon } from "@/components/admin/admin-nav";
+import { CommentGlyph } from "@/components/admin/work-board";
 
 // DASHBOARD — each person's home. Ties their weekly goals to the work assigned
 // to them. Scoped to the signed-in user (me.personId).
@@ -62,6 +63,11 @@ export default function DashboardPage() {
   const myCards = data.cards.filter((c) => c.ownerIds.includes(person.id));
   const openCount = myCards.filter((c) => c.column !== "done").length;
   const myEpics = data.initiatives.filter((i) => i.ownerId === person.id);
+  // Cards someone tagged you on (but you don't own) — the loop-closer that
+  // makes tagging mean something without notifications.
+  const taggedCards = data.cards.filter(
+    (c) => c.taggedIds.includes(person.id) && !c.ownerIds.includes(person.id),
+  );
 
   function grade(goal: WeeklyGoal, status: GoalStatus) {
     if (status === "done" && goal.status !== "done") {
@@ -257,6 +263,20 @@ export default function DashboardPage() {
             )}
           </div>
 
+          {taggedCards.length > 0 && (
+            <div className="mt-5 border-t border-white/50 pt-4">
+              <p className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-muted">
+                <span className="size-1.5 rounded-full bg-accent" aria-hidden />
+                Tagged for you · {taggedCards.length}
+              </p>
+              <div className="space-y-1.5">
+                {taggedCards.map((c) => (
+                  <IssueRow key={c.id} card={c} onOpen={() => setOpenCard(c.id)} />
+                ))}
+              </div>
+            </div>
+          )}
+
           {myEpics.length > 0 && (
             <div className="mt-5 border-t border-white/50 pt-4">
               <p className="mb-2 text-[10px] uppercase tracking-[0.16em] text-muted">Epics you own</p>
@@ -303,6 +323,12 @@ function IssueRow({ card, onOpen }: { card: WorkCard; onOpen: () => void }) {
       <span className="min-w-0 flex-1 truncate text-sm">{card.title}</span>
       {card.subtasks.length > 0 && (
         <span className="shrink-0 text-[11px] text-muted">✓ {subDone}/{card.subtasks.length}</span>
+      )}
+      {card.comments.length > 0 && (
+        <span className="inline-flex shrink-0 items-center gap-0.5 text-[11px] text-muted">
+          <CommentGlyph className="size-3" />
+          {card.comments.length}
+        </span>
       )}
       {card.dueDate && <span className="shrink-0 text-[11px] text-muted">{card.dueDate}</span>}
     </button>

@@ -27,6 +27,24 @@ import {
 import { PersonAvatar, AvatarStack } from "./person-chip";
 import { CardDetail } from "./card-detail";
 
+// Tiny speech-bubble glyph for comment counts on card faces.
+export function CommentGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 3V11.5a7.5 7.5 0 0 1 7.5-7.5h3A7.5 7.5 0 0 1 21 11.5Z" />
+    </svg>
+  );
+}
+
 // WORK — epics ▸ issues, with a Trello twist. Pick an epic to focus, then work
 // the issues as a Board (drag across columns) or a List (dense, Jira-style).
 
@@ -606,6 +624,12 @@ function BoardCard({
               ✓ {subDone}/{card.subtasks.length}
             </span>
           )}
+          {card.comments.length > 0 && (
+            <span className="inline-flex items-center gap-0.5">
+              <CommentGlyph className="size-3" />
+              {card.comments.length}
+            </span>
+          )}
         </div>
         {owners.length > 0 && <AvatarStack people={owners} size={20} />}
       </div>
@@ -704,6 +728,12 @@ function ListRow({
         {card.title}
       </button>
       {card.dueDate && <span className="hidden shrink-0 text-xs text-muted sm:inline">{card.dueDate}</span>}
+      {card.comments.length > 0 && (
+        <span className="hidden shrink-0 items-center gap-0.5 text-xs text-muted sm:inline-flex">
+          <CommentGlyph className="size-3" />
+          {card.comments.length}
+        </span>
+      )}
       {owners.length > 0 && <AvatarStack people={owners} size={18} />}
       <select
         value={card.column}

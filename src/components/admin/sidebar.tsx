@@ -21,7 +21,7 @@ export function AdminSidebar({
 }: {
   locale: string;
   nav: NavFlags;
-  user: { name: string; isAdmin: boolean };
+  user: { name: string; isAdmin: boolean; image?: string | null };
 }) {
   const pathname = usePathname();
   const prefix = `/${locale}`;
@@ -98,10 +98,15 @@ export function AdminSidebar({
       <div className="px-4 py-4 border-t border-border/70">
         <div className="flex items-center gap-3 rounded-xl px-2 py-1.5">
           <span
-            className="size-8 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[11px] font-semibold flex items-center justify-center"
+            className="size-8 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[11px] font-semibold flex items-center justify-center"
             aria-hidden
           >
-            {initials}
+            {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.image} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+            ) : (
+              initials
+            )}
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium leading-tight">{user.name}</p>
