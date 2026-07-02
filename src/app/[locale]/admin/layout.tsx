@@ -27,7 +27,11 @@ export default async function AdminLayout({ children, params }: Props) {
 
   return (
     <div className="admin-shell flex">
-      <AdminSidebar locale={locale} nav={access.nav} />
+      <AdminSidebar
+        locale={locale}
+        nav={access.nav}
+        user={{ name: access.me?.name ?? staff.name, isAdmin: !!access.me?.isAdmin }}
+      />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar staff={staff} locale={locale} />
         {/* Shared warm backdrop for the whole portal; pages no longer carry

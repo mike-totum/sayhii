@@ -14,16 +14,31 @@ import {
 // Desktop navigation. One flat list — 5-person company, everyone sees every
 // tool; Manage (admin-only) sits under its own small label.
 
-export function AdminSidebar({ locale, nav }: { locale: string; nav: NavFlags }) {
+export function AdminSidebar({
+  locale,
+  nav,
+  user,
+}: {
+  locale: string;
+  nav: NavFlags;
+  user: { name: string; isAdmin: boolean };
+}) {
   const pathname = usePathname();
   const prefix = `/${locale}`;
   const items = buildNav(nav);
 
   const sections: NavItem["section"][] = ["main", "admin"];
+  const initials = user.name
+    .split(" ")
+    .filter(Boolean)
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-white/60 bg-white/55 backdrop-blur-xl lg:sticky lg:top-0 lg:h-screen">
-      <div className="px-6 h-16 flex items-center border-b border-border/70">
+      <div className="px-6 h-12 flex items-center border-b border-border/70">
         <Link href={`${prefix}/admin/dashboard`} className="flex items-center gap-2">
           <Logo />
           <span className="text-[10px] uppercase tracking-[0.18em] rounded-full bg-primary/10 text-primary px-2 py-0.5">
@@ -80,10 +95,21 @@ export function AdminSidebar({ locale, nav }: { locale: string; nav: NavFlags })
         })}
       </nav>
 
-      <div className="px-6 py-4 border-t border-border/70 text-xs text-muted">
-        <p>
-          <span className="font-serif italic">sayhii</span> internal
-        </p>
+      <div className="px-4 py-4 border-t border-border/70">
+        <div className="flex items-center gap-3 rounded-xl px-2 py-1.5">
+          <span
+            className="size-8 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[11px] font-semibold flex items-center justify-center"
+            aria-hidden
+          >
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium leading-tight">{user.name}</p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-muted">
+              {user.isAdmin ? "Admin" : "Member"}
+            </p>
+          </div>
+        </div>
       </div>
     </aside>
   );

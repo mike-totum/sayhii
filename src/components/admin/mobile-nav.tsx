@@ -26,11 +26,17 @@ export function AdminMobileNav({ locale, nav }: { locale: string; nav: NavFlags 
             <li key={item.id} className="min-w-0 flex-1">
               <Link
                 href={`${prefix}${item.href}`}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[10px] transition-colors ${
+                className={`flex flex-col items-center gap-0.5 py-1.5 text-[10px] transition-colors ${
                   active ? "text-primary" : "text-muted hover:text-foreground"
                 }`}
               >
-                <Icon className="size-5" />
+                <span
+                  className={`flex items-center justify-center rounded-full px-3 py-1 transition-colors ${
+                    active ? "bg-primary/10" : ""
+                  }`}
+                >
+                  <Icon className="size-5" />
+                </span>
                 <span className={`truncate ${active ? "font-medium" : ""}`}>{item.label}</span>
               </Link>
             </li>

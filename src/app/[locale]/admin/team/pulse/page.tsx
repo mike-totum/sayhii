@@ -194,7 +194,7 @@ function PersonRow({
                 <p className="text-[10px] uppercase tracking-wide text-muted/70">{type}</p>
                 {goal ? (
                   <div className="mt-0.5 flex items-start gap-2">
-                    <p className={`relative flex-1 text-sm leading-snug ${goal.status === "done" ? "text-muted" : ""}`}>
+                    <p className={`relative flex-1 text-[15px] leading-snug ${goal.status === "done" ? "text-muted" : ""}`}>
                       {goal.text}
                       {burstId === goal.id && (
                         <span className="animate-recognize pointer-events-none absolute -top-3 left-0 text-base">
