@@ -73,6 +73,20 @@ export default function DashboardPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = person.name.split(" ")[0];
 
+  // The collective result, delivered to the person (mirrors Pulse's rollup).
+  const activePeople = data.people.filter((p) => p.active);
+  const teamSet = activePeople.filter((p) =>
+    data.goals.some((g) => g.personId === p.id && g.weekOf === thisWeek),
+  ).length;
+  const teamLastWeek = data.goals.filter(
+    (g) => g.weekOf === lastWeek && activePeople.some((p) => p.id === g.personId),
+  );
+  const teamGraded = teamLastWeek.filter((g) => g.status !== "on_track");
+  const teamHits = teamGraded.filter((g) => g.status === "done").length;
+  const teamHitRate = teamGraded.length
+    ? Math.round((teamHits / teamGraded.length) * 100)
+    : null;
+
   return (
     <div className="space-y-5">
       {/* profile header */}
@@ -93,8 +107,12 @@ export default function DashboardPage() {
                 onChange={(e) => updatePerson(person.id, { role: e.target.value })}
                 className="bg-transparent border-b border-transparent hover:border-white/60 focus:border-foreground/40 focus:outline-none"
               />
-              <span>·</span>
-              <span>{deptName(data.departments, person.departmentId)}</span>
+              {person.departmentId && (
+                <>
+                  <span>·</span>
+                  <span>{deptName(data.departments, person.departmentId)}</span>
+                </>
+              )}
             </div>
           </div>
           <div className="hidden flex-col items-end gap-2 sm:flex">
@@ -108,6 +126,30 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
+
+      {/* team pulse strip — the "get" that comes to you */}
+      {activePeople.length > 1 && (
+        <Link
+          href={`/${locale}/admin/team/pulse`}
+          className="group flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl glass-well px-5 py-3"
+        >
+          <p className="text-sm">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-muted mr-3">
+              Team pulse
+            </span>
+            <span className="font-medium tabular-nums">{teamSet}/{activePeople.length}</span>
+            <span className="text-muted"> set this week</span>
+            <span className="text-muted"> · </span>
+            <span className="font-medium tabular-nums text-accent">
+              {teamHitRate === null ? "—" : `${teamHitRate}%`}
+            </span>
+            <span className="text-muted"> hit last week</span>
+          </p>
+          <span className="text-xs text-muted group-hover:text-foreground transition-colors">
+            Open Pulse →
+          </span>
+        </Link>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* my week */}

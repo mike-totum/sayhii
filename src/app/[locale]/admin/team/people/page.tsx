@@ -46,9 +46,9 @@ export default function TeamPeoplePage() {
         )}
       </div>
       <p className="mt-1 text-sm text-muted">
-        {isAdmin
-          ? "Invite teammates by email and assign a role. Drag people between departments."
-          : "Your team. Ask an admin to add or move people."}
+        Invite teammates by email and assign a role. Drag people between departments —
+        an Engineering department unlocks the Engineering board for its members, and a
+        Customer Success department unlocks Customer Lookup.
       </p>
 
       {isAdmin && adding === "dept" && (

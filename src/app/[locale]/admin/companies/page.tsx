@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
-import { getStaff, hasModule } from "@/lib/admin-auth";
+import { getPortalAccess } from "@/lib/team-data";
 import { getCompanies } from "@/lib/customers";
 import { getCompaniesCore } from "@/lib/core-api";
 import { SuppressionNote } from "@/components/admin/suppression-note";
@@ -12,8 +12,8 @@ export default async function CompaniesPage({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const staff = await getStaff();
-  if (!hasModule(staff, "customer-lookup")) notFound();
+  const access = await getPortalAccess();
+  if (!access.nav.customers) notFound();
 
   const companies = (await getCompaniesCore()) ?? (await getCompanies());
 
