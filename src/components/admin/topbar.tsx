@@ -1,8 +1,21 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { signOut } from "@/app/[locale]/admin/actions";
 import type { Staff } from "@/lib/admin-auth";
+
+// Where-am-I label, mirroring the sidebar's items (display only — no gating).
+const SECTIONS: [string, string][] = [
+  ["/admin/dashboard", "Home"],
+  ["/admin/team/pulse", "Pulse"],
+  ["/admin/team/work", "Work"],
+  ["/admin/team/initiatives", "Work"],
+  ["/admin/team/engineering", "Engineering"],
+  ["/admin/team/people", "Manage"],
+  ["/admin/customers", "Customers"],
+  ["/admin/companies", "Customers"],
+];
 
 export function AdminTopbar({
   staff,
@@ -13,6 +26,9 @@ export function AdminTopbar({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
+  const section =
+    SECTIONS.find(([p]) => pathname?.startsWith(`/${locale}${p}`))?.[1] ?? "Portal";
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -37,9 +53,7 @@ export function AdminTopbar({
           <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
             sayhii internal
           </p>
-          <p className="text-sm font-medium leading-tight truncate">
-            Admin portal
-          </p>
+          <p className="text-sm font-medium leading-tight truncate">{section}</p>
         </div>
 
         <div ref={ref} className="relative">

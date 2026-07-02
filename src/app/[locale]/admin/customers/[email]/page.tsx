@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
-import { getStaff, hasModule } from "@/lib/admin-auth";
+import { getPortalAccess } from "@/lib/team-data";
 import { NotesPanel } from "@/components/admin/notes-panel";
 import {
   getCustomer,
@@ -18,8 +18,8 @@ export default async function CustomerRecordPage({ params }: Props) {
   const { locale, email: raw } = await params;
   if (!isLocale(locale)) notFound();
 
-  const staff = await getStaff();
-  if (!hasModule(staff, "customer-lookup")) notFound();
+  const access = await getPortalAccess();
+  if (!access.nav.customers) notFound();
 
   const email = decodeURIComponent(raw);
   const c = (await getCustomerCore(email)) ?? (await getCustomer(email));
