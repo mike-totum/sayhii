@@ -46,9 +46,7 @@ export default function TeamPeoplePage() {
         )}
       </div>
       <p className="mt-1 text-sm text-muted">
-        Invite teammates by email and assign a role. Drag people between departments —
-        an Engineering department unlocks the Engineering board for its members, and a
-        Customer Success department unlocks Customer Lookup.
+        Invite teammates by email and assign a role. Drag people between departments.
       </p>
 
       {isAdmin && adding === "dept" && (

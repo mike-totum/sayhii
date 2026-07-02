@@ -1,9 +1,8 @@
 "use client";
 
-// Single source of truth for portal navigation. Every surface a person sees
-// is theirs: the base trio (Home · Pulse · Work) for everyone on the roster,
-// plus tools that light up from their department (see getPortalAccess), plus
-// Manage for admins. Consumed by the sidebar (desktop) and bottom bar (mobile).
+// Single source of truth for portal navigation. sayhii is a 5-person company:
+// everyone sees every tool; only Manage (roster/invites) is admin-only.
+// Consumed by the sidebar (desktop) and bottom bar (mobile).
 
 export type NavFlags = {
   engineering: boolean;
@@ -15,7 +14,7 @@ export type NavItem = {
   id: string;
   label: string;
   href: string; // logical path; locale prefix added at render
-  section: "you" | "team" | "tools" | "admin";
+  section: "main" | "admin";
   icon: (props: { className?: string }) => React.ReactNode;
   /** Also treat these path prefixes as "active" for this item. */
   match?: string[];
@@ -79,21 +78,19 @@ export const ManageIcon = ({ className }: { className?: string }) => (
 );
 
 export const SECTION_LABELS: Record<NavItem["section"], string | null> = {
-  you: null,
-  team: "Team",
-  tools: "Tools",
+  main: null,
   admin: "Admin",
 };
 
 export function buildNav(flags: NavFlags): NavItem[] {
   const items: NavItem[] = [
-    { id: "home", label: "Home", href: "/admin/dashboard", section: "you", icon: HomeIcon },
-    { id: "pulse", label: "Pulse", href: "/admin/team/pulse", section: "team", icon: PulseIcon },
+    { id: "home", label: "Home", href: "/admin/dashboard", section: "main", icon: HomeIcon },
+    { id: "pulse", label: "Pulse", href: "/admin/team/pulse", section: "main", icon: PulseIcon },
     {
       id: "work",
       label: "Work",
       href: "/admin/team/work",
-      section: "team",
+      section: "main",
       icon: WorkIcon,
       match: ["/admin/team/initiatives"],
     },
@@ -103,7 +100,7 @@ export function buildNav(flags: NavFlags): NavItem[] {
       id: "engineering",
       label: "Engineering",
       href: "/admin/team/engineering",
-      section: "team",
+      section: "main",
       icon: EngineeringIcon,
     });
   }
@@ -112,7 +109,7 @@ export function buildNav(flags: NavFlags): NavItem[] {
       id: "customers",
       label: "Customers",
       href: "/admin/customers",
-      section: "tools",
+      section: "main",
       icon: CustomersIcon,
       match: ["/admin/companies"],
     });

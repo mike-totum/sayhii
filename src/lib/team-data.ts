@@ -46,20 +46,12 @@ export async function getTeamIdentity(people: Person[]): Promise<TeamIdentity | 
 
 // ---- portal access ----------------------------------------------------------
 //
-// Relevance-gated navigation: each person sees only the surfaces that are
-// theirs. Tools light up from the org itself — no per-person config:
-//   * Engineering  → admins + anyone in a department matching /engineer|dev|tech/
-//   * Customers    → admins + anyone in a department matching /customer|success|support/
-//   * Manage       → admins
-// So when an admin creates an "Engineering" department and drags someone in,
-// the Engineering board appears for them on their next load.
-
-const ENG_DEPT = /engineer|develop|tech/i;
-const CS_DEPT = /customer|success|support/i;
+// sayhii is 5 people: everyone signed in sees every tool. The only gate is
+// Manage (roster + invites + roles), which is admin-only. If the team ever
+// grows enough that tools need per-person relevance, this is the seam.
 
 export type PortalAccess = {
   me: TeamIdentity | null;
-  deptName: string | null;
   nav: {
     engineering: boolean;
     customers: boolean;
@@ -67,12 +59,10 @@ export type PortalAccess = {
   };
 };
 
-// Light query (people + departments only) — safe to run in the admin shell on
-// every page without dragging in goals/cards.
+// Light query (people only) — safe to run in the admin shell on every page
+// without dragging in goals/cards.
 export async function getPortalAccess(): Promise<PortalAccess> {
-  const [deps, ppl] = isDbConfigured
-    ? await Promise.all([db.select().from(departments), db.select().from(people)])
-    : [SEED_DATA.departments, SEED_DATA.people];
+  const ppl = isDbConfigured ? await db.select().from(people) : SEED_DATA.people;
 
   const roster: Person[] = ppl.map((p) => ({
     id: p.id,
@@ -87,17 +77,13 @@ export async function getPortalAccess(): Promise<PortalAccess> {
   }));
 
   const me = await getTeamIdentity(roster);
-  const mine = me?.personId ? roster.find((p) => p.id === me.personId) : undefined;
-  const deptName = deps.find((d) => d.id === mine?.departmentId)?.name ?? null;
-  const isAdmin = !!me?.isAdmin;
 
   return {
     me,
-    deptName,
     nav: {
-      engineering: isAdmin || (!!deptName && ENG_DEPT.test(deptName)),
-      customers: isAdmin || (!!deptName && CS_DEPT.test(deptName)),
-      manage: isAdmin,
+      engineering: !!me,
+      customers: !!me,
+      manage: !!me?.isAdmin,
     },
   };
 }
