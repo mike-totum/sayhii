@@ -47,32 +47,31 @@ export function AdminTopbar({
     .toUpperCase();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-      <div className="px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
-            sayhii internal
-          </p>
-          <p className="text-sm font-medium leading-tight truncate">{section}</p>
-        </div>
+    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
+      <div className="px-6 lg:px-10 h-12 flex items-center justify-between gap-4">
+        <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.22em] text-muted">
+          sayhii internal
+          <span className="mx-2 text-border" aria-hidden>/</span>
+          <span className="text-foreground font-medium">{section}</span>
+        </p>
 
         <div ref={ref} className="relative">
           <button
             onClick={() => setOpen((v) => !v)}
             aria-haspopup="menu"
             aria-expanded={open}
-            className="inline-flex items-center gap-3 rounded-full border border-border bg-surface pr-3 pl-1.5 py-1.5 hover:border-foreground/30 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface pr-2.5 pl-1 py-1 hover:border-foreground/30 transition-colors"
           >
             <span
-              className="size-7 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-xs font-semibold flex items-center justify-center"
+              className="size-6 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[10px] font-semibold flex items-center justify-center"
               aria-hidden
             >
               {initials}
             </span>
-            <span className="text-sm font-medium hidden lg:inline">
+            <span className="text-xs font-medium hidden lg:inline">
               {staff.name}
             </span>
-            <svg viewBox="0 0 24 24" fill="none" className="size-4 text-muted" aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" className="size-3.5 text-muted" aria-hidden>
               <path
                 d="M6 9l6 6 6-6"
                 stroke="currentColor"

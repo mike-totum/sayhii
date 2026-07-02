@@ -19,13 +19,15 @@ import {
 import { PersonAvatar } from "@/components/admin/person-chip";
 import { SetCell, GradeButtons, StreakStrip } from "@/components/admin/goal-cells";
 import { CardDetail } from "@/components/admin/card-detail";
+import { EmptyState } from "@/components/admin/empty-state";
+import { WorkIcon } from "@/components/admin/admin-nav";
 
 // DASHBOARD — each person's home. Ties their weekly goals to the work assigned
 // to them. Scoped to the signed-in user (me.personId).
 
 export default function DashboardPage() {
   const { locale } = useParams<{ locale: string }>();
-  const { data, me, addGoal, updateGoal, updatePerson } = useTeam();
+  const { data, me, addGoal, updateGoal } = useTeam();
   const [burstId, setBurstId] = useState<string | null>(null);
   const [openCard, setOpenCard] = useState<string | null>(null);
 
@@ -72,6 +74,11 @@ export default function DashboardPage() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = person.name.split(" ")[0];
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   // The collective result, delivered to the person (mirrors Pulse's rollup).
   const activePeople = data.people.filter((p) => p.active);
@@ -89,41 +96,31 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      {/* profile header */}
-      <header className="glass rounded-2xl p-5">
-        <div className="flex items-center gap-4">
-          <PersonAvatar person={person} size={56} />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted">{greeting}, {firstName}</p>
-            <input
-              value={person.name}
-              onChange={(e) => updatePerson(person.id, { name: e.target.value })}
-              className="w-full bg-transparent font-serif text-2xl tracking-tight border-b border-transparent hover:border-white/60 focus:border-foreground/40 focus:outline-none"
-            />
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
-              <input
-                value={person.role}
-                placeholder="Add your title"
-                onChange={(e) => updatePerson(person.id, { role: e.target.value })}
-                className="bg-transparent border-b border-transparent hover:border-white/60 focus:border-foreground/40 focus:outline-none"
-              />
+      {/* hero — the page greets you; no card, page-level type */}
+      <header className="flex items-end justify-between gap-6 pt-2 pb-1">
+        <div className="flex items-center gap-5">
+          <PersonAvatar person={person} size={64} ring />
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-muted">{today}</p>
+            <h1 className="mt-1 font-serif text-4xl tracking-tight text-foreground">
+              {greeting}, {firstName}.
+            </h1>
+            <p className="mt-1.5 text-sm text-muted">
+              {person.role || "sayhii"}
               {person.departmentId && (
-                <>
-                  <span>·</span>
-                  <span>{deptName(data.departments, person.departmentId)}</span>
-                </>
+                <> · {deptName(data.departments, person.departmentId)}</>
               )}
-            </div>
+            </p>
           </div>
-          <div className="hidden flex-col items-end gap-2 sm:flex">
-            <StreakStrip goals={myGoals} endWeek={lastWeek} label="your last 6 weeks" />
-            <Link
-              href={`/${locale}/admin/team/people/${person.id}`}
-              className="text-xs text-muted hover:text-foreground"
-            >
-              Full profile →
-            </Link>
-          </div>
+        </div>
+        <div className="hidden flex-col items-end gap-2 sm:flex">
+          <StreakStrip goals={myGoals} endWeek={lastWeek} label="your last 6 weeks" />
+          <Link
+            href={`/${locale}/admin/team/people/${person.id}`}
+            className="text-xs text-muted hover:text-foreground transition-colors"
+          >
+            Full profile →
+          </Link>
         </div>
       </header>
 
@@ -197,7 +194,7 @@ export default function DashboardPage() {
                   <p className="text-[10px] uppercase tracking-wide text-muted/70">{type}</p>
                   {goal ? (
                     <div className="mt-0.5 flex items-start gap-2">
-                      <p className={`relative flex-1 text-sm leading-snug ${goal.status === "done" ? "text-muted" : ""}`}>
+                      <p className={`relative flex-1 text-[15px] leading-snug ${goal.status === "done" ? "text-muted" : ""}`}>
                         {goal.text}
                         {burstId === goal.id && (
                           <span className="animate-recognize pointer-events-none absolute -top-3 left-0 text-base">
@@ -244,7 +241,19 @@ export default function DashboardPage() {
               );
             })}
             {myCards.length === 0 && (
-              <p className="text-sm text-muted">Nothing assigned to you yet.</p>
+              <EmptyState
+                icon={<WorkIcon className="size-4" />}
+                title="A clean slate"
+                line="Tasks you own show up here. Add your first on the Work board."
+                action={
+                  <Link
+                    href={`/${locale}/admin/team/work`}
+                    className="rounded-full bg-foreground px-3.5 py-1.5 text-xs font-medium text-background hover:bg-primary transition-colors"
+                  >
+                    Open Work
+                  </Link>
+                }
+              />
             )}
           </div>
 

@@ -37,7 +37,7 @@ export function SetCell({
 
   if (!canEdit) {
     return (
-      <p className="mt-0.5 text-sm leading-snug">
+      <p className="mt-0.5 text-[15px] leading-snug">
         {goal?.text || <span className="text-muted/60">—</span>}
       </p>
     );
@@ -62,7 +62,7 @@ export function SetCell({
         onChange={(e) => setText(e.target.value)}
         onBlur={commit}
         placeholder={placeholder}
-        className="mt-0.5 w-full bg-transparent text-sm leading-snug placeholder:text-muted/60 focus:outline-none"
+        className="mt-0.5 w-full bg-transparent text-[15px] leading-snug placeholder:text-muted/60 focus:outline-none"
       />
     </form>
   );
