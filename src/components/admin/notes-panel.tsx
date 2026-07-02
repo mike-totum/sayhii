@@ -23,8 +23,8 @@ export function NotesPanel({
   const [visibility, setVisibility] = useState<"public" | "personal">("public");
 
   return (
-    <section className="rounded-md border border-border bg-surface">
-      <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-border">
+    <section className="rounded-2xl glass overflow-hidden">
+      <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-white/50">
         <h3 className="text-sm font-medium">
           {title}{" "}
           <span className="text-muted font-normal">({notes.length})</span>

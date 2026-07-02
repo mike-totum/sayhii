@@ -3,13 +3,9 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { getPortalAccess } from "@/lib/team-data";
 import { NotesPanel } from "@/components/admin/notes-panel";
-import {
-  getCustomer,
-  type AccountStatus,
-  type Participation,
-} from "@/lib/customers";
+import { getCustomer, type AccountStatus } from "@/lib/customers";
 import { listNotes } from "@/lib/notes-data";
-import { getParticipation, getCustomerCore } from "@/lib/core-api";
+import { getCustomerCore } from "@/lib/core-api";
 import { getActivationStatus, type ActivationMonth } from "@/lib/activation-api";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
@@ -36,30 +32,34 @@ export default async function CustomerRecordPage({ params }: Props) {
   }
 
   const path = `/${locale}/admin/customers/${encodeURIComponent(c.email)}`;
-  const [userNotes, companyNotes, liveParticipation, activation] =
-    await Promise.all([
-      listNotes("user", c.email),
-      listNotes("company", c.company),
-      getParticipation(c.email),
-      getActivationStatus(c.email),
-    ]);
-  // Real participation from sayhii-core when available; stub otherwise.
-  const participation = liveParticipation ?? c.participation;
+  const [userNotes, companyNotes, activation] = await Promise.all([
+    listNotes("user", c.email),
+    listNotes("company", c.company),
+    getActivationStatus(c.email),
+  ]);
+
+  // "reports to Amy@sayhii.io" on Amy's own card is a data quirk — suppress
+  // self-reports and normalize case for display.
+  const manager =
+    c.managerEmail && c.managerEmail.toLowerCase() !== c.email.toLowerCase()
+      ? c.managerEmail.toLowerCase()
+      : null;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 lg:px-10 py-12 space-y-6">
+    <div className="mx-auto max-w-3xl px-6 lg:px-10 py-10 space-y-5">
       <BackLink locale={locale} />
 
       {/* Zone 1 — Identity */}
-      <header className="rounded-md border border-border bg-surface p-6">
+      <header className="rounded-2xl glass p-6">
         <div className="flex items-start gap-4">
           <span className="size-12 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-sm font-semibold flex items-center justify-center">
             {initials(c.name)}
           </span>
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="font-serif text-2xl tracking-tight">{c.name}</h1>
               <StatusBadge status={c.status} />
+              <ParticipationBadge status={c.participation.status} />
             </div>
             <p className="mt-1 text-sm text-muted">{c.email}</p>
             <p className="mt-1 text-sm text-muted">
@@ -70,20 +70,20 @@ export default async function CustomerRecordPage({ params }: Props) {
                 {c.company}
               </Link>
               {c.department ? ` › ${c.department}` : ""}
-              {c.managerEmail ? ` › reports to ${c.managerEmail}` : ""}
+              {manager ? ` › reports to ${manager}` : ""}
             </p>
           </div>
         </div>
       </header>
 
       {/* Zone 2 — Account */}
-      <section className="rounded-md border border-border bg-surface p-6">
+      <section className="rounded-2xl glass p-6">
         <SectionTitle>Account</SectionTitle>
         <dl className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6 text-sm">
           <Field label="Company" value={c.company} />
           <Field label="Role" value={c.role} />
           <Field label="Department" value={c.department ?? "—"} />
-          <Field label="Joined" value={c.joined ?? "—"} />
+          <Field label="Joined" value={formatJoined(c.joined)} />
           <Field
             label="Source"
             value={c.source === "hris" ? `HRIS (${c.hrisProvider ?? "—"})` : "Manual"}
@@ -92,29 +92,25 @@ export default async function CustomerRecordPage({ params }: Props) {
         </dl>
       </section>
 
-      {/* Zone 3 — Engagement (participation only) */}
-      <section className="rounded-md border border-border bg-surface p-6">
+      {/* Zone 3 — Monthly activation: the engagement story. Answered vs
+          expected per month + whether the activation went out. */}
+      <section className="rounded-2xl glass p-6">
         <div className="flex items-center justify-between gap-3">
-          <SectionTitle>Engagement</SectionTitle>
+          <SectionTitle>Monthly activation</SectionTitle>
           <span className="text-[11px] text-muted">
             participation only — no answer content
           </span>
         </div>
-        <Engagement p={participation} />
-      </section>
-
-      {/* Zone 3.5 — Monthly activation (answered vs expected, from Snowflake) */}
-      {activation && activation.length > 0 && (
-        <section className="rounded-md border border-border bg-surface p-6">
-          <div className="flex items-center justify-between gap-3">
-            <SectionTitle>Monthly activation</SectionTitle>
-            <span className="text-[11px] text-muted">
-              sent status · answered vs expected
-            </span>
-          </div>
+        {activation && activation.length > 0 ? (
           <ActivationHistory months={activation} />
-        </section>
-      )}
+        ) : (
+          <p className="mt-4 text-sm text-muted">
+            {activation === null
+              ? "Activation service not configured."
+              : "No activation history for this user yet."}
+          </p>
+        )}
+      </section>
 
       {/* Zone 4 — Notes */}
       <NotesPanel
@@ -133,37 +129,6 @@ export default async function CustomerRecordPage({ params }: Props) {
         path={path}
         notes={companyNotes}
       />
-    </div>
-  );
-}
-
-function Engagement({ p }: { p: Participation }) {
-  const statusLabel =
-    p.status === "engaged" ? "🟢 Engaged" : p.status === "dormant" ? "🟠 Dormant" : "⚪ New";
-  return (
-    <div className="mt-4 grid sm:grid-cols-[auto_1fr] gap-6 items-center">
-      <div className="flex items-center gap-4">
-        <ScoreRing score={p.score} />
-        <div>
-          <p className="text-sm font-medium">{statusLabel}</p>
-          <p className="text-xs text-muted">participation score</p>
-        </div>
-      </div>
-      <dl className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
-        <Field
-          label="Last active"
-          value={p.lastActiveDays === null ? "never" : `${p.lastActiveDays}d ago`}
-        />
-        <Field label="Phase" value={`${p.currentPhase} of ${p.totalPhases}`} />
-        <Field
-          label="Phase progress"
-          value={p.phaseProgressPct === null ? "—" : `${p.phaseProgressPct}%`}
-        />
-        <Field
-          label="Overdue"
-          value={p.overdue ? "⚠ yes" : "no"}
-        />
-      </dl>
     </div>
   );
 }
@@ -206,7 +171,8 @@ function ActivationHistory({ months }: { months: ActivationMonth[] }) {
 
 // The answer to "did they get it." Sent is the headline; other statuses
 // explain why an eligible user didn't receive one (blocked, rejected, still
-// in review, or a delivery failure).
+// in review, or a delivery failure). Months predating the approvals table
+// have no send record — the Snowflake `generated` flag covers those.
 function SendBadge({ month }: { month: ActivationMonth }) {
   const base =
     "inline-flex items-center justify-self-end text-[11px] rounded-full border px-2.5 py-0.5";
@@ -225,6 +191,17 @@ function SendBadge({ month }: { month: ActivationMonth }) {
     APPROVED: { label: "Approved, not yet sent", cls: "bg-surface text-muted border-border" },
   };
   const v = month.sentStatus ? map[month.sentStatus] : undefined;
+  if (!v && month.generated) {
+    // Generated in Snowflake but no approvals record: delivered pre-tracking.
+    return (
+      <span
+        className={`${base} bg-accent-soft/40 text-muted border-accent/30`}
+        title="An activation was generated for this month, before send tracking existed."
+      >
+        Generated
+      </span>
+    );
+  }
   const { label, cls } = v ?? {
     label: "Not sent",
     cls: "bg-surface text-muted border-border",
@@ -247,17 +224,11 @@ function formatMonthId(monthId: string): string {
   return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
-function ScoreRing({ score }: { score: number }) {
-  const tone =
-    score >= 70 ? "text-accent" : score >= 40 ? "text-primary" : "text-muted";
-  return (
-    <span
-      className={`size-14 shrink-0 rounded-full border-4 border-border flex items-center justify-center font-semibold tabular-nums ${tone}`}
-      aria-label={`Participation score ${score} of 100`}
-    >
-      {score}
-    </span>
-  );
+// Core returns joined as a float-ish year string ("2021.5"). Show the year.
+function formatJoined(joined: string | null | undefined): string {
+  if (!joined) return "—";
+  const m = /^(\d{4})(\.\d+)?$/.exec(joined);
+  return m ? m[1] : joined;
 }
 
 function BackLink({ locale }: { locale: string }) {
@@ -309,6 +280,24 @@ function StatusBadge({ status }: { status: AccountStatus }) {
       className={`inline-flex text-[11px] capitalize rounded-full border px-2.5 py-0.5 ${map[status]}`}
     >
       {status}
+    </span>
+  );
+}
+
+// Cheap recency signal from core (engaged / dormant / new) — real data, unlike
+// the old score ring which read from an endpoint that never shipped (#203).
+function ParticipationBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    engaged: { label: "🟢 Engaged", cls: "bg-accent-soft/50 border-accent/30" },
+    dormant: { label: "🟠 Dormant", cls: "bg-amber-50 border-amber-200" },
+    new: { label: "⚪ New", cls: "bg-surface border-border" },
+  };
+  const v = map[status] ?? { label: status, cls: "bg-surface border-border" };
+  return (
+    <span
+      className={`inline-flex items-center text-[11px] rounded-full border px-2.5 py-0.5 text-foreground ${v.cls}`}
+    >
+      {v.label}
     </span>
   );
 }

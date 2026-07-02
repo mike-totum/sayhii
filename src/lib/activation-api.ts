@@ -26,6 +26,10 @@ export type ActivationMonth = {
   sent: boolean;
   sentStatus: string | null; // SENT | FAILED | APPROVED | PENDING_APPROVAL | REJECTED | QA_BLOCKED | null
   sentAt: string | null; // ISO timestamp when sent
+  // From Snowflake's USER_ACTIVATION_STATUS view: an activation was generated
+  // for this month. Months predating the approvals table have generated=true
+  // but no send record — treat as delivered via the legacy path.
+  generated?: boolean;
 };
 
 export async function getActivationStatus(
