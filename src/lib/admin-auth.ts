@@ -10,6 +10,7 @@ import { auth } from "@/auth";
 export type Staff = {
   name: string;
   email: string;
+  image: string | null; // Google profile photo from the SSO session
   modules: string[]; // module grants; everyone @sayhii.io gets these for now
 };
 
@@ -22,7 +23,12 @@ export async function getStaff(): Promise<Staff | null> {
   // without Google), closed on any real deploy.
   if (!isAuthConfigured) {
     if (process.env.NODE_ENV === "production") return null;
-    return { name: "Michael Bomhoff", email: "michael.bomhoff@sayhii.io", modules: STAFF_MODULES };
+    return {
+      name: "Michael Bomhoff",
+      email: "michael.bomhoff@sayhii.io",
+      image: null,
+      modules: STAFF_MODULES,
+    };
   }
 
   // Real session. The signIn callback already enforces the domain; we re-check
@@ -34,6 +40,7 @@ export async function getStaff(): Promise<Staff | null> {
   return {
     name: session?.user?.name ?? email,
     email,
+    image: session?.user?.image ?? null,
     modules: STAFF_MODULES,
   };
 }

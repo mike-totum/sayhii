@@ -11,7 +11,7 @@ import {
   type GoalType,
   type TeamRole,
 } from "@/lib/team";
-import { PersonAvatar } from "@/components/admin/person-chip";
+import { AvatarUpload } from "@/components/admin/avatar-upload";
 
 export default function PersonDetailPage() {
   const { locale, id } = useParams<{ locale: string; id: string }>();
@@ -39,7 +39,12 @@ export default function PersonDetailPage() {
 
       <header className="rounded-2xl glass p-5 space-y-4">
         <div className="flex items-center gap-4">
-          <PersonAvatar person={person} size={52} />
+          <AvatarUpload
+            person={person}
+            size={52}
+            canEdit={canEdit}
+            onChange={(photoUrl) => updatePerson(person.id, { photoUrl })}
+          />
           <div className="min-w-0 flex-1">
             <EditableText
               value={person.name}

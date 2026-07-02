@@ -63,10 +63,15 @@ export function AdminTopbar({
             className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface pr-2.5 pl-1 py-1 hover:border-foreground/30 transition-colors"
           >
             <span
-              className="size-6 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[10px] font-semibold flex items-center justify-center"
+              className="size-6 overflow-hidden rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-[10px] font-semibold flex items-center justify-center"
               aria-hidden
             >
-              {initials}
+              {staff.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={staff.image} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+              ) : (
+                initials
+              )}
             </span>
             <span className="text-xs font-medium hidden lg:inline">
               {staff.name}
