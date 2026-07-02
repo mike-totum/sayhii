@@ -82,12 +82,12 @@ export default async function CustomersPage({ params, searchParams }: Props) {
         <p className="text-xs uppercase tracking-[0.18em] text-muted mb-3">
           {results.length} {results.length === 1 ? "result" : "results"}
         </p>
-        <ul className="divide-y divide-border rounded-md border border-border overflow-hidden">
+        <ul className="divide-y divide-white/50 rounded-2xl glass overflow-hidden">
           {results.map((r) => (
             <li key={r.email}>
               <Link
                 href={`/${locale}/admin/customers/${encodeURIComponent(r.email)}`}
-                className="flex items-center gap-4 px-5 py-4 bg-surface hover:bg-background transition-colors"
+                className="flex items-center gap-4 px-5 py-4 hover:bg-white/50 transition-colors"
               >
                 <span className="size-9 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground text-xs font-semibold flex items-center justify-center">
                   {initials(r.name)}
@@ -105,7 +105,7 @@ export default async function CustomersPage({ params, searchParams }: Props) {
             </li>
           ))}
           {results.length === 0 && (
-            <li className="px-5 py-8 bg-surface text-sm text-muted text-center">
+            <li className="px-5 py-8 text-sm text-muted text-center">
               No matches. Try the full email address.
             </li>
           )}
