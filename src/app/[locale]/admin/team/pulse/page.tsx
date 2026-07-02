@@ -74,6 +74,14 @@ export default function PulsePage() {
         <div className="flex items-center gap-3">
           <Rollup label="Set this week" value={`${setThisWeek}/${people.length}`} />
           <Rollup label="Hit last week" value={hitRate === null ? "—" : `${hitRate}%`} accent />
+          {me?.isAdmin && (
+            <Link
+              href={`/${locale}/admin/team/pulse/meeting`}
+              className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-primary transition-colors"
+            >
+              ▶ Run Monday
+            </Link>
+          )}
         </div>
       </div>
 
