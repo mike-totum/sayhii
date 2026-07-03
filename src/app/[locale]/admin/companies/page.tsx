@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { getPortalAccess } from "@/lib/team-data";
 import { getCompanies } from "@/lib/customers";
-import { getCompaniesCore } from "@/lib/core-api";
+import { getCompaniesCore, isCoreConfigured } from "@/lib/core-api";
 import { SuppressionNote } from "@/components/admin/suppression-note";
 
 type Props = { params: Promise<{ locale: string }> };
+
+export const maxDuration = 60;
 
 export default async function CompaniesPage({ params }: Props) {
   const { locale } = await params;
@@ -15,7 +17,9 @@ export default async function CompaniesPage({ params }: Props) {
   const access = await getPortalAccess();
   if (!access.nav.customers) notFound();
 
-  const companies = (await getCompaniesCore()) ?? (await getCompanies());
+  const companies = isCoreConfigured
+    ? ((await getCompaniesCore()) ?? [])
+    : await getCompanies();
 
   return (
     <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">

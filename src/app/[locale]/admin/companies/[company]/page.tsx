@@ -9,10 +9,12 @@ import {
   type AccountStatus,
   type ParticipationStatus,
 } from "@/lib/customers";
-import { getCompanyCore } from "@/lib/core-api";
+import { getCompanyCore, isCoreConfigured } from "@/lib/core-api";
 import { listNotes } from "@/lib/notes-data";
 
 type Props = { params: Promise<{ locale: string; company: string }> };
+
+export const maxDuration = 60;
 
 export default async function CompanyDetailPage({ params }: Props) {
   const { locale, company: raw } = await params;
@@ -22,7 +24,9 @@ export default async function CompanyDetailPage({ params }: Props) {
   if (!access.nav.customers) notFound();
 
   const company = decodeURIComponent(raw);
-  const detail = (await getCompanyCore(company)) ?? (await getCompany(company));
+  const detail = isCoreConfigured
+    ? await getCompanyCore(company)
+    : await getCompany(company);
   if (!detail) {
     return (
       <div className="mx-auto max-w-3xl px-6 lg:px-10 py-12">

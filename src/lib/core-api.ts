@@ -16,12 +16,22 @@ const TOKEN = process.env.SAYHII_CORE_INTERNAL_TOKEN ?? "";
 
 export const isCoreConfigured = Boolean(BASE && TOKEN);
 
-async function coreGet<T>(path: string): Promise<T | null> {
+// Core's internal endpoints iterate the prod User table and can be SLOW
+// (10-35s+ observed on prod). Every call gets a hard timeout so a slow core
+// can never hang a page render; callers treat null as "unavailable".
+async function coreGet<T>(
+  path: string,
+  opts: { timeoutMs?: number; revalidate?: number } = {},
+): Promise<T | null> {
   if (!isCoreConfigured) return null;
+  const { timeoutMs = 25_000, revalidate } = opts;
   try {
     const res = await fetch(`${BASE}${path}`, {
       headers: { Authorization: `Bearer ${TOKEN}` },
-      cache: "no-store",
+      signal: AbortSignal.timeout(timeoutMs),
+      ...(revalidate !== undefined
+        ? { next: { revalidate } }
+        : { cache: "no-store" as const }),
     });
     if (!res.ok) return null;
     return (await res.json()) as T;
@@ -72,7 +82,9 @@ export async function getCustomerCore(email: string): Promise<CustomerRecord | n
 }
 
 export async function getCompaniesCore(): Promise<CompanySummary[] | null> {
-  return coreGet<CompanySummary[]>(`/internal/companies`);
+  // Org names change rarely and the endpoint is expensive on prod — cache for
+  // an hour so the search page doesn't pay for it on every load.
+  return coreGet<CompanySummary[]>(`/internal/companies`, { revalidate: 3600 });
 }
 
 export async function getCompanyCore(name: string): Promise<CompanyDetail | null> {

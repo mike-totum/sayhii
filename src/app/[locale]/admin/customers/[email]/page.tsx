@@ -5,10 +5,13 @@ import { getPortalAccess } from "@/lib/team-data";
 import { NotesPanel } from "@/components/admin/notes-panel";
 import { getCustomer, type AccountStatus } from "@/lib/customers";
 import { listNotes } from "@/lib/notes-data";
-import { getCustomerCore } from "@/lib/core-api";
+import { getCustomerCore, isCoreConfigured } from "@/lib/core-api";
 import { getActivationStatus, type ActivationMonth } from "@/lib/activation-api";
 
 type Props = { params: Promise<{ locale: string; email: string }> };
+
+// Core's by-email lookup can take ~15s+ on prod; timeboxed in coreGet.
+export const maxDuration = 60;
 
 export default async function CustomerRecordPage({ params }: Props) {
   const { locale, email: raw } = await params;
@@ -18,14 +21,19 @@ export default async function CustomerRecordPage({ params }: Props) {
   if (!access.nav.customers) notFound();
 
   const email = decodeURIComponent(raw);
-  const c = (await getCustomerCore(email)) ?? (await getCustomer(email));
+  // With core configured, never fall back to stub data — a plausible fake
+  // record against prod is worse than an honest miss.
+  const c = isCoreConfigured
+    ? await getCustomerCore(email)
+    : await getCustomer(email);
 
   if (!c) {
     return (
       <div className="mx-auto max-w-3xl px-6 lg:px-10 py-12">
         <BackLink locale={locale} />
         <p className="mt-8 text-muted">
-          No record found for <span className="text-foreground">{email}</span>.
+          No record found for <span className="text-foreground">{email}</span>
+          {isCoreConfigured ? " — or the lookup timed out; try reloading." : "."}
         </p>
       </div>
     );
