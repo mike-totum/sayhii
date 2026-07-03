@@ -74,6 +74,8 @@ export default async function CompanyDetailPage({ params }: Props) {
           {detail.members.map((m) => (
             <li key={m.email}>
               <Link
+                // Record pages hit core live — don't prefetch a whole roster.
+                prefetch={false}
                 href={`/${locale}/admin/customers/${encodeURIComponent(m.email)}`}
                 className="flex items-center gap-4 px-5 py-3 hover:bg-background transition-colors"
               >

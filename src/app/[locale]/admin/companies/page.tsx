@@ -42,6 +42,9 @@ export default async function CompaniesPage({ params }: Props) {
         {companies.map((c) => (
           <Link
             key={c.name}
+            // Each company page runs a live org query in core — prefetching
+            // the whole grid would fire them all at once.
+            prefetch={false}
             href={`/${locale}/admin/companies/${encodeURIComponent(c.name)}`}
             className="group rounded-md border border-border bg-surface p-6 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_-28px_rgba(17,17,23,0.4)] transition-all"
           >

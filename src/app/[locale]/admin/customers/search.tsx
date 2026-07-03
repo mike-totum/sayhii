@@ -170,6 +170,9 @@ export default function CustomerSearch({
             {outcome.results.map((r) => (
               <li key={r.email}>
                 <Link
+                  // Record pages hit core live; prefetching 50 result rows
+                  // fires ~100 core calls per search and melts it.
+                  prefetch={false}
                   href={`/${locale}/admin/customers/${encodeURIComponent(r.email)}`}
                   className="flex items-center gap-4 px-5 py-4 hover:bg-white/50 transition-colors"
                 >
