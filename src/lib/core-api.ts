@@ -90,3 +90,27 @@ export async function getCompaniesCore(): Promise<CompanySummary[] | null> {
 export async function getCompanyCore(name: string): Promise<CompanyDetail | null> {
   return coreGet<CompanyDetail>(`/internal/company?name=${qp(name)}`);
 }
+
+// --- roster snapshot (search corpus) ----------------------------------------
+
+// Full cross-org roster assembled from per-company queries. Each org lookup
+// hits core's OrganizationAndIdIndex, so this never triggers the full
+// User-table scan behind /internal/customers?q= (10-35s on prod). Every
+// company fetch is cached for 5 minutes, so after the first assembly the
+// roster serves from cache in milliseconds — fast enough to filter per
+// keystroke. Rosters only change on HRIS sync; 5 minutes of staleness is fine
+// for search, and the record card always fetches live by email.
+export async function getRosterCore(): Promise<CustomerSummary[] | null> {
+  const companies = await getCompaniesCore();
+  if (!companies) return null;
+  const details = await Promise.all(
+    companies.map((c) =>
+      coreGet<CompanyDetail>(`/internal/company?name=${qp(c.name)}`, {
+        revalidate: 300,
+      }),
+    ),
+  );
+  return details
+    .filter((d): d is CompanyDetail => d !== null)
+    .flatMap((d) => d.members);
+}
