@@ -72,6 +72,8 @@ export default async function CustomerRecordPage({ params }: Props) {
             <p className="mt-1 text-sm text-muted">{c.email}</p>
             <p className="mt-1 text-sm text-muted">
               <Link
+                // Company pages run a live org query in core — load on click.
+                prefetch={false}
                 href={`/${locale}/admin/companies/${encodeURIComponent(c.company)}`}
                 className="text-foreground hover:text-primary transition-colors"
               >
