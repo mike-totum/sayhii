@@ -28,6 +28,38 @@ export default function CustomerSearch({
   const [outcome, setOutcome] = useState<SearchOutcome | null>(initial);
   const [pending, setPending] = useState(false);
   const firstRender = useRef(true);
+  // One request in flight at a time; only the newest queued query fires next.
+  // A cold backend can take many seconds per search, and aborted fetches
+  // don't stop the server-side work — serializing keeps a burst of typing
+  // from stacking expensive queries on core.
+  const queued = useRef<string | null>(null);
+  const running = useRef(false);
+
+  async function pump() {
+    if (running.current) return;
+    running.current = true;
+    try {
+      while (queued.current !== null) {
+        const params = queued.current;
+        queued.current = null;
+        let next: SearchOutcome;
+        try {
+          const res = await fetch(`/api/admin/customers/search?${params}`);
+          if (!res.ok) throw new Error(`search ${res.status}`);
+          next = (await res.json()) as SearchOutcome;
+        } catch {
+          next = { results: [], failed: true };
+        }
+        // Stale if the user kept typing — skip straight to the newer query.
+        if (queued.current === null) {
+          setOutcome(next);
+          setPending(false);
+        }
+      }
+    } finally {
+      running.current = false;
+    }
+  }
 
   useEffect(() => {
     // The server already rendered results for the initial params.
@@ -48,33 +80,20 @@ export default function CustomerSearch({
     );
 
     if (!q.trim() && !company) {
+      queued.current = null;
       setOutcome(null);
       setPending(false);
       return;
     }
 
     setPending(true);
-    const controller = new AbortController();
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/admin/customers/search?${params}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(`search ${res.status}`);
-        setOutcome((await res.json()) as SearchOutcome);
-        setPending(false);
-      } catch {
-        if (!controller.signal.aborted) {
-          setOutcome({ results: [], failed: true });
-          setPending(false);
-        }
-      }
+    const timer = setTimeout(() => {
+      queued.current = params.toString();
+      void pump();
     }, DEBOUNCE_MS);
 
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, company]);
 
   return (

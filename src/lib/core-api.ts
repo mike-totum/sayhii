@@ -25,6 +25,8 @@ async function coreGet<T>(
 ): Promise<T | null> {
   if (!isCoreConfigured) return null;
   const { timeoutMs = 25_000, revalidate } = opts;
+  const started = Date.now();
+  const route = path.split("?")[0];
   try {
     const res = await fetch(`${BASE}${path}`, {
       headers: { Authorization: `Bearer ${TOKEN}` },
@@ -33,11 +35,37 @@ async function coreGet<T>(
         ? { next: { revalidate } }
         : { cache: "no-store" as const }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[core-api] ${route} -> ${res.status} in ${Date.now() - started}ms`);
+      return null;
+    }
     return (await res.json()) as T;
-  } catch {
+  } catch (err) {
+    console.error(
+      `[core-api] ${route} -> ${err instanceof Error ? err.name : "error"} in ${Date.now() - started}ms`,
+    );
     return null;
   }
+}
+
+// Bounded-concurrency map: fanning out one request per company must not hit
+// core with everything at once — it's already the slow party.
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        out[i] = await fn(items[i]);
+      }
+    }),
+  );
+  return out;
 }
 
 const qp = (v: string) => encodeURIComponent(v);
@@ -93,6 +121,13 @@ export async function getCompanyCore(name: string): Promise<CompanyDetail | null
 
 // --- roster snapshot (search corpus) ----------------------------------------
 
+export type Roster = {
+  members: CustomerSummary[];
+  // False when any company failed to load — callers must not trust an
+  // incomplete snapshot to declare "no matches".
+  complete: boolean;
+};
+
 // Full cross-org roster assembled from per-company queries. Each org lookup
 // hits core's OrganizationAndIdIndex, so this never triggers the full
 // User-table scan behind /internal/customers?q= (10-35s on prod). Every
@@ -100,17 +135,26 @@ export async function getCompanyCore(name: string): Promise<CompanyDetail | null
 // roster serves from cache in milliseconds — fast enough to filter per
 // keystroke. Rosters only change on HRIS sync; 5 minutes of staleness is fine
 // for search, and the record card always fetches live by email.
-export async function getRosterCore(): Promise<CustomerSummary[] | null> {
+export async function getRosterCore(): Promise<Roster | null> {
   const companies = await getCompaniesCore();
-  if (!companies) return null;
-  const details = await Promise.all(
-    companies.map((c) =>
-      coreGet<CompanyDetail>(`/internal/company?name=${qp(c.name)}`, {
-        revalidate: 300,
-      }),
-    ),
+  if (!companies || companies.length === 0) return null;
+  // Short per-company timeout: a healthy indexed query answers fast, and an
+  // incomplete roster falls back to direct search anyway — don't sit through
+  // the full 25s for each straggler.
+  const details = await mapLimit(companies, 6, (c) =>
+    coreGet<CompanyDetail>(`/internal/company?name=${qp(c.name)}`, {
+      revalidate: 300,
+      timeoutMs: 10_000,
+    }),
   );
-  return details
-    .filter((d): d is CompanyDetail => d !== null)
-    .flatMap((d) => d.members);
+  const loaded = details.filter((d): d is CompanyDetail => d !== null);
+  if (loaded.length < details.length) {
+    console.error(
+      `[core-api] roster incomplete: ${details.length - loaded.length}/${details.length} companies failed`,
+    );
+  }
+  return {
+    members: loaded.flatMap((d) => d.members),
+    complete: loaded.length === details.length,
+  };
 }
