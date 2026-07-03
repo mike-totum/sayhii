@@ -1,11 +1,11 @@
 // Internal admin-portal access.
 //
-// Real auth is Google Workspace SSO (see src/auth.ts), restricted to the
-// sayhii.io domain. getStaff() reads that session. Until an OAuth client is
-// configured (AUTH_GOOGLE_ID unset — e.g. local dev), it falls back to a dev
-// identity so the portal still renders locally; that fallback is never used on
-// a real production deploy.
-import { auth } from "@/auth";
+// Real auth is SSO restricted to the sayhii.io domain — Microsoft Entra
+// (the team's IdP) or Google (minimal Workspace), see src/auth.ts. getStaff()
+// reads that session. Until a provider is configured (e.g. local dev), it
+// falls back to a dev identity so the portal still renders locally; that
+// fallback is never used on a real production deploy.
+import { auth, isEntraConfigured, isGoogleConfigured } from "@/auth";
 
 export type Staff = {
   name: string;
@@ -16,11 +16,11 @@ export type Staff = {
 
 const STAFF_MODULES = ["dashboard", "customer-lookup", "team-tracking"];
 
-const isAuthConfigured = Boolean(process.env.AUTH_GOOGLE_ID);
+const isAuthConfigured = isEntraConfigured || isGoogleConfigured;
 
 export async function getStaff(): Promise<Staff | null> {
   // No OAuth client configured yet: open in local dev (so the portal renders
-  // without Google), closed on any real deploy.
+  // without SSO), closed on any real deploy.
   if (!isAuthConfigured) {
     if (process.env.NODE_ENV === "production") return null;
     return {

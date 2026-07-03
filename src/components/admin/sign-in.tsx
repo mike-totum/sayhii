@@ -1,7 +1,9 @@
-import { signIn } from "@/auth";
+import { signIn, isEntraConfigured, isGoogleConfigured } from "@/auth";
 
 // Full-page sign-in shown by the admin layout when there's no valid session.
-// The button kicks off Google SSO; the domain gate lives in src/auth.ts.
+// Microsoft Entra is the team's IdP and leads; Google remains for the few
+// sayhii Workspace accounts. Each button appears only when its provider is
+// configured. The domain gates live in src/auth.ts.
 export function AdminSignIn({ locale }: { locale: string }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
@@ -10,25 +12,54 @@ export function AdminSignIn({ locale }: { locale: string }) {
           say<span className="text-primary italic">hii</span> admin
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Internal portal. Sign in with your sayhii Google account.
+          Internal portal. Sign in with your sayhii work account.
         </p>
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: `/${locale}/admin` });
-          }}
-          className="mt-6"
-        >
-          <button className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-warm/40">
-            <GoogleGlyph />
-            Continue with Google
-          </button>
-        </form>
+        <div className="mt-6 space-y-3">
+          {isEntraConfigured && (
+            <form
+              action={async () => {
+                "use server";
+                await signIn("microsoft-entra-id", {
+                  redirectTo: `/${locale}/admin`,
+                });
+              }}
+            >
+              <button className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-warm/40">
+                <MicrosoftGlyph />
+                Continue with Microsoft
+              </button>
+            </form>
+          )}
+          {isGoogleConfigured && (
+            <form
+              action={async () => {
+                "use server";
+                await signIn("google", { redirectTo: `/${locale}/admin` });
+              }}
+            >
+              <button className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-warm/40">
+                <GoogleGlyph />
+                Continue with Google
+              </button>
+            </form>
+          )}
+        </div>
         <p className="mt-4 text-xs text-muted">
           Only @sayhii.io accounts can access this portal.
         </p>
       </div>
     </div>
+  );
+}
+
+function MicrosoftGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 23 23" aria-hidden>
+      <rect x="1" y="1" width="10" height="10" fill="#F25022" />
+      <rect x="12" y="1" width="10" height="10" fill="#7FBA00" />
+      <rect x="1" y="12" width="10" height="10" fill="#00A4EF" />
+      <rect x="12" y="12" width="10" height="10" fill="#FFB900" />
+    </svg>
   );
 }
 
