@@ -8,12 +8,20 @@ import {
   type AccountStatus,
   type ParticipationStatus,
 } from "@/lib/customers";
-import { searchCustomersCore, getCompaniesCore } from "@/lib/core-api";
+import {
+  searchCustomersCore,
+  getCompaniesCore,
+  isCoreConfigured,
+} from "@/lib/core-api";
 
 type Props = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ q?: string; company?: string }>;
 };
+
+// Core's search iterates the prod User table — give it room, but never let a
+// slow call kill the render (coreGet timeboxes each call).
+export const maxDuration = 60;
 
 export default async function CustomersPage({ params, searchParams }: Props) {
   const { locale } = await params;
@@ -23,11 +31,27 @@ export default async function CustomersPage({ params, searchParams }: Props) {
   if (!access.nav.customers) notFound();
 
   const { q = "", company = "" } = await searchParams;
+  // Search only when asked: an empty query would scan the entire prod User
+  // table (30s+). The landing state is a prompt, not a full listing.
+  const hasQuery = Boolean(q.trim() || company);
+
   const companies =
-    (await getCompaniesCore())?.map((c) => c.name) ?? (await listCompanies());
-  const results =
-    (await searchCustomersCore(q, company || undefined)) ??
-    (await searchCustomers(q, company || undefined));
+    (await getCompaniesCore())?.map((c) => c.name) ??
+    (isCoreConfigured ? [] : await listCompanies());
+
+  // With core configured, never fall back to stub data — showing plausible
+  // fake customers against prod is worse than an honest failure.
+  let results: Awaited<ReturnType<typeof searchCustomers>> = [];
+  let searchFailed = false;
+  if (hasQuery) {
+    if (isCoreConfigured) {
+      const r = await searchCustomersCore(q, company || undefined);
+      if (r === null) searchFailed = true;
+      else results = r;
+    } else {
+      results = await searchCustomers(q, company || undefined);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">
@@ -78,6 +102,23 @@ export default async function CustomersPage({ params, searchParams }: Props) {
         </button>
       </form>
 
+      {!hasQuery ? (
+        <div className="mt-8 rounded-2xl glass px-6 py-12 text-center">
+          <p className="text-sm font-medium">Search to get started</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted">
+            Type a name or email above — the exact email is the fastest path.
+            Or pick a company to browse its people.
+          </p>
+        </div>
+      ) : searchFailed ? (
+        <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50/70 px-6 py-8 text-center">
+          <p className="text-sm font-medium">Search took too long</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted">
+            The customer directory didn&apos;t respond in time. Try again, or narrow
+            the search — a full email address is fastest.
+          </p>
+        </div>
+      ) : (
       <div className="mt-8">
         <p className="text-xs uppercase tracking-[0.18em] text-muted mb-3">
           {results.length} {results.length === 1 ? "result" : "results"}
@@ -111,6 +152,7 @@ export default async function CustomersPage({ params, searchParams }: Props) {
           )}
         </ul>
       </div>
+      )}
     </div>
   );
 }
