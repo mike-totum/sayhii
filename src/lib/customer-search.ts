@@ -13,6 +13,9 @@ const LIMIT = 50;
 export type SearchOutcome = {
   results: CustomerSummary[];
   failed: boolean;
+  // True when results came from an incomplete roster snapshot — matches from
+  // companies that haven't loaded yet may be missing.
+  partial?: boolean;
 };
 
 function filterRoster(
@@ -38,9 +41,10 @@ function filterRoster(
 // here against getRosterCore() instead of calling the endpoint, whose
 // free-text path scans the entire prod User table.
 //
-// The snapshot is only trusted when every company loaded. Anything less falls
-// back to the direct core search — slower, but correct — so this path can
-// never be quieter than the tool was before the snapshot existed.
+// Degradation order when the snapshot is incomplete: show what the snapshot
+// has (flagged partial) → exact-email primary-key lookup → direct core
+// search → honest failure. Never silently return nothing while claiming
+// success.
 export async function searchRoster(
   q: string,
   company?: string,
@@ -52,29 +56,31 @@ export async function searchRoster(
 
   const ql = q.trim().toLowerCase();
   const roster = await getRosterCore();
+  const hits = filterRoster(roster?.members ?? [], ql, company);
 
-  if (roster?.complete) {
-    const results = filterRoster(roster.members, ql, company);
-    if (results.length > 0) return { results, failed: false };
-    // Email is the User primary key — a direct lookup still finds records
-    // orphaned from a deleted or renamed org that the snapshot can't see.
-    if (ql.includes("@")) {
-      const direct = await getCustomerCore(ql);
-      if (direct) return { results: [direct], failed: false };
-    }
-    return { results, failed: false };
+  // Email is the User primary key — a key read answers fast even when the
+  // org queries above are timing out, and still finds records orphaned from
+  // a deleted or renamed org that the snapshot can't see.
+  if (hits.length === 0 && ql.includes("@")) {
+    const direct = await getCustomerCore(ql);
+    if (direct) return { results: [direct], failed: false };
   }
 
-  // Snapshot unavailable or partial: use the old direct search.
+  if (roster?.complete) return { results: hits, failed: false };
+
+  if (hits.length > 0) {
+    return { results: hits, failed: false, partial: true };
+  }
+
+  // Nothing in the partial snapshot — last resort is the direct search.
   console.error(
-    `[customer-search] roster ${roster ? "incomplete" : "unavailable"}, falling back to direct search`,
+    `[customer-search] roster ${
+      roster ? `partial ${roster.loaded}/${roster.total}` : "unavailable"
+    }, trying direct search`,
   );
   const direct = await searchCustomersCore(q, company);
-  if (direct !== null) return { results: direct.slice(0, LIMIT), failed: false };
-
-  // Direct search failed too; a partial roster is still better than nothing.
-  if (roster && roster.members.length > 0) {
-    return { results: filterRoster(roster.members, ql, company), failed: false };
+  if (direct !== null) {
+    return { results: direct.slice(0, LIMIT), failed: false };
   }
   return { results: [], failed: true };
 }
