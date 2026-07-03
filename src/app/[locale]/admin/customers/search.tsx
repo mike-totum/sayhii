@@ -159,6 +159,12 @@ export default function CustomerSearch({
           <p className="text-xs uppercase tracking-[0.18em] text-muted mb-3">
             {outcome.results.length}{" "}
             {outcome.results.length === 1 ? "result" : "results"}
+            {outcome.partial && (
+              <span className="ml-2 normal-case tracking-normal text-amber-700">
+                — directory still warming, some companies aren&apos;t
+                searchable yet
+              </span>
+            )}
           </p>
           <ul className="divide-y divide-white/50 rounded-2xl glass overflow-hidden">
             {outcome.results.map((r) => (

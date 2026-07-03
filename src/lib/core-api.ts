@@ -126,35 +126,43 @@ export type Roster = {
   // False when any company failed to load — callers must not trust an
   // incomplete snapshot to declare "no matches".
   complete: boolean;
+  loaded: number;
+  total: number;
 };
 
 // Full cross-org roster assembled from per-company queries. Each org lookup
 // hits core's OrganizationAndIdIndex, so this never triggers the full
-// User-table scan behind /internal/customers?q= (10-35s on prod). Every
-// company fetch is cached for 5 minutes, so after the first assembly the
-// roster serves from cache in milliseconds — fast enough to filter per
-// keystroke. Rosters only change on HRIS sync; 5 minutes of staleness is fine
-// for search, and the record card always fetches live by email.
+// User-table scan behind /internal/customers?q= (10-35s on prod). Loaded
+// companies are cached for an hour, so every search warms more of the roster
+// until it's fully assembled and answers come from cache in milliseconds.
+// Rosters only change on HRIS sync, and the record card always fetches live
+// by email — an hour of staleness is fine for search.
 export async function getRosterCore(): Promise<Roster | null> {
   const companies = await getCompaniesCore();
   if (!companies || companies.length === 0) return null;
-  // Short per-company timeout: a healthy indexed query answers fast, and an
-  // incomplete roster falls back to direct search anyway — don't sit through
-  // the full 25s for each straggler.
-  const details = await mapLimit(companies, 6, (c) =>
-    coreGet<CompanyDetail>(`/internal/company?name=${qp(c.name)}`, {
-      revalidate: 300,
-      timeoutMs: 10_000,
-    }),
+  // Prod core answers these org queries slowly and degrades further under
+  // parallel load — go gentle (2 wide), give each call room (20s), and stop
+  // launching new ones past an overall budget so the route always answers
+  // with whatever loaded. The rest warms up on subsequent searches.
+  const deadline = Date.now() + 30_000;
+  const details = await mapLimit(companies, 2, (c) =>
+    Date.now() >= deadline
+      ? Promise.resolve(null)
+      : coreGet<CompanyDetail>(`/internal/company?name=${qp(c.name)}`, {
+          revalidate: 3600,
+          timeoutMs: 20_000,
+        }),
   );
   const loaded = details.filter((d): d is CompanyDetail => d !== null);
   if (loaded.length < details.length) {
     console.error(
-      `[core-api] roster incomplete: ${details.length - loaded.length}/${details.length} companies failed`,
+      `[core-api] roster incomplete: ${loaded.length}/${details.length} companies loaded`,
     );
   }
   return {
     members: loaded.flatMap((d) => d.members),
     complete: loaded.length === details.length,
+    loaded: loaded.length,
+    total: details.length,
   };
 }
